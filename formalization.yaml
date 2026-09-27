@@ -1,0 +1,312 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Two-fold Langford sequences exist exactly when 3l ≥ 2d − 1; the m-fold counting bound and its attainment"
+  description: >-
+    A Lean 4 characterization of two-fold Langford sequences. An m-fold Langford sequence of order l
+    and defect d fills the positions 1, ..., 2ml so that every p in [d, d + l - 1] occupies the
+    endpoints of m pairwise disjoint pairs of positions at distance p. For d, l >= 1 a two-fold
+    sequence exists exactly when 3l >= 2d - 1. For every m, (2m - 1)l >= 2d - 1 is necessary, with
+    l(2d + l + 1) = 0 (mod 4) for odd m, and the bound is attained whenever 2d + l = 2ml + 1; the
+    row of order one exists exactly when d divides m; no three-fold sequence of order 3 and defect 6
+    exists; and for every m >= 3 the necessary conditions are not sufficient. Alkasasbeh, Dyer and
+    Howell define these sequences and ask for necessary and sufficient conditions when m >= 2; this
+    repository answers the question for m = 2. Necessity is a distance sum. Sufficiency at m = 2 is
+    strong induction on l: sixteen literal cells, concatenation, and otherwise a mirror-symmetric
+    sequence built by Lemma S from a signed permutation, which is found on the whole cone by
+    inversion, the reversal, a descent along lines of fixed mu, and in the band by 21 block-reversal
+    families plus the two-block reversal tau_l, eight sporadic cells and three bases. The tight line
+    is m interleaved copies of the source's Table 1.
+  authors: ["JD Jones"]
+  responsible_maintainers: ["JD Jones"]
+  license: "MIT"
+
+classification:
+  arxiv: ["math.CO"]
+  msc2020: ["05A05", "11B83"]
+
+sources:
+  - title: "Graceful labellings of variable windmills using Skolem sequences"
+    authors: ["Ahmad H. Alkasasbeh", "Danny Dyer", "Jared Howell"]
+    id: "arXiv:2112.04265"
+    type: "paper"
+    location: "https://arxiv.org/abs/2112.04265, Sections 2 and 7"
+    relationship: "adapts"
+    author_endorsement: "not-contacted"
+    note: >-
+      Journal version: Graceful Labellings of Variable Windmills Using Skolem-type Sequences, Ars
+      Combinatoria 159 (2024) 109-131, doi:10.61091/ars159-11. Supplies the definitions of two-fold
+      and m-fold Skolem-type and Langford sequences (Section 2), the tight-line sequence of Table 1,
+      and the question of necessary and sufficient conditions for m-fold Langford sequences with
+      m >= 2 (Section 7). The theorem and its proof are this development's; no proof of the source
+      is formalized.
+  - title: "Perfect Skolem sets"
+    authors: ["Gustav Nordh"]
+    id: "doi:10.1016/j.disc.2006.12.003"
+    type: "paper"
+    location: "Theorem 15 (numbering of arXiv:math/0506155 v1)"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      Discrete Mathematics 308 (2008) 1653-1664. The m-fold sequences here are perfect multi Skolem
+      sets in Nordh's sense; his Theorem 15 is the tight-line bijection in multiset form, and his
+      necessary conditions reduce to the theorem `necessary`. Nothing is formalized from it.
+  - title: "Langford sequences: perfect and hooked"
+    authors: ["James E. Simpson"]
+    id: "doi:10.1016/0012-365X(83)90008-0"
+    type: "paper"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      Discrete Mathematics 44 (1983) 97-104. The classical characterization of Langford sequences,
+      which `necessary` at m = 1 matches. Not a dependency.
+  - title: "m-fold and extended m-fold Skolem sequences"
+    authors: ["C. A. Baker", "R. J. Nowakowski", "N. Shalaby", "A. Sharary"]
+    id: "Zbl 0808.05001"
+    type: "paper"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      Utilitas Mathematica 45 (1994) 153-167; MR 95j:05057. The m-fold definition whose reading
+      (the pairs are a chosen partition of the occurrences) the source and this development follow,
+      and the existence condition for d = 1. Not read in full; nothing is formalized from it.
+  - title: "On certain distributions of integers in pairs with given differences"
+    authors: ["Th. Skolem"]
+    id: "doi:10.7146/math.scand.a-10490"
+    type: "paper"
+    relationship: "background"
+    author_endorsement: "n/a"
+    note: "Mathematica Scandinavica 5 (1957) 57-68. Skolem sequences; background only."
+  - title: "Verification of a conjecture of Th. Skolem"
+    authors: ["Edward S. O'Keefe"]
+    id: "doi:10.7146/math.scand.a-10624"
+    type: "paper"
+    relationship: "background"
+    author_endorsement: "n/a"
+    note: "Mathematica Scandinavica 9 (1961) 80-82. Background only."
+  - title: "Cyclically indecomposable triple systems that are decomposable"
+    authors: ["M. Grüttmüller", "R. Rees", "N. Shalaby"]
+    id: "Zbl 1133.05012"
+    type: "paper"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      Journal of Combinatorial Mathematics and Combinatorial Computing 63 (2007) 103-122. The
+      research note compares its recomputed numbers of two-fold Skolem sequences with this paper's
+      counts, as tabulated in Alruhaymi's thesis. Not read; nothing is formalized from it.
+  - title: "A survey of Skolem-type sequences and Rosa's use of them"
+    authors: ["Nevena Francetić", "Eric Mendelsohn"]
+    id: "doi:10.2478/s12175-008-0110-3"
+    type: "paper"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      Mathematica Slovaca 59 (2009) 39-76. The survey of the area; checked in the prior-art search
+      by full-text index search, not read in full.
+  - title: "Graceful labellings of new families of windmill and snake graphs"
+    authors: ["Ahmad H. Alkasasbeh"]
+    id: "hdl:20.500.14783/2068"
+    type: "thesis"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      Ph.D. thesis, Memorial University of Newfoundland, 2021. States the same question as the
+      source and prints a two-fold example containing a chain; cited in the note's fidelity remark
+      and prior-art section.
+  - title: "Mathematical and algorithmic methods for finding disjoint Rosa-type sequences"
+    authors: ["Fatimah Alruhaymi"]
+    id: "hdl:20.500.14783/2007"
+    type: "thesis"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      M.Sc. thesis, Memorial University of Newfoundland, 2018. Its Table 4.2 tabulates the counts
+      of two-fold Skolem sequences that the note compares with. Background only.
+  - title: "Generalized Langford sequences: new results and algorithms"
+    authors: ["Manrique Mata-Montero", "Steven Normore", "Nabil Shalaby"]
+    id: "doi:10.12988/imf.2014.38161"
+    type: "paper"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      International Mathematical Forum 9 (2014) 155-181. Generalized Langford sequences of higher
+      multiplicity, a different object, named in the note's prior-art section. Background only.
+  - title: "Handbook of Combinatorial Designs, second edition, Section VI.53 (Skolem and Langford-type sequences)"
+    id: "ISBN 9781584885061"
+    type: "book"
+    relationship: "background"
+    author_endorsement: "n/a"
+    note: >-
+      CRC Press, 2007. Checked in the prior-art search by full-text index search only. Background
+      only.
+  - title: "Generalized Signed Langford Sequences"
+    authors: ["Jiwen Zhang", "Haitao Cao"]
+    id: "doi:10.1002/jcd.70010"
+    type: "paper"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      Journal of Combinatorial Designs 34 (2026) 291-305. Signed Langford sequences, a different
+      object, named in the prior-art sentence and the note. Abstract and references read.
+  - title: "Distance labelings: a generalization of Langford sequences"
+    authors: ["Susana Clara López", "Francesc Antoni Muntaner-Batle"]
+    id: "doi:10.26493/1855-3974.896.fbf"
+    type: "paper"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      Ars Mathematica Contemporanea 12 (2017) 235-245. Distance labelings, in which same-label
+      vertices are pairwise at a fixed distance, so a path holds at most two per label; a different
+      object, named in the prior-art sentence and the note.
+  - title: "Generalizations of the Langford-Skolem problem"
+    authors: ["R. J. Nowakowski"]
+    id: "https://oeis.org/A104429/a104429.pdf"
+    type: "thesis"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      M.Sc. thesis, University of Calgary, 1975. Named in the note's prior-art section as not read.
+  - title: "The generalized Langford-Skolem problem"
+    authors: ["John F. Dillon"]
+    id: "Zbl 0328.10011"
+    type: "paper"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      Proceedings of the Fourth Southeastern Conference on Combinatorics, Graph Theory and Computing
+      (1973) 237-247; MR 51 #2936. Named in the note's prior-art section as not read.
+
+related_formalizations:
+  - id: "PALOMAR-2026-09-07-000013"
+    relationship: "builds-on"
+    note: >-
+      gn-lean, by the same author (MIT). L2/Pairs.lean adapts its code for pairs of positions,
+      their endpoints and differences, translations and oriented endpoints, ported to Lean
+      v4.35.0-rc2.
+
+status:
+  scope: >-
+    Six compared declarations over one compared definition, Langford.IsLangford. They characterize
+    two-fold Langford sequences, give the necessary conditions for every m and their attainment on
+    the tight line, settle the row of order one, exclude the cell (6, 3) at m = 3, and show that for
+    every m >= 3 the necessary conditions are not sufficient. No sufficient condition for m >= 3 and
+    no count of sequences is claimed; the note's linear-relaxation results are not formalized. The
+    intentional placeholders of Challenge.lean are excluded from proof counts; Solution.lean does
+    not import Challenge.lean.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Classical.choice", "Quot.sound"]
+  main_results:
+    - declaration: "Langford.twoFold_exists_iff"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "Langford.necessary"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "Langford.tight_exists"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "Langford.order_one_iff"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "Langford.not_threeFold_six_three"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "Langford.not_sufficient"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["Claude (Anthropic)"]
+      framework: "Claude Code with parallel subagents"
+      tool_setup: >-
+        The project was directed by its author. Claude (Anthropic) was used throughout; the theorem,
+        its proof, the searches, the checkers and the repository were produced in that process.
+        Lean v4.35.0-rc2 and Mathlib v4.35.0-rc2 (commit 065356127b1dc0016f66b7283ce0ce2c4055aa55)
+        are pinned by the committed manifest and lake update is never run; there are no GitHub
+        Actions workflows. There is no native_decide; the kernel computations are twenty-seven
+        literal finite-set equalities.
+  spend_usd: "not tracked"
+  notes: "See DISCLOSURE.md."
+
+fidelity:
+  divergences: >-
+    The sequence form of the source is written with the pairs made explicit: for each p a set A of
+    m left ends with a + p outside A, and the positions carrying p exactly A and A + p. The pairs
+    are a chosen partition of the occurrences of p, so four copies at a, a + p, a + 2p, a + 3p are
+    allowed; this is the reading of Baker, Nowakowski, Shalaby and Sharary that the source follows
+    for m-fold sequences, and without it the in-bound cells (d, l) = (1, 1), (5, 4) and (6, 6) would
+    have no sequence. Intervals are stated as bounds rather than interval constants. The sequence
+    is a function from the natural numbers, read on the positions 1, ..., 2ml; values at other
+    positions are ignored. The hypotheses d >= 1 and l >= 1 are required: for l = 0 the empty
+    sequence qualifies, and the source's parameters are positive.
+
+review:
+  status: "self-assessed"
+  notes: >-
+    No independent human expert review and no source-author endorsement is claimed; AI agents
+    developed and cross-reviewed the proof, the statements were checked against the source text, and
+    VERIFICATION.md states what is checked and what is not. Mechanical correctness and agreement of
+    formal statements do not establish priority or significance.
+
+alignment:
+  namespace: "Langford"
+  statements:
+    - source: "Alkasasbeh-Dyer-Howell, arXiv:2112.04265, Section 7 (the question), answered for m = 2"
+      lean: "Langford.twoFold_exists_iff"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For d, l >= 1 a two-fold Langford sequence of order l and defect d exists if and only if
+        3l >= 2d - 1.
+    - source: "The counting bound for every m, re-proved in the sequence form; Nordh, Perfect Skolem sets, Theorem 6 and Corollary 7 reduce to it"
+      lean: "Langford.necessary"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        Every m-fold sequence satisfies 2d + l <= 2ml + 1, and for odd m also
+        l(2d + l + 1) = 0 (mod 4); at m = 1 these are the classical conditions.
+    - source: "Alkasasbeh-Dyer-Howell, Table 1, extended to every m; Nordh, Perfect Skolem sets, Theorem 15 is the same bijection in multiset form"
+      lean: "Langford.tight_exists"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        If 2d + l = 2ml + 1, an m-fold sequence exists: m interleaved copies of Table 1.
+    - source: "This development: the row of order one"
+      lean: "Langford.order_one_iff"
+      module: "Solution"
+      status: "proved"
+      note: "An m-fold sequence of order 1 and defect d exists if and only if d divides m."
+    - source: "This development: an empty cell that meets the necessary conditions"
+      lean: "Langford.not_threeFold_six_three"
+      module: "Solution"
+      status: "proved"
+      note: "No three-fold sequence of order 3 and defect 6 exists."
+    - source: "This development: the necessary conditions are not sufficient for m >= 3"
+      lean: "Langford.not_sufficient"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For every m >= 3 some (d, l) with d, l >= 1 meets the conditions of necessary and admits
+        no m-fold sequence: (6, 3) for m = 3, (m - 1, 1) for even m, (m - 2, 1) for odd m >= 5.
+
+acknowledgements: >-
+  Ahmad H. Alkasasbeh, Danny Dyer and Jared Howell for the definitions, Table 1 and the question;
+  C. A. Baker, R. J. Nowakowski, N. Shalaby and A. Sharary for the m-fold definition; Gustav Nordh
+  for perfect Skolem sets; Lean, Mathlib, Comparator, lean4export, NanoDa, and the Palomar policy
+  and verifier projects. AI assistance is disclosed above and in DISCLOSURE.md.
