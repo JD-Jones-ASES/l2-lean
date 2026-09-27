@@ -9,7 +9,7 @@ or `_private.Solution.` (every declaration of this development and the private a
 generates for them; `Challenge.lean` is not imported), and collects the axioms each depends on.
 Anything outside `propext`, `Classical.choice`, `Quot.sound` is reported with `logError`, which
 fails `lake build`. The audit also fails if it matched fewer constants than the floor below (so a
-renamed namespace cannot make it pass vacuously) or if any of the six compared theorems is missing
+renamed namespace cannot make it pass vacuously) or if any of the ten compared theorems is missing
 from the environment.
 -/
 
@@ -32,7 +32,9 @@ run_cmd do
   unless checked ≥ 1300 do
     logError m!"Axiom audit matched only {checked} project constants; expected at least 1300"
   for n in [`Langford.twoFold_exists_iff, `Langford.necessary, `Langford.tight_exists,
-      `Langford.order_one_iff, `Langford.not_threeFold_six_three, `Langford.not_sufficient] do
+      `Langford.order_one_iff, `Langford.not_threeFold_six_three, `Langford.not_sufficient,
+      `Langford.residue_bound, `Langford.forced_endpoint, `Langford.not_order_three,
+      `Langford.tight_iff_straddle] do
     unless env.contains n do
       logError m!"Compared theorem is missing from the environment: {n}"
   logInfo m!"Audited {checked} project constants; unexpected axiom dependencies: {rejected}."

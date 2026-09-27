@@ -7,9 +7,19 @@
     "Langford.tight_exists",
     "Langford.order_one_iff",
     "Langford.not_threeFold_six_three",
-    "Langford.not_sufficient"
+    "Langford.not_sufficient",
+    "Langford.residue_bound",
+    "Langford.forced_endpoint",
+    "Langford.not_order_three",
+    "Langford.tight_iff_straddle"
   ],
-  "definition_names": ["Langford.IsLangford"],
-  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "definition_names": [
+    "Langford.IsLangford"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
   "enable_nanoda": true
 }

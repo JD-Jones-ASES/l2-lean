@@ -3,7 +3,7 @@ import L2.Main
 /-!
 # The compared theorems
 
-The six theorems of `Challenge.lean`, restated character for character and proved from the
+The ten theorems of `Challenge.lean`, restated character for character and proved from the
 development.
 -/
 
@@ -45,5 +45,36 @@ theorem not_sufficient (m : ℕ) (hm : 3 ≤ m) :
     ∃ d l : ℕ, 1 ≤ d ∧ 1 ≤ l ∧ 2 * d + l ≤ 2 * m * l + 1 ∧
       (m % 2 = 1 → l * (2 * d + l + 1) % 4 = 0) ∧ ¬ ∃ s : ℕ → ℕ, IsLangford m d l s := by
   exact L2.not_sufficient_internal m hm
+
+/-- The residue bound. For every `T ≥ 1`, with `r = ml mod T`, an `m`-fold Langford sequence satisfies
+`r(T − r) ≤ m · Σ_{p=d}^{d+l−1} |p − T|`; the distance `|p − T|` is written with truncated subtraction as
+`(p − T) + (T − p)`, and `p = d + i`. For `T ≥ max(ml, d + l − 1)` this is the counting bound of `necessary`;
+at `l = 1`, `T = d` it says `d ∣ m`. -/
+theorem residue_bound (m d l T : ℕ) (hm : 1 ≤ m) (hd : 1 ≤ d) (hl : 1 ≤ l) (hT : 1 ≤ T) (s : ℕ → ℕ)
+    (hs : IsLangford m d l s) :
+    (m * l % T) * (T - m * l % T) ≤ m * ∑ i ∈ Finset.range l, ((d + i - T) + (T - (d + i))) := by
+  exact L2.residue_bound_internal m d l T hm hd hl hT s hs
+
+/-- The forced-endpoint bound `6mld + ml ≤ 4d² + 2(ml)² + ml²`, that is `ml · e ≤ (l − 1 + e)²` for the
+excess `e = (2m − 1)l − 2d + 1`: the positions `1, …, d` are left ends, every left end is at most `2ml − d`,
+and the distance sum fixes the sum of the left ends. -/
+theorem forced_endpoint (m d l : ℕ) (hm : 1 ≤ m) (hd : 1 ≤ d) (hl : 1 ≤ l) (s : ℕ → ℕ)
+    (hs : IsLangford m d l s) :
+    6 * m * l * d + m * l ≤ 4 * d * d + 2 * (m * l) * (m * l) + m * l * l := by
+  exact L2.forced_endpoint_internal m d l hm hd hl s hs
+
+/-- One order-three cell for every multiplicity: for every `m ≥ 3` the cell `(d, l) = (3m − 3, 3)` satisfies
+the conditions of `necessary` and admits no `m`-fold Langford sequence. -/
+theorem not_order_three (m : ℕ) (hm : 3 ≤ m) :
+    2 * (3 * m - 3) + 3 ≤ 2 * m * 3 + 1 ∧ (m % 2 = 1 → 3 * (2 * (3 * m - 3) + 3 + 1) % 4 = 0) ∧
+      ¬ ∃ s : ℕ → ℕ, IsLangford m (3 * m - 3) 3 s := by
+  exact L2.not_order_three_internal m hm
+
+/-- Equality in the counting bound is rigid: an `m`-fold Langford sequence has `2d + l = 2ml + 1` if and only
+if every position `i ≤ ml` is the left end of its pair, that is `ml < i + s i`. -/
+theorem tight_iff_straddle (m d l : ℕ) (hm : 1 ≤ m) (hd : 1 ≤ d) (hl : 1 ≤ l) (s : ℕ → ℕ)
+    (hs : IsLangford m d l s) :
+    2 * d + l = 2 * m * l + 1 ↔ ∀ i : ℕ, 1 ≤ i → i ≤ m * l → m * l < i + s i := by
+  exact L2.tight_iff_straddle_internal m d l hm hd hl s hs
 
 end Langford
