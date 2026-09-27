@@ -7,6 +7,9 @@ A Langford-type certificate is a finite set of pairs `(x, y)` of integer positio
 collects the endpoints and the differences of such a set, translation of all pairs by a constant,
 and the oriented endpoints: each pair has a left and a right end, and the map sending an oriented
 pair to its end is the bridge between a set of pairs and a sequence.
+
+Adapted from the gn-lean development (PALOMAR-2026-09-07-000013, MIT, the same author) and ported to
+Lean v4.35.0-rc2.
 -/
 
 namespace L2

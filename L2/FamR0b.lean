@@ -30,6 +30,7 @@ def famU5 (q s : ℤ) : Finset (ℤ × ℤ) :=
     row (2 * q + 4 * s + 3) 1 (2 * q - 4 * s - 3)
 
 /-- The family `U5` solves `SP(l, δ)` with `l = 4 * q`, `δ = 4 * s + 3` (`μ = 8 * s + 5`) on its whole domain. -/
+set_option linter.unusedVariables false in
 theorem famU5_sp (q s : ℤ)
     (h1 : q ≤ 3 * s + 1) (h2 : 0 ≤ s) (h3 : 0 ≤ s) (h4 : 0 ≤ s) (h5 : 2 * s + 2 ≤ q) (h6 : s + 2 ≤ q)
     (h7 : s + 1 ≤ q) (h8 : s + 1 ≤ q) (h9 : s + 1 ≤ q) (h10 : s ≤ q) (h11 : 0 ≤ q + s + 1) :
@@ -151,6 +152,7 @@ def famU7 (q s : ℤ) : Finset (ℤ × ℤ) :=
     row (6 * q - 5 * s - 4) (4 * q - 4 * s - 3) (5 * s + 4 - 2 * q)
 
 /-- The family `U7` solves `SP(l, δ)` with `l = 4 * q`, `δ = 4 * s + 4` (`μ = 8 * s + 7`) on its whole domain. -/
+set_option linter.unusedVariables false in
 theorem famU7_sp (q s : ℤ)
     (h1 : 2 * q ≤ 5 * s + 3) (h2 : 2 * q ≤ 5 * s + 4) (h3 : 0 ≤ s) (h4 : 0 ≤ s + 1) (h5 : 2 * s + 2 ≤ q)
     (h6 : 2 * s + 2 ≤ q) (h7 : s + 2 ≤ q) (h8 : s + 1 ≤ q) (h9 : 3 * s + 3 ≤ 2 * q) (h10 : s + 1 ≤ 2 * q) :
@@ -281,6 +283,7 @@ def famV (q s : ℤ) : Finset (ℤ × ℤ) :=
     row (3 * q + s + 1) 0 (q - s - 1)
 
 /-- The family `V` solves `SP(l, δ)` with `l = 4 * q`, `δ = 2 * s + 2` (`μ = 4 * s + 3`) on its whole domain. -/
+set_option linter.unusedVariables false in
 theorem famV_sp (q s : ℤ)
     (h1 : 3 * q ≤ 5 * s + 1) (h2 : 2 * q ≤ 3 * s) (h3 : 2 * q ≤ 3 * s) (h4 : 2 * q ≤ 3 * s + 1)
     (h5 : q ≤ 2 * s) (h6 : q ≤ 2 * s + 1) (h7 : 1 ≤ s) (h8 : 0 ≤ s) (h9 : 0 ≤ s) (h10 : s + 2 ≤ q)
@@ -415,6 +418,7 @@ def famT (q s : ℤ) : Finset (ℤ × ℤ) :=
     row (8 * s + 3) (2 * s + 1) (4 * q - 8 * s - 3)
 
 /-- The family `T` solves `SP(l, δ)` with `l = 4 * q`, `δ = 4 * s + 2` (`μ = 8 * s + 3`) on its whole domain. -/
+set_option linter.unusedVariables false in
 theorem famT_sp (q s : ℤ)
     (h1 : 4 * q ≤ 9 * s + 2) (h2 : 2 * q ≤ 5 * s + 2) (h3 : 1 ≤ s) (h4 : 0 ≤ s) (h5 : 2 * s + 1 ≤ q)
     (h6 : 2 * s + 1 ≤ q) (h7 : s + 1 ≤ q) (h8 : 3 * s + 2 ≤ 2 * q) (h9 : 3 * s + 1 ≤ 2 * q)

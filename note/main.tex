@@ -90,8 +90,8 @@ version, in which every $p \in [d,d+l-1]$ occupies two disjoint pairs of positio
 distance $p$, so that the sequence has length $4l$; more generally an \emph{$m$-fold}
 Langford sequence has length $2ml$ and $m$ disjoint pairs for every $p$ (the $d = 1$ case
 is the $m$-fold Skolem sequence of Baker, Nowakowski, Shalaby and Sharary \cite{BNSS}).
-Section~7 of \cite{ADH} closes with the question of finding ``necessary and sufficient
-conditions for the existence of $m$-fold Langford sequences'' with $m \ge 2$. The only
+Section~7 of \cite{ADH} closes by asking for necessary and sufficient conditions for the
+existence of $m$-fold Langford sequences with $m \ge 2$. The only
 two-fold Langford family printed there (Construction~2.7, defect $6k-1$, order $4k-1$)
 lies on the extreme line of the counting bound.
 
@@ -1241,9 +1241,9 @@ form for the edges of the true empty set is known, and C($m$) is open.
 \section{The finite data and the formal development}\label{sec:finite}
 
 \subsection*{The end-to-end certificate}
-The folder \texttt{note/} of the repository \cite{l2lean} holds two standard-library
-Python checkers, \texttt{verify.py} and \texttt{verify\_second.py} (together,
-certificate~0033). Each rebuilds, for every $1 \le l \le L$ and every
+The certificate folder under \texttt{note/certificates/} of the repository \cite{l2lean}
+holds two standard-library Python checkers, \texttt{verify.py} and
+\texttt{verify\_second.py}. Each rebuilds, for every $1 \le l \le L$ and every
 $1 \le d \le \lfloor(3l+1)/2\rfloor$, a two-fold sequence by the constructions of this
 note alone --- concatenation for splittable cells; for the rest, Lemma~S applied to a
 permutation obtained by the reversal, $\tau_l$, the descent of Lemma~\ref{lem:C}, or a
@@ -1258,7 +1258,7 @@ descent with the iterated one on $2{,}701$ chains, and rejects $16$ mutated sequ
 Both also check the $m$-fold tight line for $m \le 6$ and odd $l \le 41$.
 
 The first script ran to $L = 1000$ ($751{,}000$ cells) and the second to $L = 600$, with
-no failure; both reproduce at $L = 300$ in about fifteen seconds with
+no failure; both reproduce at $L = 300$ in fifteen to twenty seconds with
 \texttt{python verify.py 300} and \texttt{python verify\_second.py 300}. At $L = 300$
 the $67{,}800$ in-bound cells are reached by $25{,}331$ concatenations, $600$ reversals,
 $150$ applications of $\tau_l$, $19{,}665$ band-family cells, $22{,}052$ descent chains
@@ -1285,8 +1285,8 @@ $l \le 100$ except the two empty cells of Lemma~\ref{lem:I}.
 The repository \cite{l2lean} pins Lean \texttt{v4.35.0-rc2} and the Mathlib tag of the
 same name by a committed manifest. \texttt{Challenge.lean} states the definition and the
 six theorems of \S\ref{sec:intro}; \texttt{Solution.lean} restates them byte for byte and
-closes each with the internal theorem of \texttt{L2/Main.lean}. The library \texttt{L2}
-has these modules, in dependency order:
+closes each with the internal theorem of the same name in the library \texttt{L2}, which
+has these modules:
 \begin{itemize}\setlength{\itemsep}{0pt plus 1pt}
 \item \texttt{Defs} --- the verbatim copy of \texttt{Langford.IsLangford};
 \item \texttt{Pairs} --- endpoints, differences and translations of finite sets of
@@ -1311,9 +1311,10 @@ has these modules, in dependency order:
 \end{itemize}
 Internals work over $\Z$, where linear arithmetic with negative slopes is decided by
 Lean's \texttt{omega}; the pinned statements are over $\mathbb{N}$, and the casts happen
-once, in \texttt{Bridge} and \texttt{Main}. Finite facts --- the eleven permutations and
-the sixteen literal cells --- are equalities of literal finite sets decided by the
-kernel; there is no search inside the proofs.
+once, in \texttt{Bridge} and \texttt{Main}. Finite facts --- the eleven permutations, the
+sixteen literal cells, and in the proof for $(6,3)$ the three-element subsets of $[7,12]$
+with sum $33$ --- are decided by the kernel on literal finite sets; there is no other
+search inside the proofs.
 A build-time audit (\texttt{Test/Axioms.lean}) walks every declaration of the development
 --- 1{,}475 constants in about 4{,}500 lines of Lean --- and admits only the axioms
 \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}; a source guard (\texttt{scripts/check-source.py}) rejects
@@ -1341,7 +1342,7 @@ $m$-fold Langford row. The search was bounded, and on 2026-09-27 its blind spots
 re-examined. The body of the survey \cite{FM} and the Handbook chapter on Skolem-type
 sequences could be searched only through full-text indexes, which contain no $m$-fold
 Langford statement; the 2026 paper of Zhang and Cao on generalized signed Langford
-sequences (its abstract and references) and the 2016 paper of L\'opez and Muntaner-Batle on
+sequences (its abstract and references) and the 2017 paper of L\'opez and Muntaner-Batle on
 distance labelings (read in full) concern different objects --- a signed Langford
 sequence is, by Nordh's Theorem~15, a one-fold sequence with a different difference set;
 Nowakowski's 1975 master's thesis and Dillon's 1973 paper on the generalized
@@ -1349,12 +1350,12 @@ Langford--Skolem problem remain unread, and MathSciNet was not consulted. Failur
 retrieve a paper is not evidence about its contents, and nothing here is a claim of
 priority beyond that wording.
 
-Four connections are worth recording.
+Four connections follow.
 
 \emph{Perfect Skolem sets.} As Remark~\ref{rem:nordh} explains, the objects of this
 note are Nordh's perfect multisets $m \times [d,d+l-1]$ \cite{Nordh}; his Theorem~15 is
 the tight-line bijection, and his necessary conditions reduce to Theorem~\ref{thm:nec}.
-Nordh's \S6 notes that the existence question for general multisets is NP-complete; the multisets here are highly
+Nordh's introduction notes that the existence question for general multisets is NP-complete; the multisets here are highly
 structured, and that result is context only.
 
 \emph{Constructions in \cite{ADH}.} Construction~2.7 there is a two-fold Langford family
@@ -1715,12 +1716,13 @@ T.~Skolem,
 Math. Scand. \textbf{5} (1957), 57--68; doi:10.7146/math.scand.a-10490.
 
 \bibitem{gnlean}
-\emph{gn-lean}: a Lean~4 formalization of the existence of good partitions of
-$\{1,\dots,n\}$, whose Langford machinery the present development reuses; registry entry
+J.~Jones, \emph{gn-lean}: a Lean~4 formalization of the Gurvich--Naumova conjecture (every
+$\{1,\dots,n\}$ splits into sets of at most three integers with power-of-three sums), 2026,
+whose Langford machinery the present development reuses; registry entry
 \texttt{PALOMAR-2026-09-07-000013}, \url{https://github.com/JD-Jones-ASES/gn-lean}.
 
 \bibitem{l2lean}
-\emph{l2-lean}: a Lean~4 formalization of Theorems~A and~B of this note,
+J.~Jones, \emph{l2-lean}: a Lean~4 formalization of Theorems~A and~B of this note, 2026,
 \url{https://github.com/JD-Jones-ASES/l2-lean}.
 
 \end{thebibliography}

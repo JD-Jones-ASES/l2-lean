@@ -6,11 +6,11 @@ A two-fold Langford sequence of order l and defect d is a partition of the posit
 {a, a+p} in which each p in [d, d+l-1] is the difference of exactly two pairs.  In-bound: 3l >= 2d - 1.
 
 This file builds one at EVERY in-bound cell (1 <= l <= L, 1 <= d <= floor((3l+1)/2)) from closed forms, and checks
-each one with its own exact checker.  The chain (PHASE4-cert.md):
+each one with its own exact checker.  The chain:
 
   1. checker (check_mfold): the pairs partition [1, 2ml] and the difference multiset is exactly m x [d, d+l-1];
-  2. l <= 4: the 16 census witnesses (census-cpsat/witnesses_m2.jsonl, transcribed inline as data) -- the ONLY
-     literal two-fold witnesses;
+  2. l <= 4: the sixteen literal witnesses (found by a constraint solver, transcribed inline as data and
+     re-checked here from the definition) -- the ONLY literal two-fold witnesses;
   3. splittable (l >= 5): least l1 with 3*l1 >= 2d-1 and 3(l-l1) >= 2(d+l1)-1, i.e. l1 = ceil((2d-1)/3) when
      5*l1 <= e = 3l-2d+1; build (d, l1) and (d+l1, l-l1) and concatenate (second shifted by 4*l1);
   4. unsplittable, l >= 5: signed-permutation route.  delta = d-l, mu = 2delta-1 (|mu| <= l is asserted).
@@ -23,15 +23,15 @@ each one with its own exact checker.  The chain (PHASE4-cert.md):
   5. assemble, check every cell, print route counts; then the m-fold tight line (m <= 6, odd l <= 41) from the
      paper's Table 1 (m copies).
 
-Usage:  python twofold_all.py L [--no-routes]     exit code 0 iff every cell with l <= L verified.
-No code is shared with verify.py; the family tables were transcribed independently from the class tables,
-proofs_r0.txt, classtables_r1.txt, coverage files (and band-r0's sporadic sigmas, a data file).
+Usage:  python verify_second.py L [--routes] [--log]     exit code 0 iff every cell with l <= L verified;
+--routes writes routes_second_<L>.json and --log writes run_second_<L>.log beside this script.
+No code is shared with verify.py; the family tables were transcribed independently from the note's class
+tables (Appendix A), with the eight sporadic permutations as data.
 """
 import sys, os, json, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))  # the folder of this script
 KILL = os.path.join(HERE, "KILL")  # an optional stop file: create it to interrupt a long run
-CENSUS = os.path.join(HERE, "witnesses_m2.jsonl")  # an optional cross-read; absent here, so the line is skipped
 TIME_CAP = 2400.0  # seconds of wall time for one run (named cap; hitting it = UNKNOWN beyond the last full l)
 
 
@@ -96,7 +96,7 @@ def check_sigma(sig, l, mu):
 
 
 # ======================================================================================================
-# 2. Literal witnesses, l <= 4 (census-cpsat, engine cpsat-ortools9.15-nw1), transcribed as data
+# 2. Literal witnesses, l <= 4 (found by a constraint solver), transcribed as data
 # ======================================================================================================
 LITERAL = {
     (1, 1): [[1, 2], [3, 4]],
@@ -162,7 +162,7 @@ def shape_sigma(sizes, order):
 
 
 def cinv_step(s0, n, mu):
-    """Lemma C (sp-greedy claim 4) then INV: s0 solves (n, mu), 1 <= mu <= n; returns a solution of (n+mu, mu).
+    """Lemma C then INV: s0 solves (n, mu), 1 <= mu <= n; returns a solution of (n+mu, mu).
     sigma1(w) = s0(w) + mu (w <= n), sigma1(n+i) = tau_mu(i) (i <= mu) solves (n+mu, -mu); invert."""
     t = tau(mu)
     s1 = [x + mu for x in s0] + t
@@ -216,7 +216,7 @@ def lemma_s(sig, l, mu):
     return out
 
 
-SIGMA_7_3 = [6, 4, 7, 3, 5, 2, 1]  # sp-greedy claim 5: the (7, 3) base replacing the impossible (4, 3)
+SIGMA_7_3 = [6, 4, 7, 3, 5, 2, 1]  # the (7, 3) base replacing the impossible (4, 3)
 
 
 # ======================================================================================================
@@ -245,82 +245,82 @@ def eval_sizes(f, l, mu):
     return out
 
 
-# ---- l = 2 (mod 4): sp-greedy claim 6 (FA, FB2, FB6, F4); h = (mu+1)/2 ----
+# ---- l = 2 (mod 4): FA, FB2, FB6, F4 (the note's Appendix A); h = (mu+1)/2 ----
 def _q2(l):
     return (l - 2) // 4
 
 
-fam("FA", "sp-greedy claim 6", 2, (2, 3, 0, 4, 1),
+fam("FA", "Appendix A", 2, (2, 3, 0, 4, 1),
     lambda l, mu: l % 4 == 2,
     lambda l, mu: _q2(l) + 2 <= (mu + 1) // 2 and 2 * ((mu + 1) // 2) <= 3 * _q2(l) + 2,
     lambda l, mu: [((mu + 1) // 2 - 1, 1), (_q2(l) + 1, 1), (3 * _q2(l) + 3 - 2 * ((mu + 1) // 2), 1),
                    (_q2(l), 1), ((mu + 1) // 2 - _q2(l) - 1, 1)])
-fam("FB2", "sp-greedy claim 6", 2, (1, 3, 0, 4, 2),
+fam("FB2", "Appendix A", 2, (1, 3, 0, 4, 2),
     lambda l, mu: l % 8 == 2,
     lambda l, mu: (l - 2) // 8 >= 1 and 3 * ((l - 2) // 8) + 2 <= (mu + 1) // 2 <= 4 * ((l - 2) // 8) + 1,
     lambda l, mu: [((mu + 1) // 2 - (l - 2) // 8 - 1, 1), ((l - 2) // 8, 1), (3 * ((l - 2) // 8) + 1, 1),
                    (8 * ((l - 2) // 8) + 3 - 2 * ((mu + 1) // 2), 1), ((mu + 1) // 2 - 3 * ((l - 2) // 8) - 1, 1)])
-fam("FB6", "sp-greedy claim 6", 2, (1, 3, 0, 4, 2),
+fam("FB6", "Appendix A", 2, (1, 3, 0, 4, 2),
     lambda l, mu: l % 8 == 6,
     lambda l, mu: 3 * ((l - 6) // 8) + 4 <= (mu + 1) // 2 <= 4 * ((l - 6) // 8) + 3,
     lambda l, mu: [((mu + 1) // 2 - (l - 6) // 8 - 1, 1), ((l - 6) // 8 + 1, 1), (3 * ((l - 6) // 8) + 2, 1),
                    (8 * ((l - 6) // 8) + 7 - 2 * ((mu + 1) // 2), 1), ((mu + 1) // 2 - 3 * ((l - 6) // 8) - 3, 1)])
-fam("F4", "sp-greedy claim 6", 2, (2, 0, 3, 1),
+fam("F4", "Appendix A", 2, (2, 0, 3, 1),
     lambda l, mu: l % 8 == 6,
     lambda l, mu: mu == 6 * ((l - 6) // 8) + 5,
     lambda l, mu: [(3 * ((l - 6) // 8) + 2, 1), (2 * ((l - 6) // 8) + 2, 1), (2 * ((l - 6) // 8) + 1, 1),
                    ((l - 6) // 8 + 1, 1)])
 
 
-# ---- l = 0 (mod 4): band-r0 (proofs_r0.txt: sizes, orders, full domains) ----
+# ---- l = 0 (mod 4): A1, A3, U1, U3, U5, U7, V, T (the note's Appendix A: sizes, orders, full domains) ----
 def _all_nonneg(*vals):
     return all(v >= 0 for v in vals)
 
 
-fam("A1", "band-r0 claim 2", 0, (8, 3, 6, 7, 2, 0, 5, 1, 4),
+fam("A1", "Appendix A", 0, (8, 3, 6, 7, 2, 0, 5, 1, 4),
     lambda l, mu: l % 4 == 0 and mu % 4 == 1,
     lambda l, mu: _all_nonneg(-l + 2 * mu - 2, -l + 2 * mu + 2, mu - 5, l - mu - 3, l - mu - 1, l - 8, l - 2, l - 1,
                               2 * l - mu - 3, 2 * l - mu - 1, 2 * l - mu + 1, 3 * l - 4 * mu - 8),
     lambda l, mu: [(mu - 1, 4), (1, 1), (l - mu + 1, 4), (2 * mu - l + 2, 4), (mu - 1, 4), (mu - 1, 4),
                    (3 * l - 4 * mu - 4, 4), (l - 4, 4), (1, 1)])
-fam("A3", "band-r0 claim 3", 0, (8, 3, 6, 7, 2, 0, 5, 1, 4),
+fam("A3", "Appendix A", 0, (8, 3, 6, 7, 2, 0, 5, 1, 4),
     lambda l, mu: l % 4 == 0 and mu % 4 == 3,
     lambda l, mu: _all_nonneg(-l + 2 * mu - 2, -l + 2 * mu + 2, mu - 7, mu - 3, l - mu - 5, l - mu - 1, l - 8, l - 2,
                               l - 1, 2 * l - mu - 3, 2 * l - mu - 1, 2 * l - mu + 1, 3 * l - 4 * mu - 8),
     lambda l, mu: [(mu + 1, 4), (1, 1), (l - mu - 1, 4), (2 * mu - l + 2, 4), (mu - 3, 4), (mu + 1, 4),
                    (3 * l - 4 * mu - 4, 4), (l - 4, 4), (1, 1)])
-fam("U1", "band-r0 claim 4", 0, (5, 7, 1, 3, 4, 0, 2, 6),
+fam("U1", "Appendix A", 0, (5, 7, 1, 3, 4, 0, 2, 6),
     lambda l, mu: l % 4 == 0 and mu % 8 == 1,
     lambda l, mu: _all_nonneg(-2 * l + 3 * mu - 11, mu - 5, mu - 1, mu + 1, l - mu - 3, 2 * l - mu - 15, 2 * l - mu - 7,
                               2 * l - mu - 3, 2 * l - mu - 1, 2 * l - mu + 1, 2 * l - mu + 5, 2 * l + mu - 1),
     lambda l, mu: [(2 * l - mu + 1, 8), (3 * mu - 2 * l - 3, 8), (mu + 3, 4), (2 * l - mu + 1, 8),
                    (2 * l - mu - 7, 8), (1, 1), (mu - 1, 4), (l - mu - 1, 2)])
-fam("U3", "band-r0 claim 5", 0, (5, 8, 0, 3, 6, 4, 1, 7, 2),
+fam("U3", "Appendix A", 0, (5, 8, 0, 3, 6, 4, 1, 7, 2),
     lambda l, mu: l % 4 == 0 and mu % 8 == 3,
     lambda l, mu: _all_nonneg(-2 * l + 3 * mu - 1, mu - 7, mu - 3, mu + 1, l - mu - 3, 2 * l - mu - 29, 2 * l - mu - 13,
                               2 * l - mu - 9, 2 * l - mu - 5, 2 * l - mu - 1, 2 * l - mu + 7, 2 * l + mu + 1),
     lambda l, mu: [(mu - 3, 4), (mu + 1, 4), (2 * l - mu + 3, 8), (2 * l - mu - 21, 8), (1, 1), (1, 1),
                    (2 * l - mu + 3, 8), (3 * mu - 2 * l + 7, 8), (l - mu - 1, 2)])
-fam("U5", "band-r0 claim 6", 0, (4, 7, 0, 3, 5, 1, 6, 2),
+fam("U5", "Appendix A", 0, (4, 7, 0, 3, 5, 1, 6, 2),
     lambda l, mu: l % 4 == 0 and mu % 8 == 5,
     lambda l, mu: _all_nonneg(-2 * l + 3 * mu - 7, mu - 5, mu - 1, mu + 1, l - mu - 3, 2 * l - mu - 11, 2 * l - mu - 3,
                               2 * l - mu - 1, 2 * l - mu + 1, 2 * l - mu + 5, 2 * l + mu + 3),
     lambda l, mu: [(mu - 1, 4), (mu + 3, 4), (2 * l - mu - 3, 8), (2 * l - mu - 3, 8), (1, 1), (2 * l - mu - 3, 8),
                    (3 * mu - 2 * l + 1, 8), (l - mu - 1, 2)])
-fam("U7", "band-r0 claim 7", 0, (1, 6, 2, 4, 7, 0, 8, 3, 5),
+fam("U7", "Appendix A", 0, (1, 6, 2, 4, 7, 0, 8, 3, 5),
     lambda l, mu: l % 4 == 0 and mu % 8 == 7,
     lambda l, mu: _all_nonneg(-4 * l + 5 * mu - 11, -4 * l + 5 * mu + 1, mu - 7, mu + 1, l - mu - 1, l - mu + 1,
                               2 * l - mu - 5, 2 * l - mu + 1, 4 * l - 3 * mu + 1, 4 * l - mu + 3),
     lambda l, mu: [(mu + 1, 8), (mu + 1, 8), (mu + 1, 8), (2 * l - mu - 1, 4), (5 * mu - 4 * l - 3, 8), (mu + 1, 8),
                    (l - mu, 1), (l - mu + 1, 2), (5 * mu - 4 * l - 3, 8)])
-fam("V", "band-r0 claim 8", 0, (8, 0, 5, 7, 3, 4, 1, 2, 6),
+fam("V", "Appendix A", 0, (8, 0, 5, 7, 3, 4, 1, 2, 6),
     lambda l, mu: l % 4 == 0 and mu % 4 == 3,
     lambda l, mu: _all_nonneg(-3 * l + 5 * mu - 11, -2 * l + 3 * mu - 9, -2 * l + 3 * mu - 7, -2 * l + 3 * mu - 3,
                               -l + 2 * mu - 6, -l + 2 * mu - 2, mu - 7, mu - 3, mu - 1, l - mu - 5, l - mu - 1,
                               l - mu + 2, l + 2, 2 * l - mu + 1, 2 * l - mu + 3, 3 * l - 3 * mu + 5, 4 * l - 5 * mu + 3),
     lambda l, mu: [(l - mu + 3, 4), (mu - 3, 4), (mu + 1, 4), (4 * l - 5 * mu + 7, 4), (3 * mu - 2 * l - 5, 4),
                    (5 * mu - 3 * l - 7, 4), (2 * mu - l - 2, 4), (4 * l - 5 * mu + 7, 4), (l - mu - 1, 4)])
-fam("T", "band-r0 claim 9", 0, (2, 3, 6, 0, 4, 1, 5),
+fam("T", "Appendix A", 0, (2, 3, 6, 0, 4, 1, 5),
     lambda l, mu: l % 4 == 0 and mu % 8 == 3,
     lambda l, mu: _all_nonneg(-8 * l + 9 * mu - 11, -4 * l + 5 * mu + 1, mu - 11, mu - 3, l - mu - 1, l - mu + 1,
                               2 * l - mu + 1, 4 * l - 3 * mu - 3, 4 * l - 3 * mu + 1, 4 * l - 3 * mu + 5,
@@ -328,7 +328,7 @@ fam("T", "band-r0 claim 9", 0, (2, 3, 6, 0, 4, 1, 5),
     lambda l, mu: [(mu + 1, 4), (mu - 3, 8), (8 * l - 7 * mu + 5, 8), (9 * mu - 8 * l - 3, 8), (mu - 3, 8),
                    (mu + 1, 4), (l - mu, 1)])
 
-# band-r0 sporadic cells (l, mu) -> sigma (band-r0 claim 10; sigma values from its sporadic_r0.json data file)
+# the eight sporadic cells (l, mu) -> sigma (the note prints them)
 SPORADIC_R0 = {
     (8, 5): [2, 6, 8, 7, 5, 4, 3, 1],
     (8, 7): [1, 5, 4, 8, 7, 2, 6, 3],
@@ -341,62 +341,62 @@ SPORADIC_R0 = {
                5, 4, 14, 13, 12],
 }
 
-# ---- l = 1 (mod 4): band-r1 (classtables_r1.txt, coverage_r1.md, report claims 2-4) ----
-fam("TT1", "band-r1 claim 4 (TT)", 1, (0, 1),
+# ---- l = 1 (mod 4): TT, FT, FA1, FA3, FL1, FL5 (the note's Appendix A) ----
+fam("TT1", "Appendix A", 1, (0, 1),
     lambda l, mu: l % 4 == 1,
     lambda l, mu: mu == l and l >= 5,
     lambda l, mu: [(l + 1, 2), (l - 1, 2)])
-fam("FT", "band-r1 claim 4", 1, (5, 1, 3, 0, 4, 2),
+fam("FT", "Appendix A", 1, (5, 1, 3, 0, 4, 2),
     lambda l, mu: l % 4 == 1,
     lambda l, mu: mu == l - 2 and l >= 9,
     lambda l, mu: [(l - 1, 4), (l - 5, 4), (l - 1, 4), (1, 1), (l - 1, 4), (1, 1)])
-fam("FA1", "band-r1 claim 3", 1, (7, 1, 3, 4, 0, 5, 2, 6),
+fam("FA1", "Appendix A", 1, (7, 1, 3, 4, 0, 5, 2, 6),
     lambda l, mu: l % 4 == 1 and mu % 4 == 1,
     lambda l, mu: 2 * mu >= l + 5 and mu <= l - 4,
     lambda l, mu: [(mu - 1, 4), (mu - 5, 4), (l - 1, 4), (l - mu, 4), (l - mu + 4, 4), (2 * mu - l - 1, 4), (1, 1),
                    (l - mu, 2)])
-fam("FA3", "band-r1 claim 2", 1, (6, 1, 3, 4, 0, 5, 2),
+fam("FA3", "Appendix A", 1, (6, 1, 3, 4, 0, 5, 2),
     lambda l, mu: l % 4 == 1 and mu % 4 == 3,
     lambda l, mu: 2 * mu >= l + 5 and mu <= l - 6,
     lambda l, mu: [(mu + 1, 4), (mu + 1, 4), (l - 1, 4), (l - mu - 2, 4), (l - mu + 2, 4), (2 * mu - l - 1, 4),
                    (l - mu, 2)])
-fam("FL1", "band-r1 claim 4", 1, (6, 0, 2, 4, 5, 1, 3),
+fam("FL1", "Appendix A", 1, (6, 0, 2, 4, 5, 1, 3),
     lambda l, mu: l % 8 == 1,
     lambda l, mu: 2 * mu == l + 1 and l >= 17,
     lambda l, mu: [(1, 1), (l - 1, 8), (l - 9, 8), (l - 1, 4), (l - 1, 8), (l + 7, 8), (l - 1, 4)])
-fam("FL5", "band-r1 claim 4", 1, (5, 1, 3, 4, 0, 2),
+fam("FL5", "Appendix A", 1, (5, 1, 3, 4, 0, 2),
     lambda l, mu: l % 8 == 5,
     lambda l, mu: 2 * mu == l + 1 and l >= 13,
     lambda l, mu: [(l + 3, 8), (l + 3, 8), (l - 1, 4), (l - 5, 8), (l + 3, 8), (l - 1, 4)])
 
-BASE_R1 = {(5, 3): [3, 5, 2, 4, 1], (9, 5): [6, 5, 9, 8, 1, 7, 4, 3, 2]}  # band-r1 claim 4 bases
+BASE_R1 = {(5, 3): [3, 5, 2, 4, 1], (9, 5): [6, 5, 9, 8, 1, 7, 4, 3, 2]}  # the two explicit bases
 
 
-# ---- l = 3 (mod 4): band-r3 (report claims 2-6), l = 4q+3, t = (l-mu)/2 ----
+# ---- l = 3 (mod 4): TT, R3T1, R3O, R3E, R3Q (the note's Appendix A), l = 4q+3, t = (l-mu)/2 ----
 def _qt(l, mu):
     return (l - 3) // 4, (l - mu) // 2
 
 
-fam("TT3", "band-r3 claim 6 (TT)", 3, (0, 1),
+fam("TT3", "Appendix A", 3, (0, 1),
     lambda l, mu: l % 4 == 3,
     lambda l, mu: mu == l,
     lambda l, mu: [(l + 1, 2), (l - 1, 2)])
-fam("R3T1", "band-r3 claim 5", 3, (5, 1, 3, 0, 4, 2),
+fam("R3T1", "Appendix A", 3, (5, 1, 3, 0, 4, 2),
     lambda l, mu: l % 4 == 3,
     lambda l, mu: _qt(l, mu)[1] == 1 and _qt(l, mu)[0] >= 1,
     lambda l, mu: [(_qt(l, mu)[0], 1), (_qt(l, mu)[0], 1), (_qt(l, mu)[0] + 1, 1), (1, 1), (_qt(l, mu)[0], 1),
                    (1, 1)])
-fam("R3O", "band-r3 claim 2", 3, (6, 1, 3, 4, 0, 5, 2),
+fam("R3O", "Appendix A", 3, (6, 1, 3, 4, 0, 5, 2),
     lambda l, mu: l % 4 == 3 and ((l - mu) // 2) % 2 == 1,
     lambda l, mu: 3 <= _qt(l, mu)[1] <= _qt(l, mu)[0],
     lambda l, mu: (lambda q, t: [(2 * q + 1 - t, 2), (2 * q + 1 - t, 2), (q + 1, 1), (t - 1, 2), (t + 1, 2),
                                  (q + 1 - t, 1), (t, 1)])(*_qt(l, mu)))
-fam("R3E", "band-r3 claim 3", 3, (7, 0, 2, 4, 5, 1, 6, 3),
+fam("R3E", "Appendix A", 3, (7, 0, 2, 4, 5, 1, 6, 3),
     lambda l, mu: l % 4 == 3 and ((l - mu) // 2) % 2 == 0,
     lambda l, mu: 2 <= _qt(l, mu)[1] <= _qt(l, mu)[0] - 1,
     lambda l, mu: (lambda q, t: [(1, 1), (2 * q + 2 - t, 2), (2 * q - t, 2), (q, 1), (t, 2), (t + 2, 2),
                                  (q - t, 1), (t, 1)])(*_qt(l, mu)))
-fam("R3Q", "band-r3 claim 4", 3, (6, 0, 2, 4, 5, 1, 3),
+fam("R3Q", "Appendix A", 3, (6, 0, 2, 4, 5, 1, 3),
     lambda l, mu: l % 4 == 3 and ((l - mu) // 2) % 2 == 0,
     lambda l, mu: 2 * _qt(l, mu)[0] + 2 <= 3 * _qt(l, mu)[1] and _qt(l, mu)[1] <= _qt(l, mu)[0],
     lambda l, mu: (lambda q, t: [(2 * q + 1 - 2 * t, 1), (2 * q + 2 - t, 2), (3 * t - 2 * q, 2), (t, 1),
@@ -515,7 +515,7 @@ def route_class(route):
     if r.startswith("REV") or r.startswith("TAU"):
         return "SP " + r
     if r.startswith("BASE(7,3)"):
-        return "SP base (7,3) [sp-greedy claim 5]"
+        return "SP base (7,3)"
     return "SP band family " + r
 
 
@@ -523,17 +523,21 @@ def route_class(route):
 # 6. Sections
 # ======================================================================================================
 class Log:
+    """Prints every line; with a path (--log) it also appends the line to that file."""
+
     def __init__(self, path):
-        self.f = open(path, "w", encoding="utf-8")
+        self.f = open(path, "w", encoding="utf-8") if path else None
 
     def __call__(self, *a):
         s = " ".join(str(x) for x in a)
         print(s, flush=True)
-        self.f.write(s + "\n")
-        self.f.flush()
+        if self.f:
+            self.f.write(s + "\n")
+            self.f.flush()
 
     def close(self):
-        self.f.close()
+        if self.f:
+            self.f.close()
 
 
 def sec_literals(log):
@@ -547,18 +551,6 @@ def sec_literals(log):
     missing = [c for c in cells if c not in LITERAL]
     log("  16 literal witnesses (l <= 4) re-checked: %s; in-bound cells with l <= 4: %d, missing: %s"
         % ("all pass" if ok_all else "FAILURES", len(cells), missing))
-    # optional cross-read of the census file as data (not needed to run)
-    if os.path.exists(CENSUS):
-        same = 0
-        with open(CENSUS, encoding="utf-8") as fh:
-            for line in fh:
-                if not line.strip():
-                    continue
-                r = json.loads(line)
-                if r.get("m") == 2 and r["l"] <= 4:
-                    if [list(p) for p in r["pairs"]] == LITERAL.get((r["d"], r["l"])):
-                        same += 1
-        log("  census-cpsat file cross-read: %d of 16 inline witnesses identical to the file's rows" % same)
     return ok_all and not missing
 
 
@@ -785,18 +777,18 @@ def sec_main(log, L, write_routes, t0):
             fh.write('{"script": "verify_second.py", "L": %d, "format": "[l, d, top-level route]", "cells": [\n' % L)
             fh.write(",\n".join(json.dumps(r) for r in routes))
             fh.write("\n]}\n")
-        log("  per-cell routes written to %s (%d cells)" % (path, len(routes)))
+        log("  per-cell routes written to routes_second_%d.json (%d cells)" % (L, len(routes)))
     return nfail == 0, last_full, st, route_counts, class_counts, inv_count, ncell, nfail
 
 
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     L = int(args[0]) if args else 300
-    write_routes = "--no-routes" not in sys.argv and L <= 300
-    log = Log(os.path.join(HERE, "run_second_%d.log" % L))
+    write_routes = "--routes" in sys.argv
+    log = Log(os.path.join(HERE, "run_second_%d.log" % L) if "--log" in sys.argv else None)
     t0 = time.time()
     log("verify_second.py -- L = %d, started %s" % (L, time.strftime("%Y-%m-%d %H:%M:%S")))
-    log("python %s; stdlib only; KILL = %s" % (sys.version.split()[0], KILL))
+    log("python %s; stdlib only; an optional file KILL beside this script stops a run" % sys.version.split()[0])
     results = {}
     try:
         log("[1] literal witnesses (l <= 4)")

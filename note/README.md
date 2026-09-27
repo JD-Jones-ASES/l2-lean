@@ -15,13 +15,14 @@ folder:
 
 ```sh
 cd certificates/0033-rt057-two-fold-langford-all-cells
-python verify.py 300 --no-routes
+python verify.py 300
 python verify_second.py 300
 ```
 
 The first ends with a line beginning `VERDICT: ALL VERIFIED`, the second with one beginning
-`VERDICT: PASS`; each takes about twenty seconds. Without `--no-routes`, `verify.py` writes the
-route of every cell to `routes_300.json` beside itself.
+`VERDICT: PASS`; each takes fifteen to twenty seconds. `run_300.log` and `run_second_300.log` are
+their outputs. With `--routes`, either script also writes the route of every cell to a JSON file
+beside itself; with `--log`, `verify_second.py` also writes its output to `run_second_<L>.log`.
 
 License: the note (`main.tex`, `main.pdf`) is [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/);
 the certificate is [MIT](../LICENSE), like the rest of the repository.

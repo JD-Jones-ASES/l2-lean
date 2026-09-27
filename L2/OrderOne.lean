@@ -18,6 +18,7 @@ namespace L2
 
 /-- Necessity on the row of order one: the blocks `[1, d], [d + 1, 2d], …` alternate left ends and
 right ends, so `2m` is a multiple of `2d`. -/
+set_option linter.unusedVariables false in
 theorem dvd_of_order_one (m d : ℕ) (hm : 1 ≤ m) (hd : 1 ≤ d) (s : ℕ → ℕ)
     (hs : Langford.IsLangford m d 1 s) : d ∣ m := by
   obtain ⟨hs1, hs2⟩ := hs

@@ -3,3 +3,4 @@
 *.ilean
 *.trace
 *.hash
+note/certificates/*/routes*.json

@@ -1,33 +1,33 @@
-verify_second.py -- L = 300, started 2026-09-27 08:23:06
-python 3.14.2; stdlib only; KILL = C:\GitHub_Files\Claude-Repos\l2-lean-desk\note-cert\KILL
+verify_second.py -- L = 300, started 2026-09-27 09:30:47
+python 3.14.2; stdlib only; an optional file KILL beside this script stops a run
 [1] literal witnesses (l <= 4)
   16 literal witnesses (l <= 4) re-checked: all pass; in-bound cells with l <= 4: 16, missing: []
 [2] checker negative control
   negative control: 16 of 16 mutated two-fold witnesses rejected; sigma checker control: ok
 [3] family transcription scan (every family, l <= 160, all odd 1 <= mu <= l in its class)
-  FA    sp-greedy claim 6      order 23041                        in-domain pass   380 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  FB2   sp-greedy claim 6      order 13042                        in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  FB6   sp-greedy claim 6      order 13042                        in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  F4    sp-greedy claim 6      order 2031                         in-domain pass    20 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 800
-  A1    band-r0 claim 2        order 836720514                    in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  A3    band-r0 claim 3        order 836720514                    in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  U1    band-r0 claim 4        order 57134026                     in-domain pass   120 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  U3    band-r0 claim 5        order 580364172                    in-domain pass   126 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  U5    band-r0 claim 6        order 47035162                     in-domain pass   127 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  U7    band-r0 claim 7        order 162470835                    in-domain pass    80 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  V     band-r0 claim 8        order 805734126                    in-domain pass    96 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  T     band-r0 claim 9        order 2360415                      in-domain pass    46 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  TT1   band-r1 claim 4 (TT)   order 01                           in-domain pass    39 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1560
-  FT    band-r1 claim 4        order 513042                       in-domain pass    38 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1558
-  FA1   band-r1 claim 3        order 71340526                     in-domain pass   361 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  FA3   band-r1 claim 2        order 6134052                      in-domain pass   342 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  FL1   band-r1 claim 4        order 6024513                      in-domain pass    18 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 756
-  FL5   band-r1 claim 4        order 513402                       in-domain pass    19 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 798
-  TT3   band-r3 claim 6 (TT)   order 01                           in-domain pass    40 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1600
-  R3T1  band-r3 claim 5        order 513042                       in-domain pass    39 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1599
-  R3O   band-r3 claim 2        order 6134052                      in-domain pass   361 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  R3E   band-r3 claim 3        order 70245163                     in-domain pass   361 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
-  R3Q   band-r3 claim 4        order 6024513                      in-domain pass   133 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  FA    Appendix A             order 23041                        in-domain pass   380 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  FB2   Appendix A             order 13042                        in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  FB6   Appendix A             order 13042                        in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  F4    Appendix A             order 2031                         in-domain pass    20 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 800
+  A1    Appendix A             order 836720514                    in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  A3    Appendix A             order 836720514                    in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  U1    Appendix A             order 57134026                     in-domain pass   120 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  U3    Appendix A             order 580364172                    in-domain pass   126 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  U5    Appendix A             order 47035162                     in-domain pass   127 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  U7    Appendix A             order 162470835                    in-domain pass    80 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  V     Appendix A             order 805734126                    in-domain pass    96 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  T     Appendix A             order 2360415                      in-domain pass    46 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  TT1   Appendix A             order 01                           in-domain pass    39 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1560
+  FT    Appendix A             order 513042                       in-domain pass    38 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1558
+  FA1   Appendix A             order 71340526                     in-domain pass   361 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  FA3   Appendix A             order 6134052                      in-domain pass   342 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  FL1   Appendix A             order 6024513                      in-domain pass    18 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 756
+  FL5   Appendix A             order 513402                       in-domain pass    19 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 798
+  TT3   Appendix A             order 01                           in-domain pass    40 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1600
+  R3T1  Appendix A             order 513042                       in-domain pass    39 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1599
+  R3O   Appendix A             order 6134052                      in-domain pass   361 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  R3E   Appendix A             order 70245163                     in-domain pass   361 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  R3Q   Appendix A             order 6024513                      in-domain pass   133 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
   SPORADIC_R0: 8 of 8 explicit sigmas pass
   BASE_R1: 2 of 2 explicit sigmas pass
   BASE(7,3) sigma [6,4,7,3,5,2,1]: pass
@@ -43,13 +43,12 @@ python 3.14.2; stdlib only; KILL = C:\GitHub_Files\Claude-Repos\l2-lean-desk\not
   l = 2 (mod 4), 5 <= l <= 400: 4950 band cells; F4 50, FA 2450, FB2 1225, FB6 1225
   l = 3 (mod 4), 5 <= l <= 400: 5049 band cells; R3T1 99, TT3 99, R3Q 49, R3O 2401, R3E 2401
 [6] main sweep: every in-bound cell 1 <= l <= 300, 1 <= d <= floor((3l+1)/2)
-  ... l = 50 done (1925 cells so far, 0 failures, 2.2 s)
-  ... l = 100 done (7600 cells so far, 0 failures, 2.8 s)
-  ... l = 150 done (17025 cells so far, 0 failures, 4.2 s)
-  ... l = 200 done (30200 cells so far, 0 failures, 7.3 s)
-  ... l = 250 done (47125 cells so far, 0 failures, 12.5 s)
-  ... l = 300 done (67800 cells so far, 0 failures, 20.7 s)
-  per-cell routes written to C:\GitHub_Files\Claude-Repos\l2-lean-desk\note-cert\routes_second_300.json (67800 cells)
+  ... l = 50 done (1925 cells so far, 0 failures, 2.0 s)
+  ... l = 100 done (7600 cells so far, 0 failures, 2.4 s)
+  ... l = 150 done (17025 cells so far, 0 failures, 3.7 s)
+  ... l = 200 done (30200 cells so far, 0 failures, 6.1 s)
+  ... l = 250 done (47125 cells so far, 0 failures, 10.1 s)
+  ... l = 300 done (67800 cells so far, 0 failures, 17.2 s)
   cells built and checked: 67800; failures: 0; every cell with l <= 300 verified
   top-level routes by class:
     concatenation                                   25326
@@ -104,7 +103,7 @@ python 3.14.2; stdlib only; KILL = C:\GitHub_Files\Claude-Repos\l2-lean-desk\not
     literal                                            16
     SP band family SPORADIC_R0                         15
     SP band family BASE_R1                              4
-    SP base (7,3) [sp-greedy claim 5]                   2
+    SP base (7,3)                                       2
   of the SP cells, 19814 go through Lemma INV (mu < 0)
   top-level routes, exact labels (direct mu > 0 / through INV mu < 0):
     concat                                     25326 /       0
@@ -212,8 +211,8 @@ python 3.14.2; stdlib only; KILL = C:\GitHub_Files\Claude-Repos\l2-lean-desk\not
     SP band family FL1                                  172
     SP band family FL5                                  162
     SP band family R3Q                                  162
-    SP base (7,3) [sp-greedy claim 5]                     2
+    SP base (7,3)                                         2
   literal witnesses used: 16 distinct: [(1, 1), (2, 1), (1, 2), (2, 2), (3, 2), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4)]
 [7] m-fold tight line (paper Table 1, m copies)
   m-fold tight line, m = 1..6, odd l = 1..41: 126 cells, 0 failures (each on the line (2m-1)l = 2d-1)
-VERDICT: PASS -- every in-bound two-fold cell with l <= 300 built from closed forms (plus 16 literal witnesses at l <= 4) and verified by the exact checker: yes; sections {'literals': True, 'negctl': True, 'domscan': True, 'cinv': True, 'band': True, 'main': True, 'mfold': True}; 20.8 s
+VERDICT: PASS -- every in-bound two-fold cell with l <= 300 built from closed forms (plus 16 literal witnesses at l <= 4) and verified by the exact checker: yes; sections {'literals': True, 'negctl': True, 'domscan': True, 'cinv': True, 'band': True, 'main': True, 'mfold': True}; 17.3 s

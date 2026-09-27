@@ -1,7 +1,7 @@
 verify.py (a two-fold Langford sequence at every in-bound cell) -- L = 300  [default: literal only where no closed form applies]
 python 3.14.2
 [self-test] checker negative controls: ok
-[literals] census witnesses l <= 4 re-checked: 16, failures 0
+[literals] literal witnesses l <= 4 re-checked: 16, failures 0
 [bases] explicit sigma (l,mu)=(5,3) [3, 5, 2, 4, 1]: ok
 [bases] explicit sigma (l,mu)=(9,5) [6, 5, 9, 8, 1, 7, 4, 3, 2]: ok
 [bases] explicit sigma (l,mu)=(7,3) [6, 4, 7, 3, 5, 2, 1]: ok
@@ -12,13 +12,13 @@ python 3.14.2
 [sporadic] (l,mu)=(16,11) SPORADIC-search nodes=23 0.00s sigma=[11, 10, 12, 9, 8, 13, 2, 14, 5, 7, 15, 3, 1, 16, 4, 6] ok
 [sporadic] (l,mu)=(20,15) SPORADIC-search nodes=38 0.00s sigma=[13, 12, 14, 11, 10, 15, 8, 16, 7, 4, 17, 1, 5, 18, 3, 19, 2, 20, 9, 6] ok
 [sporadic] (l,mu)=(24,17) SPORADIC-search nodes=24 0.00s sigma=[16, 15, 17, 14, 13, 18, 12, 19, 11, 9, 20, 4, 1, 21, 5, 22, 6, 3, 23, 2, 24, 8, 10, 7] ok
-[sporadic] (l,mu)=(32,23) SPORADIC-search nodes=1727 0.02s sigma=[21, 20, 22, 19, 18, 23, 17, 24, 16, 14, 25, 11, 15, 26, 4, 27, 1, 3, 28, 6, 29, 5, 13, 30, 2, 7, 32, 31, 9, 12, 10, 8] ok
+[sporadic] (l,mu)=(32,23) SPORADIC-search nodes=1727 0.01s sigma=[21, 20, 22, 19, 18, 23, 17, 24, 16, 14, 25, 11, 15, 26, 4, 27, 1, 3, 28, 6, 29, 5, 13, 30, 2, 7, 32, 31, 9, 12, 10, 8] ok
   ... l = 50 done, 1925 cells, 0 failures, 0.1s
-  ... l = 100 done, 7600 cells, 0 failures, 0.7s
-  ... l = 150 done, 17025 cells, 0 failures, 2.5s
-  ... l = 200 done, 30200 cells, 0 failures, 5.8s
-  ... l = 250 done, 47125 cells, 0 failures, 11.1s
-  ... l = 300 done, 67800 cells, 0 failures, 19.0s
+  ... l = 100 done, 7600 cells, 0 failures, 0.5s
+  ... l = 150 done, 17025 cells, 0 failures, 1.6s
+  ... l = 200 done, 30200 cells, 0 failures, 4.3s
+  ... l = 250 done, 47125 cells, 0 failures, 8.4s
+  ... l = 300 done, 67800 cells, 0 failures, 14.9s
 [A] in-bound cells 1 <= l <= 300, 1 <= d <= floor((3l+1)/2): 67800; verified 67800; failures 0
 [A] cells by top-level route (columns: total = mu > 0 direct + mu < 0 via INV):
    literal                           2 =       2 +       0
@@ -77,7 +77,7 @@ python 3.14.2
    band             U5                      553 =     360 +     193
    band             U7                      378 =     281 +      97
    band             V                       190 =      95 +      95
-[A] literal census witnesses used, as (l, d) (unsplittable cells, l <= 4): 2: [(4, 3), (4, 6)]
+[A] literal witnesses used, as (l, d) (unsplittable cells, l <= 4): 2: [(4, 3), (4, 6)]
 [B] band cells l/2 < mu <= l, 5 <= l <= 400: 20097; sigma failures/uncovered 0
    l = 0 (mod 4) first-family counts: {'A1': 1225, 'A3': 1225, 'SPORADIC-search': 8, 'T': 48, 'U1': 635, 'U3': 612, 'U5': 637, 'U7': 500, 'V': 159}
    l = 1 (mod 4) first-family counts: {'BASE-r1': 2, 'FA1': 2401, 'FA3': 2352, 'FL1': 48, 'FL5': 49, 'FT': 98, 'TT': 99}
@@ -87,5 +87,5 @@ python 3.14.2
 [B] l <= 400 first-family counts vs the note's coverage tables: all match
 [B] negative controls (mutated family sizes/orders at 21 families; swapped endpoints in a lifted witness): 63 of 63 mutants rejected
 [C] m-fold tight line, m copies of Table 1, 1 <= m <= 6, odd l <= 41: 126 cells, failures 0
-elapsed 21.1 s
+elapsed 17.1 s
 VERDICT: ALL VERIFIED -- every in-bound cell with l <= 300 has a checked two-fold Langford sequence

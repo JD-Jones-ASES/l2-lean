@@ -15,7 +15,7 @@ the pairs written out.
 
 - The pairs are a chosen partition of the occurrences of `p`: four copies at `a, a + p, a + 2p,
   a + 3p` are two pairs. This is the `m`-fold reading of Baker, Nowakowski, Shalaby and Sharary,
-  which the source follows. Under a reading that forbade such chains, the in-bound cells
+  whom the source cites for `m`-fold sequences. Under a reading that forbade such chains, the in-bound cells
   `(d, l) = (1, 1)`, `(5, 4)` and `(6, 6)` would have no sequence.
 - Intervals are written as bounds, not as interval constants.
 - `1 ≤ d` and `1 ≤ l` are hypotheses: for `l = 0` the empty sequence qualifies, and the source's
@@ -145,7 +145,7 @@ since `μ = l` is even there.
 
 `twoFold_all` proves a two-colour certificate at every in-bound cell by strong induction on `l`.
 
-- `l ≤ 4`: the sixteen in-bound cells are literal, `twoFold_lit_d_l` in `L2/Literals.lean`.
+- `l ≤ 4`: the sixteen in-bound cells are literal, `twoFold_lit_<d>_<l>` in `L2/Literals.lean`.
 - `l ≥ 5` and `l ≥ 2d`: with `l₁ = ⌊(2d + 1)/3⌋`, the cells `(d, l₁)` and `(d + l₁, l − l₁)` are
   in-bound and smaller, and `TwoFold.concat` joins them.
 - `l ≥ 5` and `l ≤ 2d − 1`: `δ = d − l` gives `−l ≤ μ ≤ l`, so `cone_sp` and `SP.toTwoFold` apply.

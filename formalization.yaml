@@ -37,9 +37,10 @@ sources:
     note: >-
       Journal version: Graceful Labellings of Variable Windmills Using Skolem-type Sequences, Ars
       Combinatoria 159 (2024) 109-131, doi:10.61091/ars159-11. Supplies the definitions of two-fold
-      and m-fold Skolem-type and Langford sequences (Section 2), the tight-line sequence of Table 1,
-      and the question of necessary and sufficient conditions for m-fold Langford sequences with
-      m >= 2 (Section 7). The theorem and its proof are this development's; no proof of the source
+      Skolem-type and Langford sequences (Section 2), the tight-line sequence of Table 1, and the
+      question of necessary and sufficient conditions for m-fold Langford sequences with m >= 2
+      (Section 7); its Table 8 cites Baker, Nowakowski, Shalaby and Sharary for m-fold Skolem
+      sequences. The theorem and its proof are this development's; no proof of the source
       is formalized.
   - title: "Perfect Skolem sets"
     authors: ["Gustav Nordh"]
@@ -133,6 +134,7 @@ sources:
       International Mathematical Forum 9 (2014) 155-181. Generalized Langford sequences of higher
       multiplicity, a different object, named in the note's prior-art section. Background only.
   - title: "Handbook of Combinatorial Designs, second edition, Section VI.53 (Skolem and Langford-type sequences)"
+    authors: ["Charles J. Colbourn (editor)", "Jeffrey H. Dinitz (editor)"]
     id: "ISBN 9781584885061"
     type: "book"
     relationship: "background"
@@ -176,6 +178,24 @@ sources:
     note: >-
       Proceedings of the Fourth Southeastern Conference on Combinatorics, Graph Theory and Computing
       (1973) 237-247; MR 51 #2936. Named in the note's prior-art section as not read.
+  - title: "The Lean 4 Theorem Prover and Programming Language"
+    authors: ["Leonardo de Moura", "Sebastian Ullrich"]
+    id: "doi:10.1007/978-3-030-79876-5_37"
+    type: "paper"
+    location: "Automated Deduction - CADE 28, Lecture Notes in Computer Science, Springer, 2021, 625-635"
+    relationship: "background"
+    author_endorsement: "n/a"
+    note: >-
+      The proof assistant. Cited in the note; nothing mathematical is taken from it.
+  - title: "The Lean mathematical library"
+    authors: ["The mathlib Community"]
+    id: "doi:10.1145/3372885.3373824"
+    type: "paper"
+    location: "Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2020), 367-381"
+    relationship: "background"
+    author_endorsement: "n/a"
+    note: >-
+      The library the development imports (tag v4.35.0-rc2). Cited in the note.
 
 related_formalizations:
   - id: "PALOMAR-2026-09-07-000013"
@@ -240,7 +260,8 @@ automation:
         Lean v4.35.0-rc2 and Mathlib v4.35.0-rc2 (commit 065356127b1dc0016f66b7283ce0ce2c4055aa55)
         are pinned by the committed manifest and lake update is never run; there are no GitHub
         Actions workflows. There is no native_decide; the kernel computations are twenty-seven
-        literal finite-set equalities.
+        literal finite-set equalities and six small closed checks in L2/SixThree.lean (the
+        three-element subsets of [7, 12] with sum 33, three interval sums, two cardinalities).
   spend_usd: "not tracked"
   notes: "See DISCLOSURE.md."
 
@@ -249,7 +270,7 @@ fidelity:
     The sequence form of the source is written with the pairs made explicit: for each p a set A of
     m left ends with a + p outside A, and the positions carrying p exactly A and A + p. The pairs
     are a chosen partition of the occurrences of p, so four copies at a, a + p, a + 2p, a + 3p are
-    allowed; this is the reading of Baker, Nowakowski, Shalaby and Sharary that the source follows
+    allowed; this is the reading of Baker, Nowakowski, Shalaby and Sharary, whom the source cites
     for m-fold sequences, and without it the in-bound cells (d, l) = (1, 1), (5, 4) and (6, 6) would
     have no sequence. Intervals are stated as bounds rather than interval constants. The sequence
     is a function from the natural numbers, read on the positions 1, ..., 2ml; values at other

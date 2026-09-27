@@ -41,24 +41,33 @@ the kernel-bypass options in `L2/`, Solution.lean and `Test/`, the same tokens e
 Challenge.lean, and any `debug.` option in the `[leanOptions]` table of lakefile.toml.
 
 Lean `v4.35.0-rc2` and Mathlib `v4.35.0-rc2` (commit `065356127b1dc0016f66b7283ce0ce2c4055aa55`) are
-pinned by the committed manifest; `lake update` is never run. A build after `lake exe cache get` takes about eight minutes on a 16-core, 16 GB PC; each module takes 20–26 s, most of it the Mathlib import.
+pinned by the committed manifest; `lake update` is never run. A build from an empty `.lake/build` after `lake exe cache get`, one module at a time, takes about nine and a half minutes on a 16-core, 16 GB PC (568 s measured); each module takes 20–27 s, most of it the Mathlib import.
 
 ## The finite computations
 
-There is no `native_decide`. The only kernel computations are the twenty-seven literal
-certificates of L2/Literals.lean, each a few equalities of literal finite sets of integer pairs,
-evaluated by `decide`; there is no search inside any proof.
+There is no `native_decide`. The kernel computations are the twenty-seven literal certificates
+of L2/Literals.lean, each a few equalities of literal finite sets of integer pairs, evaluated by
+`decide` (one by `decide +kernel`), and six small closed checks in L2/SixThree.lean: that
+`{10, 11, 12}` is the only three-element subset of `[7, 12]` with sum 33 (a `decide` over its 64
+subsets), three interval sums and two cardinalities. There is no other search inside any proof.
 
 | Computation | Size |
 | --- | --- |
-| The sixteen two-fold certificates `twoFold_lit_d_l`, every in-bound cell with `l ≤ 4` | two colours of `l` pairs each, at most 16 positions; all sixteen inside the 21 s build of L2/Literals.lean |
-| The eleven `SP` solutions `sp_5_3`, `sp_7_3`, `sp_8_5`, `sp_8_7`, `sp_9_5`, `sp_12_9`, `sp_12_11`, `sp_16_11`, `sp_20_15`, `sp_24_17` | permutations of 5 to 24 points; the same module build |
+| The sixteen two-fold certificates `twoFold_lit_<d>_<l>`, every in-bound cell with `l ≤ 4` | two colours of `l` pairs each, at most 16 positions; all sixteen inside the 21 s build of L2/Literals.lean |
+| Ten of the eleven `SP` solutions, `sp_5_3`, `sp_7_3`, `sp_8_5`, `sp_8_7`, `sp_9_5`, `sp_12_9`, `sp_12_11`, `sp_16_11`, `sp_20_15`, `sp_24_17`, by `decide` | permutations of 5 to 24 points; the same module build |
 | `sp_32_23`, by `decide +kernel` | a permutation of 32 points; the same module build |
+| `three_subset_sum_33` and five literal sums and cardinalities in L2/SixThree.lean, by `decide` | 64 subsets of `[7, 12]`; sums of intervals inside `[1, 18]` |
 
 The family theorems are linear arithmetic over `ℤ` (`omega`), split by the sign and parity of the
-value as the class tables direct. The five family modules build in 22–26 s each, L2/FamR1.lean (with the eight-block family FA1) the longest; no theorem needs a raised heartbeat limit, and no `omega` call takes more than a few seconds.
+value as the class tables direct. The five family modules build in 23–27 s each, L2/FamR1.lean (with the eight-block family FA1) the longest; no theorem needs a raised heartbeat limit, and no `omega` call takes more than a few seconds.
 
-Mutation controls: DESK_FILLS.
+Mutation controls, each run once in a scratch copy and reverted: (a) one pair of the literal certificate
+`twoFold_lit_4_4` altered — its `decide` fails; (b) one entry of `sp_12_9` altered — its `decide` fails;
+(c) a `sorry` in `SP.reversal` — Solution still compiles, and `lake build Test` fails on six `sorryAx`
+dependencies while `scripts/check-source.py` reports the line; (d) the hypothesis of `twoFold_all`
+weakened to `2d ≤ 3l + 3` — the proof fails; (e) a declared `axiom` and a `native_decide` in a scratch
+lemma — the audit reports both (the second as an auxiliary axiom) and the source guard flags both;
+(f) one block size of `famA1` changed by one — `famA1_sp` fails.
 
 `scripts/check_langford.py` recomputes the finite content with the standard library and exact
 integers, independently of Lean: the sixteen literal certificates and the eleven `SP` solutions
@@ -67,7 +76,7 @@ checked as a solution of `SP` and lifted through Lemma S to a two-fold sequence;
 `τ_l`, and the band coverage to `l = 120`; the cone to `l = 60` and the induction of L2/Main.lean to
 `l = 40`; an exhaustive search for `l ≤ 5`; the tight line for `m ≤ 6` and odd `l ≤ 21`; the row
 `l = 1` for `m ≤ 12` against `d ∣ m`; the cell `(6, 3)` at `m = 3` by exhaustive search (212 nodes);
-and two controls. The family tables in the script are transcribed from the Lean definitions. It
+the witnesses of `not_sufficient` for `3 ≤ m ≤ 12`; and two controls. The family tables in the script are transcribed from the Lean definitions. It
 runs in a few seconds and ends:
 
 ```text

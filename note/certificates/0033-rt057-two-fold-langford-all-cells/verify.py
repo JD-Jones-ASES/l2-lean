@@ -2,10 +2,11 @@
 """verify.py -- a two-fold Langford sequence at every in-bound cell, from the closed forms.
 
 A two-fold Langford sequence at EVERY in-bound cell (1 <= l <= L, 1 <= d <= floor((3l+1)/2)),
-built from closed forms (plus the census literals at l <= 4 and a tiny exact search for the
-eight band-r0 sporadic cells), each one checked by the exact checker below.
+built from closed forms (plus the sixteen literal witnesses at l <= 4 and a small exact search for the
+eight sporadic cells), each one checked by the exact checker below.
 
-Standalone, stdlib only.  Usage:  python twofold_all.py L   (exit 0 iff every cell verified).
+Standalone, stdlib only.  Usage:  python verify.py L [--routes] [--literal-small]   (exit 0 iff every cell
+verified; --routes writes routes_<L>.json beside this script).
 
 Definitions: a two-fold Langford sequence of order l and defect d
 is a partition of [1, 4l] into 2l pairs {a, a+p} in which each p in [d, d+l-1] is the
@@ -13,9 +14,9 @@ difference of exactly two pairs.  m-fold: [1, 2ml], m*l pairs, each difference m
 
 Chain:
   1. checker (check_mfold);
-  2. literal census witnesses (all 16 cells l <= 4 re-checked), used only at unsplittable cells
+  2. literal witnesses (all 16 cells l <= 4 re-checked), used only at unsplittable cells
      with l <= 4 where no closed form applies -- (d, l) = (3, 4), (6, 4) -- or at every
-     unsplittable l <= 4 cell with --census-small;
+     unsplittable l <= 4 cell with --literal-small;
   3. concatenation at splittable cells (tried first, at every l), least l1;
   4. wedge cells (unsplittable, l >= 5) through SP(l, delta) in the displacement picture:
      mu = 2(d-l)-1, sigma a permutation of [1,l] with {|2(sigma(w)-w)+mu|} = {1,3,...,2l-1};
@@ -135,7 +136,7 @@ def reversal(n):
 
 
 def cinv_step(s0, mu):
-    """Lemma C then INV (sp-greedy claim 4): sigma0 solves (n, mu), 1 <= mu <= n ->
+    """Lemma C then INV: sigma0 solves (n, mu), 1 <= mu <= n ->
     sigma1(w) = sigma0(w)+mu (w <= n), sigma1(n+i) = tau_mu(i) solves (n+mu, -mu);
     its inverse solves (n+mu, mu)."""
     n = len(s0) - 1
@@ -199,7 +200,7 @@ def idx(order_str):
     return tuple(int(ch) for ch in order_str)
 
 
-# ---- l = 2 (mod 4): sp-greedy claim 6 (h = (mu+1)/2) ---------------------------------------
+# ---- l = 2 (mod 4): the families of the note's Appendix A (h = (mu+1)/2) -------------------
 def fam_r2(l, mu):
     h = (mu + 1) // 2
     out = []
@@ -222,9 +223,9 @@ def fam_r2(l, mu):
     return out
 
 
-# ---- l = 0 (mod 4): band-r0 report + proofs_r0.txt ------------------------------------------
+# ---- l = 0 (mod 4): the families of the note's Appendix A -----------------------------------
 # Each entry: name, order, (mu modulus, residue), sizes as (A,B,C,D) = (A l + B mu + C)/D,
-# full domain inequalities (A,B,C) meaning A l + B mu + C >= 0 (proofs_r0.txt "full domain").
+# full domain inequalities (A,B,C) meaning A l + B mu + C >= 0 (the note's full domains).
 R0_FAMILIES = [
     ("A1", "836720514", (4, 1),
      [(0, 1, -1, 4), (0, 0, 1, 1), (1, -1, 1, 4), (-1, 2, 2, 4), (0, 1, -1, 4), (0, 1, -1, 4),
@@ -268,8 +269,8 @@ R0_FAMILIES = [
      [(-8, 9, -11), (-4, 5, 1), (0, 1, -11), (0, 1, -3), (1, -1, -1), (1, -1, 1), (2, -1, 1),
       (4, -3, -3), (4, -3, 1), (4, -3, 5), (4, -1, 3), (8, -7, -3)]),
 ]
-# band-r0's sporadic cells (l, mu): no family holds them; the sigmas are NOT transcribed
-# (they live only in band-r0's code) -- this file finds them by its own exact search.
+# the eight sporadic cells (l, mu): no family holds them; this file finds their permutations by its own
+# exact search (the note prints them).
 R0_SPORADIC = [(8, 5), (8, 7), (12, 9), (12, 11), (16, 11), (20, 15), (24, 17), (32, 23)]
 
 
@@ -283,8 +284,8 @@ def fam_r0(l, mu):
     return out
 
 
-# ---- l = 1 (mod 4): band-r1 report + classtables_r1.txt -------------------------------------
-R1_BASES = {  # explicit sigmas printed in band-r1's report (claim 4), from sp-greedy's search
+# ---- l = 1 (mod 4): the families of the note's Appendix A -----------------------------------
+R1_BASES = {  # the two explicit bases of the note
     (5, 3): [3, 5, 2, 4, 1],
     (9, 5): [6, 5, 9, 8, 1, 7, 4, 3, 2],
 }
@@ -318,7 +319,7 @@ def fam_r1(l, mu):
     return out
 
 
-# ---- l = 3 (mod 4): band-r3 report (l = 4q+3, t = (l-mu)/2, band 0 <= t <= q) ---------------
+# ---- l = 3 (mod 4): the families of the note's Appendix A (l = 4q+3, t = (l-mu)/2, band 0 <= t <= q) --
 def fam_r3(l, mu):
     out = []
     if l % 4 != 3:
@@ -343,12 +344,12 @@ def fam_r3(l, mu):
 
 FAMILY_ORDER = {0: fam_r0, 1: fam_r1, 2: fam_r2, 3: fam_r3}
 
-# (7, 3): the explicit base of Theorem R (sp-greedy claim 5), used when the chain base is (4, 3).
+# (7, 3): the explicit base of Theorem R, used when the chain base is (4, 3).
 SIGMA_7_3 = [6, 4, 7, 3, 5, 2, 1]
 
 
 # ============================================================================================
-# A small exact search (Algorithm X, MRV, deterministic), used ONLY for band-r0's sporadic cells.
+# A small exact search (Algorithm X, MRV, deterministic), used ONLY for the eight sporadic cells.
 # Items: class k, source w, target s.  Option (w, s) covers w, s and k = (|2(s-w)+mu|+1)/2 <= l.
 # ============================================================================================
 def sp_search(l, mu, node_cap=5_000_000):
@@ -468,8 +469,8 @@ def solve_sp(l, mu):
 
 
 # ============================================================================================
-# 2. Literal census witnesses (census-cpsat/witnesses_m2.jsonl, engine cpsat-ortools9.15-nw1),
-#    keyed (l, d).  Re-checked at start-up; used only at unsplittable cells with l <= 4.
+# 2. Literal witnesses for l <= 4, found by a constraint solver and re-checked here from the definition,
+#    keyed (l, d).  Used only at unsplittable cells with l <= 4.
 # ============================================================================================
 CENSUS = {
     (1, 1): [[1, 2], [3, 4]],
@@ -490,7 +491,7 @@ CENSUS = {
     (4, 6): [[1, 7], [2, 11], [3, 10], [4, 12], [5, 13], [6, 15], [8, 14], [9, 16]],
 }
 LITERALS_USED = set()
-CENSUS_SMALL = False  # set by --census-small
+CENSUS_SMALL = False  # set by --literal-small
 
 
 # ============================================================================================
@@ -518,7 +519,7 @@ def build(d, l):
         # Unsplittable small cells.  By default the closed forms REV / TT (and INV) are used where
         # they apply (they are valid for every l >= 1), so a literal is used only where SP(l, mu)
         # has no closed form here: (d, l) = (3, 4) and (6, 4), i.e. SP(4, -3) and SP(4, 3), which
-        # are empty (wedge-B Lemma I / sp-greedy claim 3).  --census-small: literal at every
+        # are empty (the note's Lemma I).  --literal-small: literal at every
         # unsplittable l <= 4 cell (the letter of the brief's step 2).
         if CENSUS_SMALL or not (mu in (1, -1) or abs(mu) == l):
             LITERALS_USED.add((l, d))
@@ -671,14 +672,14 @@ def mfold_tight(m, n):
 def main():
     global CENSUS_SMALL
     if len(sys.argv) < 2:
-        print("usage: python verify.py L [--no-routes] [--census-small]")
+        print("usage: python verify.py L [--routes] [--literal-small]")
         return 2
     L = int(sys.argv[1])
-    CENSUS_SMALL = "--census-small" in sys.argv
+    CENSUS_SMALL = "--literal-small" in sys.argv
     t0 = time.time()
     ok = True
     print("verify.py (a two-fold Langford sequence at every in-bound cell) -- L = %d%s" %
-          (L, "  [--census-small: literal at every unsplittable l <= 4 cell]" if CENSUS_SMALL
+          (L, "  [--literal-small: literal at every unsplittable l <= 4 cell]" if CENSUS_SMALL
            else "  [default: literal only where no closed form applies]"), flush=True)
     print("python %s" % sys.version.split()[0])
 
@@ -694,16 +695,16 @@ def main():
     assert check_sigma([0] + SIGMA_7_3, 7, 5) is not None
     print("[self-test] checker negative controls: ok")
 
-    # --- literals: re-check all 16 census witnesses ---
+    # --- literals: re-check all 16 literal witnesses ---
     lit_bad = 0
     for (l, d), prs in sorted(CENSUS.items()):
         e = check_mfold([tuple(p) for p in prs], 2, d, l)
         if e:
             lit_bad += 1
-            print("  census witness (l,d)=(%d,%d) FAILS: %s" % (l, d, e))
-    print("[literals] census witnesses l <= 4 re-checked: %d, failures %d" % (len(CENSUS), lit_bad))
+            print("  literal witness (l,d)=(%d,%d) FAILS: %s" % (l, d, e))
+    print("[literals] literal witnesses l <= 4 re-checked: %d, failures %d" % (len(CENSUS), lit_bad))
     ok &= (lit_bad == 0)
-    # explicit SP bases transcribed from the reports
+    # explicit SP bases transcribed from the note
     for (l, mu), s in list(R1_BASES.items()) + [((7, 3), SIGMA_7_3)]:
         e = check_sigma([0] + s, l, mu)
         print("[bases] explicit sigma (l,mu)=(%d,%d) %s: %s" % (l, mu, s, "ok" if e is None else e))
@@ -770,15 +771,15 @@ def main():
             v = fam_counts[(cat, det)]
             print("   %-16s %-18s %8d = %7d + %7d" % (cat.split()[0] if cat == "CINV chain"
                                                      else "band", det, v[0] + v[1], v[0], v[1]))
-    print("[A] literal census witnesses used, as (l, d) (unsplittable cells, l <= 4): %d: %s"
+    print("[A] literal witnesses used, as (l, d) (unsplittable cells, l <= 4): %d: %s"
           % (len(LITERALS_USED), sorted(LITERALS_USED)))
     ok &= (len(fails) == 0)
 
-    if "--no-routes" not in sys.argv:
+    if "--routes" in sys.argv:
         fn = OUTDIR + "/routes_%d.json" % L
         with open(fn, "w") as fh:
             json.dump(routes, fh, separators=(",", ":"))
-        print("[A] routes written to %s" % fn)
+        print("[A] routes written to routes_%d.json" % L)
 
     # --- Section B: band census ---
     LB = max(L, 400)

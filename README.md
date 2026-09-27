@@ -5,7 +5,7 @@ which every `p` in `[d, d + l − 1]` fills the endpoints of two disjoint pairs 
 distance `p`. The `m`-fold version has `2ml` positions and `m` pairs for every `p`; `m = 1` gives
 ordinary Langford sequences.
 
-Alkasasbeh, Dyer and Howell define these sequences in Section 2 of *Graceful labellings of variable
+Alkasasbeh, Dyer and Howell define two-fold Langford sequences in Section 2 of *Graceful labellings of variable
 windmills using Skolem sequences*, [arXiv:2112.04265](https://arxiv.org/abs/2112.04265) (2021;
 journal version *Graceful Labellings of Variable Windmills Using Skolem-type Sequences*, Ars
 Combinatoria 159 (2024) 109–131, doi:10.61091/ars159-11), and in Section 7 ask for necessary and
@@ -22,7 +22,8 @@ question for `m = 2` and proves, for `d, l ≥ 1` (all names in the namespace `L
 
 The pairs are a chosen partition of the occurrences of `p`, so four copies of `p` at
 `a, a + p, a + 2p, a + 3p` are allowed; this is the reading of Baker, Nowakowski, Shalaby and
-Sharary, which the source follows for `m`-fold sequences.
+Sharary, whom the source cites for `m`-fold sequences (the note's remark on chains gives the
+evidence).
 
 Necessity is a distance sum: the left and right ends of the `ml` pairs split `{1, …, 2ml}`, their
 sums differ by `m` times the sum of the differences, and that gap is at most `(ml)²`; the parity of
