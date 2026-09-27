@@ -43,13 +43,15 @@ with truncated subtraction, at `p = d + i` for `i < l`.
 
 The potential is the triangle wave `Res.tri T y = T − min(y mod 4T, 4T − y mod 4T)`, that is
 `T − dist(y, 4Tℤ)`. It has antiperiod `2T` (`Res.tri_add_two_mul`: `tri T (y + 2T) = −tri T y`), is even
-(`Res.tri_neg`), has Lipschitz constant `1` (`Res.tri_lipschitz`) and equals `T − y` on `[0, 2T]`
-(`Res.tri_eq`). On the positions put `V(x) = tri T (2x − 2ml − 1)`, so that `V(x + T) = −V(x)`.
+(`Res.tri_neg`), moves by at most `1` per step (`Res.tri_succ`) and so has Lipschitz constant `1`
+(`Res.tri_lipschitz`), and equals `T − y` on `[0, 2T]` (`Res.tri_eq`). On the positions put
+`V(x) = tri T (2x − 2ml − 1)`, so that `V(x + T) = −V(x)`.
 
 - Block sums. With `g(N) = Σ_{k<N} tri T (2k + 1)`: `g(r) = r(T − r)` for `r ≤ T` (`Res.sum_tri_lt`), so
-  `g(T) = 0`, and the antiperiod gives `g(qT + r) = (−1)^q r(T − r)` (`Res.sum_tri_mod`). Reflecting the
-  lower half of the positions with `Res.tri_neg`, `Σ_{x=1}^{2ml} V(x) = 2g(ml) = ±2r(T − r)`
-  (`Res.sum_positions`).
+  `g(T) = 0`; the antiperiod gives `g(T + N) = −g(N)` (`Res.sum_tri_add`), hence
+  `g(qT + r) = (−1)^q r(T − r)` (`Res.sum_tri_mod`). Reflecting the lower half of the positions with
+  `Res.tri_neg`, `Σ_{x=1}^{2ml} V(x) = 2g(ml) = ±2r(T − r)` (`Res.sum_positions`, after the reindexing
+  `Res.sum_Icc_one`).
 - Weighted pair sums. `Res.sum_left_weighted` and `Res.sum_right_weighted` are `Nec.sum_right_sub_left`
   with a weight `w`: the sum of `w` over the left (right) ends is the sum over `p` of the sum of `w(a)`
   (`w(a + p)`) over `a ∈ A p`. With `Nec.left_right_union` and `Nec.left_right_disjoint`,
@@ -59,16 +61,17 @@ The potential is the triangle wave `Res.tri T y = T − min(y mod 4T, 4T − y m
   `tri T y − tri T (y + 2(p − T))`, which the Lipschitz bound puts in `[−2|p − T|, 2|p − T|]`. For either
   sign `σ = ±1`, `0 ≤ σ(V(a) + V(a + p)) + 2|p − T|`.
 - Assembly. Summing the edge inequality over the pairs, with `σ` chosen so that `σ · 2g(ml) = −2r(T − r)`,
-  and using `|A p| = m`, gives `0 ≤ −2r(T − r) + 2m·S(T)` over `ℤ`; the cast back to the pinned form over
-  `ℕ` loses nothing, since `r < T`.
+  and using `|A p| = m`, gives `0 ≤ −2r(T − r) + 2m·S(T)` over `ℤ`. `Res.sum_window` rewrites the sum
+  over `[d, d + l − 1]` as the sum over `p = d + i`, `i < l`, and the cast back to the pinned form over `ℕ`
+  loses nothing, since `r < T`.
 
 `residue_bound_window` is the closed form inside the window `d ≤ T ≤ d + l − 1`: there
-`2S(T) = u(u + 1) + v(v + 1)` with `u = T − d` and `v = d + l − 1 − T`, so
-`2r(T − r) ≤ m(u(u + 1) + v(v + 1))`.
+`2S(T) = u(u + 1) + v(v + 1)` with `u = T − d` and `v = d + l − 1 − T` (`Res.sum_dist_low`,
+`Res.sum_dist_high`), so `2r(T − r) ≤ m(u(u + 1) + v(v + 1))`.
 
-Two cases recover earlier theorems. For `T > ml` with `T ≥ d + l − 1`, `r = ml` and
-`2S(T) = 2lT − l(2d + l − 1)`, and the bound reads `2d + l ≤ 2ml + 1`. At `l = 1` and `T = d`,
-`S(d) = 0` forces `r = 0`, that is `d ∣ m`.
+Two cases recover earlier theorems (remarks, not separate Lean statements). For `T > ml` with
+`T ≥ d + l − 1`, `r = ml` and `2S(T) = 2lT − l(2d + l − 1)`, and the bound reads `2d + l ≤ 2ml + 1`. At
+`l = 1` and `T = d`, `S(d) = 0` forces `r = 0`, that is `d ∣ m`.
 
 ## The forced-endpoint bound, the order-three cells and the top of order two (`L2/Forced.lean`)
 

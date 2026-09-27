@@ -58,8 +58,8 @@ of L2/Literals.lean, each a few equalities of literal finite sets of integer pai
 `decide` (one by `decide +kernel`), and six small closed checks in L2/SixThree.lean: that
 `{10, 11, 12}` is the only three-element subset of `[7, 12]` with sum 33 (a `decide` over its 64
 subsets), three interval sums and two cardinalities. There is no other search inside any proof. The
-modules of the bounds, L2/Residue.lean, L2/Forced.lean and L2/Straddle.lean, contain no kernel
-computation; their arithmetic is `omega`, `nlinarith` and `ring`.
+modules of the bounds, L2/Residue.lean, L2/Forced.lean and L2/Straddle.lean, contain no `decide` and no
+search; their arithmetic is `omega`, `linarith`, `nlinarith`, `linear_combination` and `ring`.
 
 | Computation | Size |
 | --- | --- |
@@ -100,7 +100,7 @@ from the Lean definitions. It runs in under ten seconds and ends:
 ok    control: A1 at (4, 2) with the target starts of its first two blocks exchanged does not solve SP, as it must not
 ok    control: the lift of sp_7_3 with the right ends of two pairs exchanged is not a two-fold sequence of order 7 and defect 9, as it must not be
 
-elapsed 7.4 s
+elapsed 5.9 s
 ALL CHECKS PASSED
 ```
 
