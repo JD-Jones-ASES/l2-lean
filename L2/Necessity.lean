@@ -190,8 +190,8 @@ theorem pairwise_right {m d l : ℕ} {s : ℕ → ℕ} {A : ℕ → Finset ℕ} 
   rw [hbx] at e2
   exact e1.symm.trans e2
 
-/-- No position is both a left end and a right end. -/
 set_option linter.unusedVariables false in
+/-- No position is both a left end and a right end. -/
 theorem left_right_disjoint {m d l : ℕ} {s : ℕ → ℕ} {A : ℕ → Finset ℕ} (hd : 1 ≤ d) (hl : 1 ≤ l)
     (hs : Langford.IsLangford m d l s) (hA : Choice m d l s A) :
     Disjoint (leftEnds d l A) (rightEnds d l A) := by
@@ -207,8 +207,8 @@ theorem left_right_disjoint {m d l : ℕ} {s : ℕ → ℕ} {A : ℕ → Finset 
   subst hpq
   exact ((hA p hp'.1 hp'.2).2.1 a ha).2.2 hxp
 
-/-- The left ends and the right ends together are the positions `[1, 2ml]`. -/
 set_option linter.unusedVariables false in
+/-- The left ends and the right ends together are the positions `[1, 2ml]`. -/
 theorem left_right_union {m d l : ℕ} {s : ℕ → ℕ} {A : ℕ → Finset ℕ} (hd : 1 ≤ d) (hl : 1 ≤ l)
     (hs : Langford.IsLangford m d l s) (hA : Choice m d l s A) :
     leftEnds d l A ∪ rightEnds d l A = Finset.Icc 1 (2 * m * l) := by
@@ -234,8 +234,8 @@ theorem left_right_union {m d l : ℕ} {s : ℕ → ℕ} {A : ℕ → Finset ℕ
     · exact Or.inl (Finset.mem_biUnion.2 ⟨s x, hp, hx⟩)
     · exact Or.inr (Finset.mem_biUnion.2 ⟨s x, hp, Finset.mem_image.2 ⟨a, ha, hax.symm⟩⟩)
 
-/-- There are `ml` left ends. -/
 set_option linter.unusedVariables false in
+/-- There are `ml` left ends. -/
 theorem card_left {m d l : ℕ} {s : ℕ → ℕ} {A : ℕ → Finset ℕ} (hd : 1 ≤ d) (hl : 1 ≤ l)
     (hs : Langford.IsLangford m d l s) (hA : Choice m d l s A) :
     (leftEnds d l A).card = m * l := by
@@ -247,8 +247,8 @@ theorem card_left {m d l : ℕ} {s : ℕ → ℕ} {A : ℕ → Finset ℕ} (hd :
   have : d + l - 1 + 1 - d = l := by omega
   rw [this, Nat.mul_comm]
 
-/-- There are `ml` right ends. -/
 set_option linter.unusedVariables false in
+/-- There are `ml` right ends. -/
 theorem card_right {m d l : ℕ} {s : ℕ → ℕ} {A : ℕ → Finset ℕ} (hd : 1 ≤ d) (hl : 1 ≤ l)
     (hs : Langford.IsLangford m d l s) (hA : Choice m d l s A) :
     (rightEnds d l A).card = m * l := by
@@ -261,8 +261,8 @@ theorem card_right {m d l : ℕ} {s : ℕ → ℕ} {A : ℕ → Finset ℕ} (hd 
   have : d + l - 1 + 1 - d = l := by omega
   rw [this, Nat.mul_comm]
 
-/-- The distance sum: `ΣR = ΣL + m · Σ_{p=d}^{d+l−1} p`. -/
 set_option linter.unusedVariables false in
+/-- The distance sum: `ΣR = ΣL + m · Σ_{p=d}^{d+l−1} p`. -/
 theorem sum_right_sub_left {m d l : ℕ} {s : ℕ → ℕ} {A : ℕ → Finset ℕ} (hd : 1 ≤ d) (hl : 1 ≤ l)
     (hs : Langford.IsLangford m d l s) (hA : Choice m d l s A) :
     ∑ x ∈ rightEnds d l A, x =
