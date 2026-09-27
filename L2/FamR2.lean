@@ -6,6 +6,12 @@ import L2.SP
 The families `FA`, `FB2`, `FB6`, `F4`. Each is a union of rows (block reversals) whose sizes
 are affine in the parameters, and each solves `SP(l, δ)` on its whole domain: the value runs
 and mirror runs of its rows tile `[1 − l, l]`.
+
+Each proof is the family's class table, mechanised. The sources and the targets of the blocks
+tile `[1, l]`. Every value run and every mirror run lies inside `[1 − l, l]`. Conversely, an `x`
+in `[1 − l, l]` is placed by its sign and its parity: in each of the four cases the class table
+(kept as a comment under each theorem) names a chain of runs, abutting with step two, that covers
+that class, and splitting `x` at the chain's boundaries leaves one run per piece.
 -/
 
 namespace L2
@@ -23,7 +29,36 @@ def famFA (q h : ℤ) : Finset (ℤ × ℤ) :=
 theorem famFA_sp (q h : ℤ)
     (h1 : q + 2 ≤ h) (h2 : 2 * h ≤ 3 * q + 2) :
     SP (4 * q + 2) (h) (famFA q h) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famFA, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famFA, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famFA, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      simp only [or_assoc]
+      rcases le_or_gt 1 x with hs | hs <;> rcases Int.emod_two_eq x with hp | hp
+      · rcases le_or_gt x (2 * q) with c1 | c1 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (2 * h - 2 * q - 3) with c1 | c1 <;>
+          rcases le_or_gt x (4 * q + 3 - 2 * h) with c2 | c2 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (2 * h - 4 * q - 4) with c1 | c1 <;>
+          rcases le_or_gt x (2 * q + 2 - 2 * h) with c2 | c2 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (-2 * q - 1) with c1 | c1 <;>
+          repeat (first | (left; omega) | right | omega)
+  · unfold famFA
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le
+      (card_union_le_of_le (card_row_le _ _ _) (card_row_le _ _ _)) (card_row_le _ _ _))
+      (card_row_le _ _ _)) (card_row_le _ _ _)).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = 4 * q + 3 - 2 * h, n = h - 1; value [4 * q + 5 - 2 * h, 4 * q + 1]; mirror [-4 * q, 2 * h - 4 * q - 4]; P
 --   b1: a = h - 1, c = 3 * q + 1, n = q + 1; value [2 * q + 2, 4 * q + 2]; mirror [-4 * q - 1, -2 * q - 1]; P
@@ -49,7 +84,36 @@ def famFB2 (k h : ℤ) : Finset (ℤ × ℤ) :=
 theorem famFB2_sp (k h : ℤ)
     (h1 : 1 ≤ k) (h2 : 3 * k + 2 ≤ h) (h3 : h ≤ 4 * k + 1) :
     SP (8 * k + 2) (h) (famFB2 k h) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famFB2, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famFB2, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famFB2, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      simp only [or_assoc]
+      rcases le_or_gt 1 x with hs | hs <;> rcases Int.emod_two_eq x with hp | hp
+      · rcases le_or_gt x (2 * k) with c1 | c1 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (2 * h - 6 * k - 3) with c1 | c1 <;>
+          rcases le_or_gt x (10 * k + 3 - 2 * h) with c2 | c2 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (2 * h - 10 * k - 4) with c1 | c1 <;>
+          rcases le_or_gt x (6 * k + 2 - 2 * h) with c2 | c2 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (-2 * k - 1) with c1 | c1 <;>
+          repeat (first | (left; omega) | right | omega)
+  · unfold famFB2
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le
+      (card_union_le_of_le (card_row_le _ _ _) (card_row_le _ _ _)) (card_row_le _ _ _))
+      (card_row_le _ _ _)) (card_row_le _ _ _)).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = 9 * k + 3 - 2 * h, n = h - k - 1; value [10 * k + 5 - 2 * h, 8 * k + 1]; mirror [-8 * k, 2 * h - 10 * k - 4]; P
 --   b1: a = h - k - 1, c = 0, n = k; value [2, 2 * k]; mirror [1 - 2 * k, -1]; P
@@ -75,7 +139,36 @@ def famFB6 (k h : ℤ) : Finset (ℤ × ℤ) :=
 theorem famFB6_sp (k h : ℤ)
     (h1 : 3 * k + 4 ≤ h) (h2 : h ≤ 4 * k + 3) :
     SP (8 * k + 6) (h) (famFB6 k h) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famFB6, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famFB6, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famFB6, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      simp only [or_assoc]
+      rcases le_or_gt 1 x with hs | hs <;> rcases Int.emod_two_eq x with hp | hp
+      · rcases le_or_gt x (2 * h - 6 * k - 6) with c1 | c1 <;>
+          rcases le_or_gt x (10 * k + 8 - 2 * h) with c2 | c2 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (2 * k + 1) with c1 | c1 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (-2 * k - 2) with c1 | c1 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (2 * h - 10 * k - 9) with c1 | c1 <;>
+          rcases le_or_gt x (6 * k + 5 - 2 * h) with c2 | c2 <;>
+          repeat (first | (left; omega) | right | omega)
+  · unfold famFB6
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le
+      (card_union_le_of_le (card_row_le _ _ _) (card_row_le _ _ _)) (card_row_le _ _ _))
+      (card_row_le _ _ _)) (card_row_le _ _ _)).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = 9 * k + 8 - 2 * h, n = h - k - 1; value [10 * k + 10 - 2 * h, 8 * k + 6]; mirror [-8 * k - 5, 2 * h - 10 * k - 9]; P
 --   b1: a = h - k - 1, c = 0, n = k + 1; value [1, 2 * k + 1]; mirror [-2 * k, 0]; P
@@ -100,7 +193,34 @@ def famF4 (k : ℤ) : Finset (ℤ × ℤ) :=
 theorem famF4_sp (k : ℤ)
     (h1 : 0 ≤ k) :
     SP (8 * k + 6) (3 * k + 3) (famF4 k) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famF4, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famF4, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famF4, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      simp only [or_assoc]
+      rcases le_or_gt 1 x with hs | hs <;> rcases Int.emod_two_eq x with hp | hp
+      · rcases le_or_gt x (4 * k + 2) with c1 | c1 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (2 * k + 1) with c1 | c1 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (-2 * k - 2) with c1 | c1 <;>
+          repeat (first | (left; omega) | right | omega)
+      · rcases le_or_gt x (-4 * k - 3) with c1 | c1 <;>
+          repeat (first | (left; omega) | right | omega)
+  · unfold famF4
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le
+      (card_row_le _ _ _) (card_row_le _ _ _)) (card_row_le _ _ _))
+      (card_row_le _ _ _)).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = 2 * k + 1, n = 3 * k + 2; value [2 * k + 3, 8 * k + 5]; mirror [-8 * k - 4, -2 * k - 2]; P
 --   b1: a = 3 * k + 2, c = 6 * k + 4, n = 2 * k + 2; value [4 * k + 4, 8 * k + 6]; mirror [-8 * k - 5, -4 * k - 3]; P
