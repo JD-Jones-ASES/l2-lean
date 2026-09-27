@@ -6,9 +6,26 @@ import L2.SP
 The families `FA1`, `FA3`, `FT`, `FL1`, `FL5`. Each is a union of rows (block reversals)
 whose sizes are affine in the parameters, and each solves `SP(l, δ)` on its whole domain: the
 value runs and mirror runs of its rows tile `[1 − l, l]`.
+
+Each proof checks sources, targets and values membership-wise. For the reverse inclusion the
+point `x` is split by sign and parity, and then along the chain of runs that covers that class
+(the class table kept as a comment after each theorem); on each piece one disjunct is closed by
+`omega`.
 -/
 
 namespace L2
+
+/-- Close a goal that is a nested disjunction of linear-arithmetic conjunctions by finding one
+disjunct that `omega` proves from the hypotheses in context. -/
+syntax "famR1_search" : tactic
+
+macro_rules
+  | `(tactic| famR1_search) =>
+    `(tactic| first
+      | (refine Or.inl ?_; famR1_search)
+      | (refine Or.inr ?_; famR1_search)
+      | omega)
+
 
 /-- The block-reversal family `FA1` (l = 4q + 1, μ = 4s + 1, 8 blocks, target order `71340526`): block `i` sends the sources
 `[aᵢ + 1, aᵢ + nᵢ]` onto the targets `[cᵢ + 1, cᵢ + nᵢ]` reversed. -/
@@ -26,7 +43,100 @@ def famFA1 (q s : ℤ) : Finset (ℤ × ℤ) :=
 theorem famFA1_sp (q s : ℤ)
     (h1 : q + 1 ≤ 2 * s) (h2 : s + 1 ≤ q) :
     SP (4 * q + 1) (2 * s + 1) (famFA1 q s) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famFA1, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt x (0 + (s)) with hb0 | hb0
+      · famR1_search
+      rcases le_or_gt x (s + (s - 1)) with hb1 | hb1
+      · famR1_search
+      rcases le_or_gt x (2 * s - 1 + (q)) with hb2 | hb2
+      · famR1_search
+      rcases le_or_gt x (q + 2 * s - 1 + (q - s)) with hb3 | hb3
+      · famR1_search
+      rcases le_or_gt x (2 * q + s - 1 + (q + 1 - s)) with hb4 | hb4
+      · famR1_search
+      rcases le_or_gt x (3 * q + (2 * s - q)) with hb5 | hb5
+      · famR1_search
+      rcases le_or_gt x (2 * q + 2 * s + (1)) with hb6 | hb6
+      · famR1_search
+      famR1_search
+  · ext x
+    simp only [famFA1, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt x (0 + (2 * q - 2 * s)) with hb0 | hb0
+      · famR1_search
+      rcases le_or_gt x (2 * q - 2 * s + (s - 1)) with hb1 | hb1
+      · famR1_search
+      rcases le_or_gt x (2 * q - s - 1 + (q - s)) with hb2 | hb2
+      · famR1_search
+      rcases le_or_gt x (3 * q - 2 * s - 1 + (q + 1 - s)) with hb3 | hb3
+      · famR1_search
+      rcases le_or_gt x (4 * q - 3 * s + (s)) with hb4 | hb4
+      · famR1_search
+      rcases le_or_gt x (4 * q - 2 * s + (2 * s - q)) with hb5 | hb5
+      · famR1_search
+      rcases le_or_gt x (3 * q + (q)) with hb6 | hb6
+      · famR1_search
+      famR1_search
+  · ext x
+    simp only [famFA1, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt 1 x with hs | hs
+      · rcases Int.emod_two_eq x with hp | hp
+        · -- x ≥ 1, x even: b3.value | b5.value | b7.mirror | b0.value
+          rcases le_or_gt x (2 * q - 2 * s) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (2 * s) with hb1 | hb1
+          · famR1_search
+          rcases le_or_gt x (4 * q - 2 * s) with hb2 | hb2
+          · famR1_search
+          famR1_search
+        · -- x ≥ 1, x odd: b4.value | b1.value | b6.value | b2.value
+          rcases le_or_gt x (2 * q + 1 - 2 * s) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (2 * q - 1) with hb1 | hb1
+          · famR1_search
+          rcases le_or_gt x (2 * q + 1) with hb2 | hb2
+          · famR1_search
+          famR1_search
+      · rcases Int.emod_two_eq x with hp | hp
+        · -- x ≤ 0, x even: b2.mirror | b6.mirror | b1.mirror | b4.mirror
+          rcases le_or_gt x (-2 * q - 2) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (-2 * q) with hb1 | hb1
+          · famR1_search
+          rcases le_or_gt x (2 * s - 2 * q - 2) with hb2 | hb2
+          · famR1_search
+          famR1_search
+        · -- x ≤ 0, x odd: b0.mirror | b7.value | b5.mirror | b3.mirror
+          rcases le_or_gt x (2 * s - 4 * q - 1) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (-2 * s - 1) with hb1 | hb1
+          · famR1_search
+          rcases le_or_gt x (2 * s - 2 * q - 1) with hb2 | hb2
+          · famR1_search
+          famR1_search
+  · unfold famFA1
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_row_le (0) (4 * q - 3 * s) (s))
+      (card_row_le (s) (2 * q - 2 * s) (s - 1)))
+      (card_row_le (2 * s - 1) (3 * q) (q)))
+      (card_row_le (q + 2 * s - 1) (2 * q - s - 1) (q - s)))
+      (card_row_le (2 * q + s - 1) (3 * q - 2 * s - 1) (q + 1 - s)))
+      (card_row_le (3 * q) (4 * q - 2 * s) (2 * s - q)))
+      (card_row_le (2 * q + 2 * s) (4 * q) (1)))
+      (card_row_le (2 * q + 2 * s + 1) (0) (2 * q - 2 * s))).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = 4 * q - 3 * s, n = s; value [4 * q + 2 - 2 * s, 4 * q]; mirror [1 - 4 * q, 2 * s - 4 * q - 1]; P
 --   b1: a = s, c = 2 * q - 2 * s, n = s - 1; value [2 * q + 3 - 2 * s, 2 * q - 1]; mirror [2 - 2 * q, 2 * s - 2 * q - 2]; P
@@ -57,7 +167,91 @@ def famFA3 (q s : ℤ) : Finset (ℤ × ℤ) :=
 theorem famFA3_sp (q s : ℤ)
     (h1 : q ≤ 2 * s) (h2 : s + 2 ≤ q) :
     SP (4 * q + 1) (2 * s + 2) (famFA3 q s) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famFA3, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt x (0 + (s + 1)) with hb0 | hb0
+      · famR1_search
+      rcases le_or_gt x (s + 1 + (s + 1)) with hb1 | hb1
+      · famR1_search
+      rcases le_or_gt x (2 * s + 2 + (q)) with hb2 | hb2
+      · famR1_search
+      rcases le_or_gt x (q + 2 * s + 2 + (q - s - 1)) with hb3 | hb3
+      · famR1_search
+      rcases le_or_gt x (2 * q + s + 1 + (q - s)) with hb4 | hb4
+      · famR1_search
+      rcases le_or_gt x (3 * q + 1 + (2 * s + 1 - q)) with hb5 | hb5
+      · famR1_search
+      famR1_search
+  · ext x
+    simp only [famFA3, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt x (0 + (2 * q - 2 * s - 1)) with hb0 | hb0
+      · famR1_search
+      rcases le_or_gt x (2 * q - 2 * s - 1 + (s + 1)) with hb1 | hb1
+      · famR1_search
+      rcases le_or_gt x (2 * q - s + (q - s - 1)) with hb2 | hb2
+      · famR1_search
+      rcases le_or_gt x (3 * q - 2 * s - 1 + (q - s)) with hb3 | hb3
+      · famR1_search
+      rcases le_or_gt x (4 * q - 3 * s - 1 + (s + 1)) with hb4 | hb4
+      · famR1_search
+      rcases le_or_gt x (4 * q - 2 * s + (2 * s + 1 - q)) with hb5 | hb5
+      · famR1_search
+      famR1_search
+  · ext x
+    simp only [famFA3, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt 1 x with hs | hs
+      · rcases Int.emod_two_eq x with hp | hp
+        · -- x ≥ 1, x even: b3.value | b1.value | b2.value
+          rcases le_or_gt x (2 * q - 2 * s - 2) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (2 * q) with hb1 | hb1
+          · famR1_search
+          famR1_search
+        · -- x ≥ 1, x odd: b4.value | b5.value | b6.mirror | b0.value
+          rcases le_or_gt x (2 * q - 2 * s - 1) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (2 * s + 1) with hb1 | hb1
+          · famR1_search
+          rcases le_or_gt x (4 * q - 2 * s - 1) with hb2 | hb2
+          · famR1_search
+          famR1_search
+      · rcases Int.emod_two_eq x with hp | hp
+        · -- x ≤ 0, x even: b0.mirror | b6.value | b5.mirror | b4.mirror
+          rcases le_or_gt x (2 * s - 4 * q) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (-2 * s - 2) with hb1 | hb1
+          · famR1_search
+          rcases le_or_gt x (2 * s - 2 * q) with hb2 | hb2
+          · famR1_search
+          famR1_search
+        · -- x ≤ 0, x odd: b2.mirror | b1.mirror | b3.mirror
+          rcases le_or_gt x (-2 * q - 1) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (2 * s + 1 - 2 * q) with hb1 | hb1
+          · famR1_search
+          famR1_search
+  · unfold famFA3
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_row_le (0) (4 * q - 3 * s - 1) (s + 1))
+      (card_row_le (s + 1) (2 * q - 2 * s - 1) (s + 1)))
+      (card_row_le (2 * s + 2) (3 * q + 1) (q)))
+      (card_row_le (q + 2 * s + 2) (2 * q - s) (q - s - 1)))
+      (card_row_le (2 * q + s + 1) (3 * q - 2 * s - 1) (q - s)))
+      (card_row_le (3 * q + 1) (4 * q - 2 * s) (2 * s + 1 - q)))
+      (card_row_le (2 * q + 2 * s + 2) (0) (2 * q - 2 * s - 1))).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = 4 * q - 3 * s - 1, n = s + 1; value [4 * q + 1 - 2 * s, 4 * q + 1]; mirror [-4 * q, 2 * s - 4 * q]; P
 --   b1: a = s + 1, c = 2 * q - 2 * s - 1, n = s + 1; value [2 * q - 2 * s, 2 * q]; mirror [1 - 2 * q, 2 * s + 1 - 2 * q]; P
@@ -86,7 +280,82 @@ def famFT (q : ℤ) : Finset (ℤ × ℤ) :=
 theorem famFT_sp (q : ℤ)
     (h1 : 2 ≤ q) :
     SP (4 * q + 1) (2 * q) (famFT q) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famFT, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt x (0 + (q)) with hb0 | hb0
+      · famR1_search
+      rcases le_or_gt x (q + (q - 1)) with hb1 | hb1
+      · famR1_search
+      rcases le_or_gt x (2 * q - 1 + (q)) with hb2 | hb2
+      · famR1_search
+      rcases le_or_gt x (3 * q - 1 + (1)) with hb3 | hb3
+      · famR1_search
+      rcases le_or_gt x (3 * q + (q)) with hb4 | hb4
+      · famR1_search
+      famR1_search
+  · ext x
+    simp only [famFT, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt x (0 + (1)) with hb0 | hb0
+      · famR1_search
+      rcases le_or_gt x (1 + (q - 1)) with hb1 | hb1
+      · famR1_search
+      rcases le_or_gt x (q + (1)) with hb2 | hb2
+      · famR1_search
+      rcases le_or_gt x (q + 1 + (q)) with hb3 | hb3
+      · famR1_search
+      rcases le_or_gt x (2 * q + 1 + (q)) with hb4 | hb4
+      · famR1_search
+      famR1_search
+  · ext x
+    simp only [famFT, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt 1 x with hs | hs
+      · rcases Int.emod_two_eq x with hp | hp
+        · -- x ≥ 1, x even: b4.value | b0.value
+          rcases le_or_gt x (2 * q) with hb0 | hb0
+          · famR1_search
+          famR1_search
+        · -- x ≥ 1, x odd: b3.value | b1.value | b5.mirror | b2.value
+          rcases le_or_gt x (1) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (2 * q - 1) with hb1 | hb1
+          · famR1_search
+          rcases le_or_gt x (2 * q + 1) with hb2 | hb2
+          · famR1_search
+          famR1_search
+      · rcases Int.emod_two_eq x with hp | hp
+        · -- x ≤ 0, x even: b2.mirror | b5.value | b1.mirror | b3.mirror
+          rcases le_or_gt x (-2 * q - 2) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (-2 * q) with hb1 | hb1
+          · famR1_search
+          rcases le_or_gt x (-2) with hb2 | hb2
+          · famR1_search
+          famR1_search
+        · -- x ≤ 0, x odd: b0.mirror | b4.mirror
+          rcases le_or_gt x (-2 * q - 1) with hb0 | hb0
+          · famR1_search
+          famR1_search
+  · unfold famFT
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_row_le (0) (q + 1) (q))
+      (card_row_le (q) (1) (q - 1)))
+      (card_row_le (2 * q - 1) (3 * q + 1) (q)))
+      (card_row_le (3 * q - 1) (q) (1)))
+      (card_row_le (3 * q) (2 * q + 1) (q)))
+      (card_row_le (4 * q) (0) (1))).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = q + 1, n = q; value [2 * q + 2, 4 * q]; mirror [1 - 4 * q, -2 * q - 1]; P
 --   b1: a = q, c = 1, n = q - 1; value [3, 2 * q - 1]; mirror [2 - 2 * q, -2]; P
@@ -115,7 +384,91 @@ def famFL1 (p : ℤ) : Finset (ℤ × ℤ) :=
 theorem famFL1_sp (p : ℤ)
     (h1 : 2 ≤ p) :
     SP (8 * p + 1) (2 * p + 1) (famFL1 p) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famFL1, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt x (0 + (1)) with hb0 | hb0
+      · famR1_search
+      rcases le_or_gt x (1 + (p)) with hb1 | hb1
+      · famR1_search
+      rcases le_or_gt x (p + 1 + (p - 1)) with hb2 | hb2
+      · famR1_search
+      rcases le_or_gt x (2 * p + (2 * p)) with hb3 | hb3
+      · famR1_search
+      rcases le_or_gt x (4 * p + (p)) with hb4 | hb4
+      · famR1_search
+      rcases le_or_gt x (5 * p + (p + 1)) with hb5 | hb5
+      · famR1_search
+      famR1_search
+  · ext x
+    simp only [famFL1, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt x (0 + (2 * p)) with hb0 | hb0
+      · famR1_search
+      rcases le_or_gt x (2 * p + (1)) with hb1 | hb1
+      · famR1_search
+      rcases le_or_gt x (2 * p + 1 + (p - 1)) with hb2 | hb2
+      · famR1_search
+      rcases le_or_gt x (3 * p + (p)) with hb3 | hb3
+      · famR1_search
+      rcases le_or_gt x (4 * p + (p + 1)) with hb4 | hb4
+      · famR1_search
+      rcases le_or_gt x (5 * p + 1 + (p)) with hb5 | hb5
+      · famR1_search
+      famR1_search
+  · ext x
+    simp only [famFL1, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt 1 x with hs | hs
+      · rcases Int.emod_two_eq x with hp | hp
+        · -- x ≥ 1, x even: b4.value | b6.mirror | b1.value
+          rcases le_or_gt x (2 * p) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (6 * p) with hb1 | hb1
+          · famR1_search
+          famR1_search
+        · -- x ≥ 1, x odd: b5.value | b2.value | b0.value | b3.value
+          rcases le_or_gt x (2 * p + 1) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (4 * p - 1) with hb1 | hb1
+          · famR1_search
+          rcases le_or_gt x (4 * p + 1) with hb2 | hb2
+          · famR1_search
+          famR1_search
+      · rcases Int.emod_two_eq x with hp | hp
+        · -- x ≤ 0, x even: b3.mirror | b0.mirror | b2.mirror | b5.mirror
+          rcases le_or_gt x (-4 * p - 2) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (-4 * p) with hb1 | hb1
+          · famR1_search
+          rcases le_or_gt x (-2 * p - 2) with hb2 | hb2
+          · famR1_search
+          famR1_search
+        · -- x ≤ 0, x odd: b1.mirror | b6.value | b4.mirror
+          rcases le_or_gt x (-6 * p - 1) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (-2 * p - 1) with hb1 | hb1
+          · famR1_search
+          famR1_search
+  · unfold famFL1
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_row_le (0) (2 * p) (1))
+      (card_row_le (1) (5 * p + 1) (p)))
+      (card_row_le (p + 1) (2 * p + 1) (p - 1)))
+      (card_row_le (2 * p) (6 * p + 1) (2 * p)))
+      (card_row_le (4 * p) (3 * p) (p)))
+      (card_row_le (5 * p) (4 * p) (p + 1)))
+      (card_row_le (6 * p + 1) (0) (2 * p))).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = 2 * p, n = 1; value [4 * p + 1, 4 * p + 1]; mirror [-4 * p, -4 * p]; P
 --   b1: a = 1, c = 5 * p + 1, n = p; value [6 * p + 2, 8 * p]; mirror [1 - 8 * p, -6 * p - 1]; P
@@ -144,7 +497,82 @@ def famFL5 (p : ℤ) : Finset (ℤ × ℤ) :=
 theorem famFL5_sp (p : ℤ)
     (h1 : 1 ≤ p) :
     SP (8 * p + 5) (2 * p + 2) (famFL5 p) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famFL5, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt x (0 + (p + 1)) with hb0 | hb0
+      · famR1_search
+      rcases le_or_gt x (p + 1 + (p + 1)) with hb1 | hb1
+      · famR1_search
+      rcases le_or_gt x (2 * p + 2 + (2 * p + 1)) with hb2 | hb2
+      · famR1_search
+      rcases le_or_gt x (4 * p + 3 + (p)) with hb3 | hb3
+      · famR1_search
+      rcases le_or_gt x (5 * p + 3 + (p + 1)) with hb4 | hb4
+      · famR1_search
+      famR1_search
+  · ext x
+    simp only [famFL5, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt x (0 + (2 * p + 1)) with hb0 | hb0
+      · famR1_search
+      rcases le_or_gt x (2 * p + 1 + (p + 1)) with hb1 | hb1
+      · famR1_search
+      rcases le_or_gt x (3 * p + 2 + (p)) with hb2 | hb2
+      · famR1_search
+      rcases le_or_gt x (4 * p + 2 + (p + 1)) with hb3 | hb3
+      · famR1_search
+      rcases le_or_gt x (5 * p + 3 + (p + 1)) with hb4 | hb4
+      · famR1_search
+      famR1_search
+  · ext x
+    simp only [famFL5, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc]
+    constructor
+    · intro hx
+      omega
+    · intro hx
+      rcases le_or_gt 1 x with hs | hs
+      · rcases Int.emod_two_eq x with hp | hp
+        · -- x ≥ 1, x even: b3.value | b1.value | b2.value
+          rcases le_or_gt x (2 * p) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (4 * p + 2) with hb1 | hb1
+          · famR1_search
+          famR1_search
+        · -- x ≥ 1, x odd: b4.value | b5.mirror | b0.value
+          rcases le_or_gt x (2 * p + 1) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (6 * p + 3) with hb1 | hb1
+          · famR1_search
+          famR1_search
+      · rcases Int.emod_two_eq x with hp | hp
+        · -- x ≤ 0, x even: b0.mirror | b5.value | b4.mirror
+          rcases le_or_gt x (-6 * p - 4) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (-2 * p - 2) with hb1 | hb1
+          · famR1_search
+          famR1_search
+        · -- x ≤ 0, x odd: b2.mirror | b1.mirror | b3.mirror
+          rcases le_or_gt x (-4 * p - 3) with hb0 | hb0
+          · famR1_search
+          rcases le_or_gt x (-2 * p - 1) with hb1 | hb1
+          · famR1_search
+          famR1_search
+  · unfold famFL5
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_row_le (0) (5 * p + 3) (p + 1))
+      (card_row_le (p + 1) (2 * p + 1) (p + 1)))
+      (card_row_le (2 * p + 2) (6 * p + 4) (2 * p + 1)))
+      (card_row_le (4 * p + 3) (3 * p + 2) (p)))
+      (card_row_le (5 * p + 3) (4 * p + 2) (p + 1)))
+      (card_row_le (6 * p + 4) (0) (2 * p + 1))).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = 5 * p + 3, n = p + 1; value [6 * p + 5, 8 * p + 5]; mirror [-8 * p - 4, -6 * p - 4]; P
 --   b1: a = p + 1, c = 2 * p + 1, n = p + 1; value [2 * p + 2, 4 * p + 2]; mirror [-4 * p - 1, -2 * p - 1]; P
