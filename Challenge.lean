@@ -20,7 +20,9 @@ reading of `m`-fold sequences, which the source follows). Intervals are written 
 hypotheses `1 ≤ d` and `1 ≤ l` are needed: for `l = 0` the empty sequence qualifies, and the
 paper's parameters are positive.
 
-This Mathlib-only file intentionally contains placeholders. The corresponding Solution
+This Mathlib-only file intentionally contains placeholders (six theorems from the first version of the
+development and four added afterwards: the residue bound, the forced-endpoint bound, the order-three cells
+and the rigidity of the counting bound). The corresponding Solution
 declarations are proved in a separate environment.
 -/
 
@@ -71,6 +73,37 @@ theorem not_threeFold_six_three : ¬ ∃ s : ℕ → ℕ, IsLangford 3 6 3 s := 
 theorem not_sufficient (m : ℕ) (hm : 3 ≤ m) :
     ∃ d l : ℕ, 1 ≤ d ∧ 1 ≤ l ∧ 2 * d + l ≤ 2 * m * l + 1 ∧
       (m % 2 = 1 → l * (2 * d + l + 1) % 4 = 0) ∧ ¬ ∃ s : ℕ → ℕ, IsLangford m d l s := by
+  sorry
+
+/-- The residue bound. For every `T ≥ 1`, with `r = ml mod T`, an `m`-fold Langford sequence satisfies
+`r(T − r) ≤ m · Σ_{p=d}^{d+l−1} |p − T|`; the distance `|p − T|` is written with truncated subtraction as
+`(p − T) + (T − p)`, and `p = d + i`. For `T ≥ max(ml, d + l − 1)` this is the counting bound of `necessary`;
+at `l = 1`, `T = d` it says `d ∣ m`. -/
+theorem residue_bound (m d l T : ℕ) (hm : 1 ≤ m) (hd : 1 ≤ d) (hl : 1 ≤ l) (hT : 1 ≤ T) (s : ℕ → ℕ)
+    (hs : IsLangford m d l s) :
+    (m * l % T) * (T - m * l % T) ≤ m * ∑ i ∈ Finset.range l, ((d + i - T) + (T - (d + i))) := by
+  sorry
+
+/-- The forced-endpoint bound `6mld + ml ≤ 4d² + 2(ml)² + ml²`, that is `ml · e ≤ (l − 1 + e)²` for the
+excess `e = (2m − 1)l − 2d + 1`: the positions `1, …, d` are left ends, every left end is at most `2ml − d`,
+and the distance sum fixes the sum of the left ends. -/
+theorem forced_endpoint (m d l : ℕ) (hm : 1 ≤ m) (hd : 1 ≤ d) (hl : 1 ≤ l) (s : ℕ → ℕ)
+    (hs : IsLangford m d l s) :
+    6 * m * l * d + m * l ≤ 4 * d * d + 2 * (m * l) * (m * l) + m * l * l := by
+  sorry
+
+/-- One order-three cell for every multiplicity: for every `m ≥ 3` the cell `(d, l) = (3m − 3, 3)` satisfies
+the conditions of `necessary` and admits no `m`-fold Langford sequence. -/
+theorem not_order_three (m : ℕ) (hm : 3 ≤ m) :
+    2 * (3 * m - 3) + 3 ≤ 2 * m * 3 + 1 ∧ (m % 2 = 1 → 3 * (2 * (3 * m - 3) + 3 + 1) % 4 = 0) ∧
+      ¬ ∃ s : ℕ → ℕ, IsLangford m (3 * m - 3) 3 s := by
+  sorry
+
+/-- Equality in the counting bound is rigid: an `m`-fold Langford sequence has `2d + l = 2ml + 1` if and only
+if every position `i ≤ ml` is the left end of its pair, that is `ml < i + s i`. -/
+theorem tight_iff_straddle (m d l : ℕ) (hm : 1 ≤ m) (hd : 1 ≤ d) (hl : 1 ≤ l) (s : ℕ → ℕ)
+    (hs : IsLangford m d l s) :
+    2 * d + l = 2 * m * l + 1 ↔ ∀ i : ℕ, 1 ≤ i → i ≤ m * l → m * l < i + s i := by
   sorry
 
 end Langford
