@@ -72,8 +72,8 @@ theorem forced_endpoint_internal (m d l : ℕ) (hm : 1 ≤ m) (hd : 1 ≤ d) (hl
       obtain ⟨p, hp, hxp⟩ := Finset.mem_biUnion.1 h
       obtain ⟨a, ha, hax⟩ := Finset.mem_image.1 hxp
       have hax' : a + p = x := hax
-      have hdp := (Nec.mem_window hl hp).1
       have hp' := Nec.mem_window hl hp
+      have hdp := hp'.1
       have ha1 := ((hA p hp'.1 hp'.2).2.1 a ha).1
       omega
   -- every left end `x` has its partner `x + p ≤ 2ml` with `p ≥ d`
