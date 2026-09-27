@@ -1,0 +1,1728 @@
+\pdfoutput=1
+\documentclass[11pt]{amsart}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1.25in]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\emergencystretch}{3em}
+\renewcommand{\theenumi}{\roman{enumi}}
+\renewcommand{\labelenumi}{(\theenumi)}
+\hypersetup{pdftitle={Two-fold Langford sequences exist exactly when 3l >= 2d - 1}}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem*{thmA}{Theorem A}
+\newtheorem*{thmB}{Theorem B}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\SP}{\mathrm{SP}}
+\newcommand{\lean}[1]{\par\smallskip
+  {\small\raggedright\noindent\textit{Lean:} \texttt{#1}.\par}\smallskip}
+\newcommand{\status}[1]{\par\smallskip
+  {\small\raggedright\noindent\textit{Status:} #1\par}\smallskip}
+\newcommand{\famtable}[8]{%
+  \par\bigskip\noindent\textbf{#1.} #2; domain #4.
+  Target order $(#3)$. Lean: #5.\par\nopagebreak\smallskip
+  {\footnotesize\noindent
+  \begin{tabular}{@{}l l l l >{\raggedright\arraybackslash}p{2.45in}@{}}
+  \toprule
+  block & $n_i$ & $M_i$ & type & class runs\\
+  \midrule
+  #6
+  \bottomrule
+  \end{tabular}\par}
+  \nopagebreak\smallskip\noindent{\small Odd chain: #7. Even chain: #8.}\par}
+
+\author{JD Jones}
+
+\title[Two-fold Langford sequences]{Two-fold Langford sequences exist exactly when
+$3l \ge 2d-1$, and what is known for every multiplicity}
+
+\date{27 September 2026}
+
+\subjclass[2020]{05A05 (Primary); 11B83, 68V20 (Secondary)}
+\keywords{Langford sequences, Skolem-type sequences, $m$-fold sequences, signed
+permutations, block reversals, Farkas certificates, formal verification}
+
+\begin{document}
+
+\begin{abstract}
+A two-fold Langford sequence of order $l$ and defect $d$ is a sequence of length $4l$
+in which every $p \in [d,d+l-1]$ occupies two disjoint pairs of positions at distance
+$p$. Alkasasbeh, Dyer and Howell asked for necessary and sufficient conditions for the
+existence of $m$-fold Langford sequences, $m \ge 2$. We answer the case $m = 2$: for
+$d, l \ge 1$ a two-fold Langford sequence of order $l$ and defect $d$ exists if and only
+if $3l \ge 2d-1$. Necessity is a distance count. Sufficiency reduces, by concatenation
+and a mirror-symmetric ansatz, to a problem about permutations of $\{1,\dots,l\}$ whose
+signed displacements are prescribed; an inversion symmetry and a composition lemma
+reduce that problem to a band near its diagonal, which is closed by twenty-one
+block-reversal families and the two-block reversal $\tau_l$, each proved by a class
+table, together with eleven explicit permutations. For every $m$ we prove the counting bound $(2m-1)l \ge 2d-1$ with a
+parity condition for odd $m$, show that the bound is attained for every $m$, settle the
+order $l = 1$ (a sequence exists if and only if $d \mid m$), and show that for every
+$m \ge 3$ counting and parity are not sufficient. These statements are formalized and
+machine-checked in Lean~4. For $m \ge 3$ we also describe, with exact Farkas
+certificates and closed-form edges, the empty bands inside the counting bound; that part
+is proved on paper and not formalized, and the general characterization remains open.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+
+Write $[u,v]$ for the set of integers $x$ with $u \le x \le v$. A \emph{Langford
+sequence} of defect $d$ and order $l$ is a sequence of length $2l$ in which each
+$p \in [d,d+l-1]$ occurs exactly twice, at two positions $p$ apart; at $d = 1$ these are
+Skolem sequences \cite{Skolem,OKeefe}, and their existence was settled by Simpson
+\cite{Simpson}. Alkasasbeh, Dyer and Howell \cite{ADH} introduced the \emph{two-fold}
+version, in which every $p \in [d,d+l-1]$ occupies two disjoint pairs of positions at
+distance $p$, so that the sequence has length $4l$; more generally an \emph{$m$-fold}
+Langford sequence has length $2ml$ and $m$ disjoint pairs for every $p$ (the $d = 1$ case
+is the $m$-fold Skolem sequence of Baker, Nowakowski, Shalaby and Sharary \cite{BNSS}).
+Section~7 of \cite{ADH} closes with the question of finding ``necessary and sufficient
+conditions for the existence of $m$-fold Langford sequences'' with $m \ge 2$. The only
+two-fold Langford family printed there (Construction~2.7, defect $6k-1$, order $4k-1$)
+lies on the extreme line of the counting bound.
+
+\begin{thmA}
+Let $d, l \ge 1$. A two-fold Langford sequence of order $l$ and defect $d$ exists if and
+only if $3l \ge 2d-1$.
+\end{thmA}
+
+\begin{thmB}
+Let $m, d, l \ge 1$.
+\begin{enumerate}
+\item If an $m$-fold Langford sequence of order $l$ and defect $d$ exists, then
+  $(2m-1)l \ge 2d-1$, and if $m$ is odd, $l(2d+l+1) \equiv 0 \pmod 4$.
+\item If $(2m-1)l = 2d-1$, an $m$-fold Langford sequence of order $l$ and defect $d$
+  exists.
+\item An $m$-fold Langford sequence of order $1$ and defect $d$ exists if and only if
+  $d \mid m$.
+\item No three-fold Langford sequence of order $3$ and defect $6$ exists.
+\item For every $m \ge 3$ the conditions of \textup{(i)} are not sufficient: some
+  $(d,l)$ satisfies them and has no $m$-fold Langford sequence.
+\end{enumerate}
+\end{thmB}
+
+At $m = 2$ the parity clause of (i) is vacuous and Theorem~A says that (i) is exact. At
+$m = 1$ the conditions of (i) are Simpson's, and exactness there is his theorem
+\cite{Simpson}; at $d = 1$ they are the conditions of \cite{BNSS}. Part (v) shows that
+nothing of the kind holds for $m \ge 3$; explicit witnesses are $(d,l) = (6,3)$ at
+$m = 3$, $(m-1,1)$ for even $m \ge 4$ and $(m-2,1)$ for odd $m \ge 5$.
+
+\subsection*{What is formalized}
+Theorem~A and all five parts of Theorem~B are formalized and machine-checked in Lean~4
+with Mathlib \cite{Lean4,Mathlib}, in the accompanying repository \cite{l2lean}, as the
+theorems
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\texttt{Langford.twoFold\_exists\_iff} (Theorem A) & \texttt{Langford.order\_one\_iff} (B(iii))\\
+\texttt{Langford.necessary} (B(i)) & \texttt{Langford.not\_threeFold\_six\_three} (B(iv))\\
+\texttt{Langford.tight\_exists} (B(ii)) & \texttt{Langford.not\_sufficient} (B(v))
+\end{tabular}
+\end{center}
+about the definition \texttt{Langford.IsLangford} (Definition~\ref{def:seq}). Every numbered
+statement below that carries a \emph{Lean} line is proved there under the name given.
+Statements that carry a \emph{Status} line instead are proved on paper in this note and
+are not formalized, or are finite computations; they are Remark~\ref{rem:nordh},
+Corollary~\ref{cor:evenm}, Lemma~\ref{lem:I}, Lemma~\ref{lem:Z}, the computations for
+$m \ge 3$ in \S\ref{sec:mge3}, and the whole of \S\ref{sec:lp}. The note is the human-readable account
+of the formalized proof: it follows the route the formalization takes, so that a reader
+can check one against the other without reading Lean.
+
+\subsection*{The shape of the proof of Theorem~A}
+Necessity is the distance sum (Theorem~\ref{thm:nec}): the right ends minus the left
+ends of the $2l$ pairs sum to $2\sum p$, and no partition of $[1,4l]$ into pairs does
+better than $4l^2$. For sufficiency put
+\[
+  e = 3l-2d+1 \ (\text{the excess}), \qquad
+  \delta = d-l, \qquad \mu = 2\delta-1 = l-e .
+\]
+\begin{itemize}
+\item Two sequences $(d,l_1)$ and $(d+l_1,l_2)$ placed one after the other form
+  $(d,l_1+l_2)$ (Lemma~\ref{lem:concat}); every in-bound cell with $l \ge 2d$ splits in
+  this way into two smaller in-bound cells (Lemma~\ref{lem:split}).
+\item Every other in-bound cell with $l \ge 5$ has $-l \le \mu \le l$, and a
+  mirror-symmetric ansatz (Lemma~S, Lemma~\ref{lem:S}) turns a permutation $\sigma$ of
+  $[1,l]$ whose numbers $\sigma(w)-w+\delta$ and their mirrors tile $[1-l,l]$ --- the
+  \emph{signed-permutation problem} $\SP(l,\delta)$ --- into a two-fold sequence of
+  defect $l + \delta = d$.
+\item Inversion $\sigma \mapsto \sigma^{-1}$ exchanges $\mu$ and $-\mu$; the reversal
+  and a two-block reversal $\tau_l$ solve $\mu = 1$ and $\mu = l$; and a composition
+  lemma (Lemma~C) carries a solution at $(n,\mu)$ to one at $(n+\mu,\mu)$. So every cell
+  descends along its line of fixed $\mu$ to a base cell in the \emph{band}
+  $l/2 < \mu \le l$ (Theorem~\ref{thm:R}); one base cell, $(l,\mu) = (4,3)$, is empty, and
+  $(7,3)$ is supplied instead.
+\item The band is closed, in each residue class of $l$ modulo $4$, by explicit
+  block-reversal permutations whose block sizes are affine in $(l,\mu)$: twenty-one
+  families and $\tau_l$, each proved by a \emph{class table}, plus eight sporadic cells
+  and two small bases (\S\ref{sec:band} and Appendix~\ref{app:tables}).
+\item The sixteen in-bound cells with $l \le 4$ are explicit.
+\end{itemize}
+No part of the argument depends on Simpson's theorem.
+
+\subsection*{Beyond \texorpdfstring{$m = 2$}{m = 2}}
+Section~\ref{sec:allm} proves Theorem~B(i)--(iii) and the juxtaposition lemma, which
+gives, with Theorem~A, a sequence at every cell with $3l \ge 2d-1$ for every even $m$
+(Corollary~\ref{cor:evenm}). Section~\ref{sec:mge3} proves (iv) and (v), and
+\S\ref{sec:lp} describes the picture for $m \ge 3$: an elementary emptiness lemma, a
+one-parameter family of integer Farkas certificates whose optimum yields closed-form
+empty bands with edges
+$d/l \to [(2j+1)m - J \mp \sqrt{m^2-J^2}]/(2J)$, $J = j(j+1) < m$, realized cells
+between two empty bands, and a conjecture. Section~\ref{sec:prior} lists the prior art
+that was searched.
+
+\section{Definitions, fidelity and certificates}\label{sec:defs}
+
+\begin{definition}\label{def:seq}
+Let $m, d, l \ge 1$. A sequence $s = (s_1,\dots,s_{2ml})$ is an \emph{$m$-fold Langford
+sequence of order $l$ and defect $d$} if every entry lies in $[d,d+l-1]$ and, for every
+$p \in [d,d+l-1]$, there is a set $A_p$ of $m$ positions such that for every $a \in A_p$
+\[
+  1 \le a, \qquad a + p \le 2ml, \qquad a + p \notin A_p,
+\]
+and the positions $i \in [1,2ml]$ with $s_i = p$ are exactly the elements of $A_p$ and
+of $A_p + p$. For $m = 2$ we say \emph{two-fold}.
+\end{definition}
+\lean{Langford.IsLangford (Challenge.lean; verbatim copy in L2/Defs.lean)}
+
+The formal definition reads $s$ as a function $\mathbb{N} \to \mathbb{N}$ on the positions
+$1,\dots,2ml$ and ignores its other values; intervals are written with bounds. The
+hypotheses $d \ge 1$ and $l \ge 1$ in Theorem~A are needed: for $l = 0$ the empty
+sequence qualifies, and for $d = 0$ nothing does.
+
+\begin{lemma}[the pair form]\label{lem:pairform}
+An $m$-fold Langford sequence of order $l$ and defect $d$ exists if and only if $[1,2ml]$
+can be partitioned into $ml$ pairs $\{a,b\}$, $a<b$, in which every $p \in [d,d+l-1]$ is
+the difference $b-a$ of exactly $m$ pairs.
+\end{lemma}
+
+\begin{proof}
+Given $s$ and the sets $A_p$, take the pairs $\{a,a+p\}$, $a \in A_p$. For fixed $p$
+these are $m$ pairs with $2m$ distinct endpoints: the $a$ are distinct, so are the
+$a+p$, and $a + p \notin A_p$ forbids a left end from being another pair's right end. For
+distinct $p$ the endpoint sets are disjoint because a position carries one value. The
+$l$ values give $2ml$ endpoints in $[1,2ml]$, so the pairs partition it. Conversely, put
+$s_i$ equal to the difference of the pair containing $i$ and $A_p$ equal to the set of
+left ends of the pairs of difference $p$.
+\end{proof}
+
+\begin{remark}[fidelity: chains]\label{rem:chains}
+The definition of \cite{ADH} asks, for each $p$, for ``exactly $2$ disjoint pairs'' of
+occurrences at distance $p$, and in a second condition that the two occurrences in each
+pair be $p$ apart. The second condition applies within the chosen pairs: read for all
+four occurrences it could never hold. The first is read as above: the occurrences of $p$
+\emph{can be partitioned} into $m$ pairs at distance $p$, so four occurrences at $a$,
+$a+p$, $a+2p$, $a+3p$ (a \emph{chain}) are allowed. This is the $m$-fold wording of
+Baker, Nowakowski, Shalaby and Sharary \cite{BNSS}, which \cite{ADH} follows; the
+thesis \cite{Alk} prints as a double Langford example the sequence
+$(4,2,3,2,4,3,4,2,3,2,4,3)$, whose four $3$s are the chain $3,6,9,12$; and the published
+count $1$ of two-fold Skolem sequences of order $1$ \cite{GRS} is the chain $(1,1,1,1)$.
+Under the strict reading, which forbids chains, the in-bound cells $(d,l) = (1,1)$,
+$(5,4)$ and $(6,6)$ would have no sequence, since each of their sequences contains a
+chain, and Theorem~A would be false there. Definition~\ref{def:seq} admits chains.
+\end{remark}
+
+\subsection*{Coordinates}
+A cell $(d,l)$ is \emph{in-bound} if $3l \ge 2d-1$, equivalently $2d \le 3l+1$. Its
+excess is $e = 3l-2d+1 \ge 0$. We use
+\[
+  \delta = d - l, \qquad \mu = 2\delta - 1 = 2(d-l)-1 = l - e .
+\]
+In-bound means $\mu \le l$, and $l \le 2d-1$ means $\mu \ge -l$. The line $\mu = l$
+($e = 0$) is the tight line; $\mu = -l$ ($e = 2l$) is the line $l = 2d-1$.
+
+\subsection*{Certificates}
+The formal development never builds a sequence directly. It builds coloured sets of
+integer pairs and proves once that they give a sequence.
+
+\begin{definition}\label{def:cert}
+An \emph{$m$-colour certificate} for $(m,d,l)$ is a family $C_0,\dots,C_{m-1}$ of finite
+sets of integer pairs $(a,b)$ such that
+\begin{enumerate}
+\item for each colour $c$, the set $\{b-a : (a,b) \in C_c\}$ equals $[d,d+l-1]$;
+\item the set of all endpoints of all pairs of all colours equals $[1,2ml]$;
+\item $\sum_c |C_c| \le ml$.
+\end{enumerate}
+For $m = 2$ we write $(A,B)$ for $(C_0,C_1)$ and call it a two-colour certificate.
+\end{definition}
+\lean{L2.MultiPairing, L2.TwoFold, L2.TwoFold.toMulti (L2/Multi.lean)}
+
+\begin{lemma}[the bridge]\label{lem:bridge}
+If an $m$-colour certificate exists for $(m,d,l)$ with $d,l \ge 1$, then an $m$-fold
+Langford sequence of order $l$ and defect $d$ exists.
+\end{lemma}
+
+\begin{proof}
+Each colour has at least $l$ pairs by (i). With (iii), each has exactly $l$, the colours
+are pairwise disjoint, and the difference map is injective on each colour, so each
+$p \in [d,d+l-1]$ is the difference of exactly $m$ pairs. The $ml$ pairs have at most
+$2ml$ endpoints, and by (ii) they have all of $[1,2ml]$; so no endpoint is shared and
+the pairs partition $[1,2ml]$ (a pair $(a,a)$ is impossible because $d \ge 1$). Lemma~\ref{lem:pairform} finishes.
+\end{proof}
+\lean{L2.MultiPairing.card\_colour, L2.MultiPairing.pairwise\_disjoint,
+L2.MultiPairing.card\_fiber, L2.MultiPairing.endpoint\_bijOn,
+L2.MultiPairing.isLangford (L2/Bridge.lean)}
+
+The certificate format is the counting device of the formalization \cite{gnlean}
+lifted to $m$ colours: families prove only set equalities and a cardinality bound, and
+the multiplicity bookkeeping is done in this one lemma. The pair machinery of
+\cite{gnlean} (endpoints, differences, translations) is reused, ported to the present
+toolchain.
+
+\section{Every multiplicity: the bound, the tight line, the row of order one}\label{sec:allm}
+
+\begin{theorem}[necessity]\label{thm:nec}
+Let $m, d, l \ge 1$. If an $m$-fold Langford sequence of order $l$ and defect $d$ exists,
+then
+\[
+  2d + l \le 2ml + 1, \quad\text{that is}\quad (2m-1)l \ge 2d-1,
+\]
+with equality if and only if every pair has its left end in $[1,ml]$ and its right end in
+$[ml+1,2ml]$. If $m$ is odd, moreover $l(2d+l+1) \equiv 0 \pmod 4$.
+\end{theorem}
+
+\begin{proof}
+Take the pair form, put $H = ml$ and let $L$ and $R$ be the sets of left and right ends;
+they partition $[1,2H]$ and have $H$ elements each. Summing $b - a$ over the pairs,
+\[
+  \sum R - \sum L \;=\; m \sum_{p=d}^{d+l-1} p \;=\; \frac{ml(2d+l-1)}{2}.
+\]
+An $H$-subset of $[1,2H]$ has sum at most $\sum[H+1,2H]$ and at least $\sum[1,H]$, so
+$\sum R - \sum L \le H^2 = m^2l^2$, with equality only if $R = [H+1,2H]$. Hence
+$2d + l - 1 \le 2ml$, with the stated equality case. For the parity,
+$\sum R + \sum L = H(2H+1)$, so
+\[
+  4 \sum R \;=\; 2ml(2ml+1) + ml(2d+l-1) \;=\; ml\,(4ml + 2d + l + 1)
+  \;\equiv\; ml\,(2d+l+1) \pmod 4,
+\]
+and the left side is divisible by $4$. For odd $m$, $m$ is invertible modulo $4$.
+\end{proof}
+\lean{Langford.necessary, L2.necessary\_internal, L2.Nec.sum\_le\_top,
+L2.Nec.bottom\_le\_sum, L2.Nec.sum\_right\_sub\_left (L2/Necessity.lean)}
+
+For even $m$ the parity condition is vacuous (if $l$ is odd, $2d + l + 1$ is even). For
+odd $m$ it says: $l \equiv 0 \pmod 4$ allows every $d$, $l \equiv 1 \pmod 4$ needs $d$
+odd, $l \equiv 3 \pmod 4$ needs $d$ even, and $l \equiv 2 \pmod 4$ is impossible. These
+are the classes of the ordinary case $m = 1$, where the two conditions are Simpson's
+\cite{Simpson}; at $d = 1$ they are the conditions of \cite{BNSS} for $m$-fold Skolem
+sequences, whose exactness there we take from the literature (the primary text of
+\cite{BNSS} was not available to us; its statement agrees in five secondary sources,
+among them Table~8 of \cite{ADH}).
+
+\begin{remark}\label{rem:nordh}
+Nordh \cite{Nordh} studies \emph{perfect Skolem sets}: a multiset of positive integers
+is perfect if $[1,2n]$ can be partitioned into pairs whose differences are exactly its
+elements. A two-fold Langford sequence of order $l$ and defect $d$ is precisely a
+perfect multiset $2 \times [d,d+l-1]$, and an $m$-fold one a perfect multiset
+$m \times [d,d+l-1]$. Nordh's general necessary conditions --- an even number of even
+elements, and for every $k$ the $k$ largest elements summing to at most $k(2n-k)$ ---
+reduce for $m \times [d,d+l-1]$, $n = ml$, exactly to Theorem~\ref{thm:nec}. Indeed
+$f(k) = k(2n-k) - \sum_{i \le k} a_i$ (elements in decreasing order) has increments
+decreasing by at least $1$ at every step, so $f$ is concave with $f(0) = 0$ and
+$f \ge 0$ everywhere if and only if $f(n) \ge 0$, which is $(2m-1)l \ge 2d-1$; and the
+number of even elements, $m$ times the number of even $p \in [d,d+l-1]$, is even for
+odd $m$ exactly in the classes listed above. So his conditions add nothing to the
+counting bound; he notes himself that they are not sufficient for general multisets.
+\end{remark}
+\status{proved here; not formalized (it is a comparison with the literature).}
+
+\subsection*{The tight line}
+Let $d_0 \ge 1$ and $l = 2d_0 - 1$. Table~1 of \cite{ADH} is the ordinary Langford
+sequence of defect $d_0$ and order $l$ with the pairs
+\begin{equation}\label{eq:table1}
+  (d_0 - r,\; 2d_0 + r) \ (0 \le r \le d_0-1), \qquad
+  (2d_0 - 1 - r,\; 3d_0 + r) \ (0 \le r \le d_0-2).
+\end{equation}
+Their left ends fill $[1,l]$ and their right ends $[l+1,2l]$; the differences
+$d_0+2r$ and $d_0+1+2r$ fill $[d_0, 3d_0-2] = [d_0, d_0+l-1]$. As a bijection
+$i \mapsto (\text{right end}) - l$ of $[1,l]$ it is the two-block reversal $\tau_l$ of
+\S\ref{sec:reduction}: it reverses $[1,d_0]$ and $[d_0+1,l]$.
+
+\begin{theorem}[the tight line, every $m$]\label{thm:tight}
+Let $m \ge 1$ and let $l = 2d_0-1$ be odd. Put $d = ((2m-1)l+1)/2 = ml - (d_0-1)$. The
+$m$ colours
+\[
+  C_c = \bigl\{\,(a + cl,\; b + (m-1+c)l) : (a,b) \text{ a pair of } \eqref{eq:table1}\,\bigr\},
+  \qquad 0 \le c \le m-1,
+\]
+form an $m$-colour certificate for $(m,d,l)$. Hence an $m$-fold Langford sequence exists
+on the whole line $(2m-1)l = 2d-1$.
+\end{theorem}
+
+\begin{proof}
+Colour $c$ has left ends $[cl+1,(c+1)l]$ and right ends $[ml+cl+1,ml+(c+1)l]$, so the
+union over $c$ is $[1,2ml]$. Its differences are those of \eqref{eq:table1} plus
+$(m-1)l$, that is $[d_0+(m-1)l,\, d_0+(m-1)l+l-1] = [d,d+l-1]$. Each colour has $l$
+pairs. Lemma~\ref{lem:bridge} finishes. When $l$ is even, $(2m-1)l+1$ is odd and the line
+has no integer point.
+\end{proof}
+\lean{Langford.tight\_exists, L2.table1, L2.tightColour, L2.tight\_multi,
+L2.tight\_exists\_internal (L2/Tight.lean, L2/Main.lean)}
+
+By the equality case of Theorem~\ref{thm:nec}, a tight sequence is the same thing as a
+permutation $\sigma$ of $[1,ml]$, position $i$ pairing with $ml + \sigma(i)$, whose
+displacement multiset $\{\sigma(i) - i\}$ is $m \times [-(l-1)/2,(l-1)/2]$. In the
+language of perfect sets this is Theorem~15 of \cite{Nordh} (numbering of
+arXiv:math/0506155v1), which should be cited for the bijection; the construction above
+is the block-diagonal permutation with $m$ copies of $\tau_l$. At $m = 2$ this closes the
+half $d \equiv 2 \pmod 6$ of the tight line that Construction~2.7 of \cite{ADH} does not
+reach.
+
+\begin{lemma}[juxtaposition]\label{lem:juxt}
+If an $m_1$-fold and an $m_2$-fold Langford sequence of the same order $l$ and defect $d$
+exist, so does an $(m_1+m_2)$-fold one: place the second after the first, shifted by
+$2m_1l$.
+\end{lemma}
+\lean{L2.juxtapose, L2.MultiPairing.juxtapose (L2/Multi.lean)}
+
+\begin{corollary}\label{cor:evenm}
+For every even $m$, an $m$-fold Langford sequence of order $l$ and defect $d$ exists at
+every cell with $3l \ge 2d-1$.
+\end{corollary}
+
+\begin{proof}
+Juxtapose $m/2$ copies of the two-fold sequence of Theorem~A.
+\end{proof}
+\status{proved here from Theorem~A and Lemma~\ref{lem:juxt}, both formalized; the
+corollary itself is not stated in the development. For odd $m \ge 3$ the same argument
+with one ordinary Langford sequence gives every cell with $l \ge 2d-1$ that satisfies the
+parity condition, by Simpson's theorem \cite{Simpson}, which is cited and not
+re-derived.}
+
+\begin{theorem}[the row of order one]\label{thm:orderone}
+Let $m, d \ge 1$. An $m$-fold Langford sequence of order $1$ and defect $d$ exists if and
+only if $d \mid m$.
+\end{theorem}
+
+\begin{proof}
+Here every pair has difference $d$ and the positions are $[1,2m]$. A position $i \le d$
+is a left end, since $i - d < 1$. A position $i > d$ is a right end exactly when $i-d$ is
+a left end, because the only possible partner of a right end $i$ is $i-d$. By induction
+on $i$, the blocks $[1,d]$, $[d+1,2d]$, $[2d+1,3d]$, \dots\ consist alternately of left
+ends and right ends. Write $2m = 2dq + r$ with $0 \le r < 2d$. If $1 \le r \le d$, the
+position $2m$ lies in a block of left ends and its partner $2m + d$ is out of range. If
+$d < r < 2d$, the block $[2dq+1,2dq+d]$ consists of left ends and the partner
+$2dq + 2d$ of its last position exceeds $2m$. So $r = 0$ and $d \mid m$. Conversely, if
+$m = dk$, the cell $(d,1)$ lies on the tight line of multiplicity $d$
+($(2d-1)\cdot 1 = 2d-1$), so Theorem~\ref{thm:tight} gives a $d$-fold sequence, and $k$
+copies juxtaposed (Lemma~\ref{lem:juxt}) give an $m$-fold one.
+\end{proof}
+\lean{Langford.order\_one\_iff, L2.dvd\_of\_order\_one, L2.order\_one\_of\_dvd,
+L2.order\_one\_iff\_internal (L2/OrderOne.lean)}
+
+\section{The reduction at \texorpdfstring{$m = 2$}{m = 2}}\label{sec:reduction}
+
+\subsection*{Concatenation and the unsplittable region}
+
+\begin{lemma}[concatenation]\label{lem:concat}
+If two-fold sequences of orders $l_1, l_2$ and defects $d$ and $d + l_1$ exist, then one
+of order $l_1 + l_2$ and defect $d$ exists: the second, shifted by $4l_1$, follows the
+first.
+\end{lemma}
+
+\begin{proof}
+The differences are $[d,d+l_1-1] \cup [d+l_1,d+l_1+l_2-1]$, twice each, and the
+positions are $[1,4l_1] \cup [4l_1+1,4l_1+4l_2]$. On certificates the two colours are
+concatenated colour by colour.
+\end{proof}
+\lean{L2.TwoFold.concat (L2/Multi.lean)}
+
+\begin{lemma}[splitting]\label{lem:split}
+Let $(d,l)$ be in-bound. A split $l = l_1 + l_2$ with both $(d,l_1)$ and $(d+l_1,l_2)$
+in-bound exists if and only if $e \ge 5l_1^*$, where $l_1^* = \lceil (2d-1)/3 \rceil =
+\lfloor (2d+1)/3 \rfloor$, and then $l_1 = l_1^*$ works. Every in-bound cell with
+$l \ge 2d$ splits with $l_1 = l_1^*$, and every cell that does not split has
+$l < (16d+2)/9 \le 2d$.
+\end{lemma}
+
+\begin{proof}
+$(d,l_1)$ is in-bound iff $3l_1 \ge 2d-1$, and $(d+l_1,l-l_1)$ is in-bound iff
+$2(d+l_1) \le 3(l-l_1)+1$, that is $5l_1 \le e$. The first is a lower bound on $l_1$ and
+the second an upper bound, so a split exists iff the least admissible $l_1^*$ satisfies
+the second. If $l \ge 2d$ then $e \ge 4d+1 \ge (10d+5)/3 \ge 5l_1^*$ and
+$1 \le l_1^* < l$. If $e < 5l_1^* \le 5(2d+1)/3$ then $9l < 16d+2$.
+\end{proof}
+\lean{used inside L2.twoFold\_all (L2/Main.lean)}
+
+The unsplittable region $0 \le e < 5\lceil(2d-1)/3\rceil$ is therefore a wedge of slope
+roughly $[2/3, 16/9]$ in $l/d$, and the counting bound shows that no concatenation of
+consecutive blocks can reach it. The cells with $l \ge 2d-1$ all split except $(d,l) =
+(1,1)$ and $(4,7)$: at $l = 2d-1$ one needs $5l_1^* \le 4d-2$, which holds for $d \ge 6$
+since $5(2d+1)/3 \le 4d-2$, and for $d \le 5$ fails only at $d = 1$ and $d = 4$. Both
+exceptional cells lie on the line $\mu = -l$ and are reached through Lemma~S by
+$\tau_l^{-1}$, so Simpson's theorem is not needed anywhere.
+
+\subsection*{The signed-permutation problem}
+
+\begin{definition}\label{def:SP}
+Let $l \ge 1$ and $\delta \in \Z$. A permutation $\sigma$ of $[1,l]$ \emph{solves}
+$\SP(l,\delta)$ if the $2l$ numbers
+\[
+  y_w = \sigma(w) - w + \delta \qquad\text{and}\qquad 1 - y_w \qquad (w \in [1,l])
+\]
+are exactly the elements of $[1-l,l]$. In the formalization $\sigma$ is its graph
+$G \subset \Z^2$: the first coordinates of $G$ are $[1,l]$, the second coordinates are
+$[1,l]$, $|G| \le l$, and the images of $G$ under the \emph{value} $(w,t) \mapsto
+t-w+\delta$ and the \emph{mirror} $(w,t) \mapsto w-t+1-\delta$ have union $[1-l,l]$.
+\end{definition}
+\lean{L2.SP, L2.val, L2.mir (L2/SP.lean, L2/Rows.lean)}
+
+\begin{lemma}[displacement form]\label{lem:P}
+Put $\mu = 2\delta - 1$ and $x_w = 2(\sigma(w)-w) + \mu$. Then $\sigma$ solves
+$\SP(l,\delta)$ if and only if $\{|x_w| : w \in [1,l]\} = \{1,3,\dots,2l-1\}$.
+\end{lemma}
+
+\begin{proof}
+$x_w = 2y_w - 1$, and for an integer $y$ one has $y \in \{k,1-k\}$ exactly when
+$|2y-1| = 2k-1$. The set $[1-l,l]$ is the disjoint union of the $l$ pairs
+$\{k,1-k\}$, $k \in [1,l]$, and $y_w$, $1-y_w$ always lie in the same pair. So the $2l$
+numbers are $[1-l,l]$ iff every pair is hit by exactly one $w$, iff the $|x_w|$ run
+through $2k-1$, $k \in [1,l]$, once each.
+\end{proof}
+\lean{implicit in L2.SP (the set form is the one formalized)}
+
+We call $k = (|x_w|+1)/2$ the \emph{class} of $w$. In the form in which the
+construction was first found, a solution was a permutation $\pi$ of $[1,l]$ with a label
+$S$ or $D$ on each $u$, the value of $u$ being $u + \pi(u) - 1$ (label $S$) or
+$\pi(u) - u$ (label $D$), the $l$ values forming $[\delta,\delta+l-1]$; the two forms
+correspond by $u = (|x_w|+1)/2$, $\pi(u) = w$, the label being the sign of $x_w$.
+
+\begin{lemma}[Lemma S]\label{lem:S}
+Let $\sigma$ solve $\SP(l,\delta)$ and suppose $d = l + \delta \ge 1$. With
+$y_w = \sigma(w) - w + \delta$, the pairs
+\[
+  A_w = \bigl(l+1-w,\; 2l+y_w\bigr), \qquad B_w = \bigl(2l+1-y_w,\; 3l+w\bigr),
+  \qquad w \in [1,l],
+\]
+form a two-colour certificate $(\{A_w\},\{B_w\})$ for $(2,d,l)$. The resulting two-fold
+Langford sequence of order $l$ and defect $d$ is symmetric under $i \mapsto 4l+1-i$,
+which exchanges $A_w$ and $B_w$, and every pair joins the outer half
+$[1,l] \cup [3l+1,4l]$ to the middle half $[l+1,3l]$.
+\end{lemma}
+
+\begin{proof}
+The difference of $A_w$ is $2l + y_w - l - 1 + w = d + \sigma(w) - 1$, and so is the
+difference of $B_w$. As $\sigma(w)$ runs over $[1,l]$, each colour has the difference set
+$[d,d+l-1]$. The left ends of the $A_w$ are $[1,l]$ and the right ends of the $B_w$ are
+$[3l+1,4l]$. The remaining endpoints are $2l + y_w$ and $2l + (1-y_w)$, which by the
+definition of $\SP$ run over $2l + [1-l,l] = [l+1,3l]$. So the endpoints are $[1,4l]$,
+and there are $2l$ pairs. The symmetry is the identity
+$4l+1-(2l+y_w) = 2l+1-y_w$ together with $4l+1-(l+1-w) = 3l+w$.
+\end{proof}
+\lean{L2.colourA, L2.colourB, L2.SP.toTwoFold (L2/LemmaS.lean)}
+
+Not every cell has a sequence of this form. The next invariant shows that exactly one
+small cell of each sign is missed.
+
+\begin{lemma}[the value-sum invariant]\label{lem:I}
+Let $\sigma$ solve $\SP(l,\delta)$, let $K^+$ be the set of classes $k$ with
+$y_w = k$ for some $w$ and $K^-$ the set with $y_w = 1-k$. Then
+\[
+  \sum_{k \in K^-} (2k-1) \;=\; \frac{l(l-\mu)}{2} \;=\; \frac{le}{2}.
+\]
+In particular $\SP(4,2)$ ($\mu = 3$) and $\SP(4,-1)$ ($\mu = -3$) have no solution.
+\end{lemma}
+
+\begin{proof}
+$\sum_w y_w = \sum \sigma(w) - \sum w + l\delta = l\delta$. On the other hand
+$K^+ \sqcup K^- = [1,l]$ and $\sum_w y_w = \sum_{K^+} k + \sum_{K^-}(1-k) = l(l+1)/2
+- \sum_{K^-}(2k-1)$. So $\sum_{K^-}(2k-1) = l(l+1)/2 - l\delta = l(l-\mu)/2$. At
+$(l,\mu) = (4,3)$ this is $2$; at $(4,-3)$ it is $14$, so
+$\sum_{K^+}(2k-1) = 16 - 14 = 2$. No set of distinct odd numbers sums to $2$.
+\end{proof}
+\status{proved here; not formalized. The formal development never needs these two
+cells: it uses literal sequences at $(d,l) = (6,4)$ and $(3,4)$ and the base $(7,3)$ in
+Theorem~\ref{thm:R}.}
+
+The two cells are $(d,l) = (6,4)$ and $(3,4)$. The first has no mirror-symmetric two-fold
+sequence at all (the same invariant, applied after folding a symmetric sequence at its
+centre, where no pair can be its own mirror image); it does have the sequence
+\[
+  (6,9,9,6,8,8,6,7,7,6,9,9,8,8,7,7).
+\]
+The second has a mirror-symmetric sequence that is
+not of the form of Lemma~S. Both are among the sixteen literal cells of
+\S\ref{sec:theorem}.
+
+\subsection*{Symmetry, the reversal, \texorpdfstring{$\tau_l$}{tau} and Lemma C}
+
+\begin{lemma}[inversion]\label{lem:inv}
+$\sigma$ solves $\SP(l,\delta)$ if and only if $\sigma^{-1}$ solves $\SP(l,1-\delta)$;
+in displacement terms $\mu \mapsto -\mu$.
+\end{lemma}
+
+\begin{proof}
+The graph of $\sigma^{-1}$ consists of the pairs $(t,w)$. The value of $(t,w)$ at
+$1-\delta$ is $w-t+1-\delta$, the mirror of $(w,t)$ at $\delta$, and its mirror at
+$1-\delta$ is $t-w+\delta$, the value of $(w,t)$ at $\delta$. So the union of values and
+mirrors is unchanged.
+\end{proof}
+\lean{L2.SP.inv, L2.mem\_image\_val\_swap, L2.mem\_image\_mir\_swap}
+
+A second proof uses the reflection $w \mapsto l+1-w$ on the targets with the labels
+$S$ and $D$ exchanged; it is a different bijection between the two solution sets.
+
+\begin{lemma}[the reversal and $\tau_l$]\label{lem:rev}
+The reversal $w \mapsto l+1-w$ solves $\SP(l,1)$ ($\mu = 1$) for every $l \ge 1$. For
+odd $l$, the permutation $\tau_l$ that reverses $[1,(l+1)/2]$ and $[(l+3)/2,l]$ has
+displacements $\tau_l(i) - i$ running through $[-(l-1)/2,(l-1)/2]$ once each and solves
+$\SP(l,(l+1)/2)$ ($\mu = l$); hence $\tau_l^{-1}$ solves $\mu = -l$.
+\end{lemma}
+
+\begin{proof}
+For the reversal, $y_w = l+2-2w$ runs through $l, l-2, \dots, 2-l$ and $1-y_w$ through
+the integers of the other parity in $[1-l,l-1]$. For $\tau_l$ with $h = (l+1)/2$: on
+$[1,h]$ the displacement is $h+1-2i$, running over $h-1, h-3, \dots, 1-h$; on
+$[h+1,l]$ it is $l+h+1-2i$, running over $h-2, h-4, \dots, 2-h$. Together they are
+$[1-h,h-1]$ once each, so $y = (\text{displacement}) + h$ runs through $[1,l]$ and the
+mirrors through $[1-l,0]$.
+\end{proof}
+\lean{L2.SP.reversal, L2.tauGraph, L2.SP.tau}
+
+\begin{lemma}[Lemma C, with inversion]\label{lem:C}
+Let $\sigma_0$ solve $\SP(n,\delta)$ with $\delta \ge 1$, and put $\mu = 2\delta-1$.
+Define a permutation $\sigma_1$ of $[1,n+\mu]$ by
+\[
+  \sigma_1(w) = \sigma_0(w) + \mu \ \ (1 \le w \le n), \qquad
+  \sigma_1(n+i) = \tau_\mu(i) \ \ (1 \le i \le \mu).
+\]
+Then $\sigma_1$ solves $\SP(n+\mu, 1-\delta)$, and $\sigma_1^{-1}$ solves
+$\SP(n+\mu,\delta)$.
+\end{lemma}
+
+\begin{proof}
+The images are $[\mu+1,n+\mu]$ and $[1,\mu]$, so $\sigma_1$ is a permutation. For
+$w \le n$, the value of $(w,\sigma_0(w)+\mu)$ at $1-\delta$ is
+$\sigma_0(w) - w + \mu + 1 - \delta = \sigma_0(w) - w + \delta$, the old value, and its
+mirror is likewise the old mirror; these contribute $[1-n,n]$. For the appended block,
+the value of $(n+i,\tau_\mu(i))$ at $1-\delta$ is $(\tau_\mu(i)-i) - n + 1 - \delta$;
+the displacements of $\tau_\mu$ are $[1-\delta,\delta-1]$ (Lemma~\ref{lem:rev}), so these
+values are $[1-(n+\mu),-n]$ and their mirrors $[n+1,n+\mu]$. The union is
+$[1-(n+\mu),n+\mu]$. Lemma~\ref{lem:inv} gives the last claim. No bound on $\mu$ in terms
+of $n$ is used.
+\end{proof}
+\lean{L2.cinvGraph, L2.SP.cinv\_aux, L2.SP.cinv}
+
+\begin{corollary}[descent]\label{cor:descent}
+If $\SP(n,\delta)$ has a solution and $\delta \ge 1$, then so has $\SP(n + k\mu,\delta)$
+for every $k \ge 0$, where $\mu = 2\delta-1$.
+\end{corollary}
+\lean{L2.SP.descend}
+
+In its first form Lemma~C carried $(l,\mu)$ to $(l+|\mu|,-\mu)$; composed with inversion
+it holds $\mu$ fixed and walks $l$ up the whole line of fixed $\mu$. An equivalent
+composite, written with the reflection, gives the same extension.
+
+\subsection*{Reduction to the band}
+
+\begin{theorem}[Theorem R]\label{thm:R}
+Assume the band theorem (Theorem~\ref{thm:band}): for every $l \ge 5$ and every odd
+$\mu$ with $l < 2\mu \le 2l$, $\SP(l,(\mu+1)/2)$ has a solution. Then $\SP(l,\delta)$ has
+a solution for every $l \ge 5$ and every $\delta$ with $-l \le 2\delta-1 \le l$.
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:inv} we may assume $\mu = 2\delta-1 \ge 1$. We use strong induction on
+$l$. If $\mu = 1$, use the reversal. If $l < 2\mu$, use the band theorem (it includes
+$\mu = l$, which is $\tau_l$). Otherwise $2\mu \le l$; put $l' = l - \mu \ge \mu$ and
+obtain a solution at $(l',\mu)$ as follows, then apply Lemma~\ref{lem:C}.
+\begin{itemize}
+\item If $l' = \mu$: $\tau_\mu$.
+\item If $\mu < l' < 2\mu$ and $l' \ge 5$: the band theorem.
+\item If $\mu < l' < 2\mu$ and $l' \le 4$: then $\mu$ is odd, $\mu \ge 3$ and
+  $\mu < l' \le 4$, so $(l',\mu) = (4,3)$ and $l = 7$. That cell is empty
+  (Lemma~\ref{lem:I}), and $(7,3)$ is supplied directly by
+  $\sigma = (6,4,7,3,5,2,1)$, whose values $|x_w|$ are $13,7,11,1,3,5,9$.
+\item If $l' \ge 2\mu$: then $l' \ge 6$, and the induction hypothesis applies.\qedhere
+\end{itemize}
+\end{proof}
+\lean{L2.cone\_sp, L2.sp\_7\_3 (L2/Cone.lean, L2/Literals.lean)}
+
+Equivalently, every cell descends along its line of fixed $\mu$ to the base
+$l_0 = \mu + ((l-\mu) \bmod \mu)$, which lies in $[\mu,2\mu)$, except that the base
+$(4,3)$ is replaced by $(7,3)$. The inversion and descent steps are proved in general;
+everything specific sits in the band.
+
+\section{The band}\label{sec:band}
+
+The band is the set of cells $(l,\mu)$ with $l \ge 5$, $\mu$ odd and
+$l/2 < \mu \le l$. All solutions used there are \emph{block reversals}.
+
+\subsection*{Shapes and the block lemma}
+A \emph{shape} is a list of block sizes $n_0,\dots,n_{b-1} \ge 1$ with sum $l$ and a
+\emph{target order}, a permutation of the block indices listing them in left-to-right
+target position. Block $i$ has source interval $[a_i+1,a_i+n_i]$ with
+$a_i = n_0 + \dots + n_{i-1}$ (sources cut left to right) and target interval
+$[c_i+1,c_i+n_i]$, where $c_i$ is the sum of the sizes of the blocks placed before $i$ in
+the target order; the block maps its source interval onto its target interval reversed:
+\[
+  \sigma(a_i + r) = c_i + n_i + 1 - r, \qquad 1 \le r \le n_i .
+\]
+In the formalization block $i$ is the finite set
+$\mathrm{row}(a_i,c_i,n_i) = \{(a_i+r,\, c_i+n_i+1-r) : 1 \le r \le n_i\}$ and a family is
+a union of rows.
+
+\begin{lemma}[block lemma]\label{lem:block}
+Put $M_i = 2(c_i - a_i) + \mu$. On block $i$,
+$x_{a_i+r} = M_i + 2n_i + 2 - 4r$ for $1 \le r \le n_i$: an arithmetic progression of
+step $4$ from $x_{\mathrm{lo}} = M_i - 2n_i + 2$ to $x_{\mathrm{hi}} = M_i + 2n_i - 2$.
+Consequently its classes form a run of one parity and step $2$:
+\begin{itemize}
+\item type P ($x_{\mathrm{lo}} \ge 1$): classes $(M_i-2n_i+3)/2, \dots, (M_i+2n_i-1)/2$;
+\item type N ($x_{\mathrm{hi}} \le -1$): classes $(-M_i-2n_i+3)/2, \dots,
+  (-M_i+2n_i-1)/2$;
+\item type C ($x_{\mathrm{lo}} \le -1$, $x_{\mathrm{hi}} \ge 1$): if
+  $x_{\mathrm{hi}} \equiv 1 \pmod 4$ (type C1), odd classes $1, \dots,
+  (x_{\mathrm{hi}}+1)/2$ and even classes $2, \dots, (1-x_{\mathrm{lo}})/2$; if
+  $x_{\mathrm{hi}} \equiv 3 \pmod 4$ (type C3), even classes $2, \dots,
+  (x_{\mathrm{hi}}+1)/2$ and odd classes $1, \dots, (1-x_{\mathrm{lo}})/2$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+$x_{a_i+r} = 2(c_i+n_i+1-r-a_i-r)+\mu$. The classes follow from $k = (|x|+1)/2$. In the
+set form of Definition~\ref{def:SP}, the values of the block run with step $2$ from
+$c_i - a_i + 1 - n_i + \delta$ to $c_i - a_i + n_i - 1 + \delta$, and the mirrors from
+$a_i - c_i + 2 - n_i - \delta$ to $a_i - c_i + n_i - \delta$.
+\end{proof}
+\lean{L2.row, L2.mem\_image\_val\_row, L2.mem\_image\_mir\_row, L2.mem\_image\_fst\_row,
+L2.mem\_image\_snd\_row (L2/Rows.lean)}
+
+\begin{lemma}[tiling]\label{lem:tiling}
+Suppose that the odd class runs of a shape, in increasing order, start at $1$, each
+starts $2$ above the end of the previous one, and the last ends at the largest odd number
+$\le l$; and that the even runs do the same from $2$ to the largest even number $\le l$.
+Then the shape solves $\SP(l,(\mu+1)/2)$.
+\end{lemma}
+
+\begin{proof}
+The classes $1,\dots,l$ then occur once each, and Lemma~\ref{lem:P} applies; the shape
+is a permutation because the blocks tile $[1,l]$ both in source order and in target
+order.
+\end{proof}
+
+A \emph{family} is a target order together with sizes $n_i$ that are affine functions of
+$(l,\mu)$ on a residue class, and a \emph{domain}. Its \emph{class table} lists, for each
+block, $n_i$, $M_i$, the type and the class run(s), and the order of the runs in the odd
+and in the even chain. A family is proved by four facts, each an identity or a linear
+inequality in $(l,\mu)$: (a) the sizes sum to $l$; (b) the chain relations (first start,
+abutment, last end) hold identically; (c) the domain is exactly the set where every
+$n_i \ge 1$ and every type condition holds; (d) on the residue class every size and run
+end is an integer and each C block has a constant residue of $x_{\mathrm{hi}}$ modulo $4$.
+Then at every cell of the domain Lemma~\ref{lem:tiling} applies.
+
+The class tables of all families are printed in Appendix~\ref{app:tables}. Each was
+derived symbolically from its sizes and target order, and each was re-derived by an
+independent implementation: for the even classes of $l$ on every residue sublattice
+modulo $32$, for the odd classes with exact linear programming proving the sign
+conditions over the domain and the exactness of the domain in both directions. The two
+checkers of \S\ref{sec:finite} transcribe every table independently. Every family was,
+in addition, built at every domain cell up to at least $l = 400$, and at domain-edge
+cells up to $l = 1001$ or beyond, and checked through Lemma~S to a two-fold sequence.
+
+\subsection*{The families}
+Table~\ref{tab:families} lists the families. There are twenty-one block-reversal
+families and $\tau_l$ (the two-block family TT), twenty-two in all.
+
+\begin{table}[ht]
+\centering\small
+\caption{The band families. Domains in full, with class tables, in
+Appendix~\ref{app:tables}.}\label{tab:families}
+\begin{tabular}{@{}lllcl@{}}
+\toprule
+family & $l$ & $\mu$ & blocks & range of $\mu$ \\
+\midrule
+FA & $\equiv 2 \ (4)$ & odd & 5 & $(l+4)/2 \le \mu \le (3l-2)/4$ \\
+FB2 & $\equiv 2 \ (8)$ & odd & 5 & $(3l+6)/4 \le \mu \le l-1$ \\
+FB6 & $\equiv 6 \ (8)$ & odd & 5 & $(3l+10)/4 \le \mu \le l-1$ \\
+F4 & $\equiv 6 \ (8)$ & $(3l+2)/4$ & 4 & a line \\
+A1 & $\equiv 0 \ (4)$ & $\equiv 1 \ (4)$ & 9 & $l/2+1 \le \mu \le 3l/4-2$ \\
+A3 & $\equiv 0 \ (4)$ & $\equiv 3 \ (4)$ & 9 & $l/2+1 \le \mu \le 3l/4-2$, $\mu \le l-5$ \\
+U1 & $\equiv 0 \ (4)$ & $\equiv 1 \ (8)$ & 8 & $(2l+11)/3 \le \mu \le l-3$ \\
+U3 & $\equiv 0 \ (4)$ & $\equiv 3 \ (8)$ & 9 & $(2l+1)/3 \le \mu \le l-3$ \\
+U5 & $\equiv 0 \ (4)$ & $\equiv 5 \ (8)$ & 8 & $(2l+7)/3 \le \mu \le l-3$ \\
+U7 & $\equiv 0 \ (4)$ & $\equiv 7 \ (8)$ & 9 & $(4l+11)/5 \le \mu \le l-1$ \\
+V & $\equiv 0 \ (4)$ & $\equiv 3 \ (4)$ & 9 & about $(2l+9)/3 \le \mu \le (4l+3)/5$ \\
+T & $\equiv 0 \ (4)$ & $\equiv 3 \ (8)$ & 7 & $(8l+11)/9 \le \mu \le l-1$ \\
+FA3 & $\equiv 1 \ (4)$ & $\equiv 3 \ (4)$ & 7 & $(l+5)/2 \le \mu \le l-6$ \\
+FA1 & $\equiv 1 \ (4)$ & $\equiv 1 \ (4)$ & 8 & $(l+5)/2 \le \mu \le l-4$ \\
+FT & $\equiv 1 \ (4)$ & $l-2$ & 6 & a line, $l \ge 9$ \\
+FL1 & $\equiv 1 \ (8)$ & $(l+1)/2$ & 7 & a line, $l \ge 17$ \\
+FL5 & $\equiv 5 \ (8)$ & $(l+1)/2$ & 6 & a line, $l \ge 13$ \\
+R3O & $\equiv 3 \ (4)$ & $\equiv 1 \ (4)$ & 7 & $(l+3)/2 \le \mu \le l-6$ \\
+R3E & $\equiv 3 \ (4)$ & $\equiv 3 \ (4)$ & 8 & $(l+7)/2 \le \mu \le l-4$ \\
+R3Q & $\equiv 3 \ (4)$ & $\equiv 3 \ (4)$ & 7 & $(l+3)/2 \le \mu \le (2l-1)/3$ \\
+R3T1 & $\equiv 3 \ (4)$ & $l-2$ & 6 & a line, $l \ge 7$ \\
+TT & odd & $l$ & 2 & $\tau_l$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The families for $l \equiv 0 \pmod 4$ were found by enumerating the block
+decompositions of computed solutions and solving, for each solution, the linear system
+that its pattern of abutting runs imposes on the sizes; a single solution then yields its
+whole two-parameter family. The other classes were found the same way from shape
+enumerations. Two structural features recur. In R3O, R3E, R3Q and all the
+$l \equiv 1 \pmod 4$ families a \emph{corner} block maps the last $(l-\mu)/2$ sources
+reversed onto the first $(l-\mu)/2$ targets, with $M = -l$, and is the only block of
+type N. In R3O, R3E and R3Q a \emph{double block}, two blocks consecutive in source and
+in target that share one $M$, covers the bottom run of both parities.
+
+\subsection*{Sporadic cells and bases}
+Table~\ref{tab:sporadic} lists the eleven explicit solutions. The eight cells with
+$l \equiv 0 \pmod 4$ are exactly the band cells of that class that lie in no family
+domain; $(5,3)$ and $(9,5)$ complete the class $l \equiv 1 \pmod 4$; $(7,3)$ is the base
+of Theorem~\ref{thm:R}.
+
+\begin{table}[ht]
+\centering\small
+\caption{The explicit solutions, $\sigma = (\sigma(1),\dots,\sigma(l))$, $\delta = (\mu+1)/2$.}
+\label{tab:sporadic}
+\begin{tabular}{@{}ccl@{}}
+\toprule
+$(l,\mu)$ & $\delta$ & $\sigma$ \\
+\midrule
+$(7,3)$ & 2 & $6,4,7,3,5,2,1$ \\
+$(5,3)$ & 2 & $3,5,2,4,1$ \\
+$(9,5)$ & 3 & $6,5,9,8,1,7,4,3,2$ \\
+$(8,5)$ & 3 & $2,6,8,7,5,4,3,1$ \\
+$(8,7)$ & 4 & $1,5,4,8,7,2,6,3$ \\
+$(12,9)$ & 5 & $7,6,5,1,12,11,10,4,9,8,3,2$ \\
+$(12,11)$ & 6 & $2,1,3,9,8,12,11,10,7,6,5,4$ \\
+$(16,11)$ & 6 & $1,4,12,11,10,16,15,14,13,9,8,7,6,5,3,2$ \\
+$(20,15)$ & 8 & $2,1,14,13,12,11,10,20,19,18,17,16,15,7,6,5,4,3,9,8$ \\
+$(24,17)$ & 9 & $2,1,17,16,15,14,13,12,24,23,22,21,20,19,18,9,8,7,6,5,4,3,11,10$ \\
+$(32,23)$ & 12 & $2,1,23,22,21,20,19,18,17,16,15,3,32,31,30,29,28,27,26,25,24,$\\
+ & & $11,10,9,8,7,6,5,4,14,13,12$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+\lean{L2.sp\_7\_3, L2.sp\_5\_3, L2.sp\_9\_5, L2.sp\_8\_5, L2.sp\_8\_7, L2.sp\_12\_9,
+L2.sp\_12\_11, L2.sp\_16\_11, L2.sp\_20\_15, L2.sp\_24\_17, L2.sp\_32\_23
+(L2/Literals.lean, each by kernel evaluation of a literal finite-set equality)}
+
+\subsection*{The coverage theorems}
+
+\begin{theorem}[$l \equiv 2 \pmod 4$]\label{thm:cov2}
+Every band cell with $l \equiv 2 \pmod 4$, $l \ge 6$, has a solution.
+\end{theorem}
+
+\begin{proof}
+Here $\mu = l$ is even and not in the band, so $\mu$ runs over the odd numbers in
+$(l/2,l)$. If $l = 8k+2$ ($k \ge 1$), these are $[4k+3,8k+1]$: FA covers
+$[4k+3,6k+1]$ and FB2 covers $[6k+3,8k+1]$. If $l = 8k+6$, they are $[4k+5,8k+5]$: FA
+covers $[4k+5,6k+3]$, F4 is $\mu = 6k+5$, and FB6 covers $[6k+7,8k+5]$. In each case the
+stated interval is the family's domain restricted to the class.
+\end{proof}
+\lean{L2.band\_r2 (L2/Band.lean), with L2.famFA\_sp, L2.famFB2\_sp, L2.famFB6\_sp,
+L2.famF4\_sp (L2/FamR2.lean)}
+
+\begin{theorem}[$l \equiv 1 \pmod 4$]\label{thm:cov1}
+Every band cell with $l \equiv 1 \pmod 4$, $l \ge 5$, has a solution.
+\end{theorem}
+
+\begin{proof}
+The odd $\mu$ in $(l/2,l]$ are $(l+1)/2$, which is odd, and then $(l+5)/2, \dots, l$,
+since $(l+3)/2$ is even. The case $\mu = (l+1)/2$ is FL1 if $l \equiv 1 \pmod 8$,
+$l \ge 17$; FL5 if $l \equiv 5 \pmod 8$, $l \ge 13$; and the bases $(5,3)$ and $(9,5)$
+at $l = 5$ and $9$. For $(l+5)/2 \le \mu \le l-4$: FA1 if $\mu \equiv 1 \pmod 4$; if
+$\mu \equiv 3 \pmod 4$, then $\mu \le l-6$ because $l - 4 \equiv 1 \pmod 4$, and FA3
+applies. The case $\mu = l-2$ is FT for $l \ge 9$ and the base $(5,3)$ at $l = 5$. The
+case $\mu = l$ is $\tau_l$.
+\end{proof}
+\lean{L2.band\_r1, with L2.famFA1\_sp, L2.famFA3\_sp, L2.famFT\_sp, L2.famFL1\_sp,
+L2.famFL5\_sp (L2/FamR1.lean)}
+
+\begin{theorem}[$l \equiv 3 \pmod 4$]\label{thm:cov3}
+Every band cell with $l \equiv 3 \pmod 4$, $l \ge 7$, has a solution.
+\end{theorem}
+
+\begin{proof}
+Write $l = 4q+3$ and $t = (l-\mu)/2$; the band is $0 \le t \le q$. The case $t = 0$ is
+$\tau_l$; $t = 1$ is R3T1; odd $t$ with $3 \le t \le q$ is R3O; even $t$ with
+$2 \le t \le q-1$ is R3E. What remains is $t = q$ with $q$ even, so $q \ge 2$; then
+$3t = 3q \ge 2q+2$, and R3Q applies (its domain in these coordinates is $t$ even,
+$2q+2 \le 3t$, $t \le q$).
+\end{proof}
+\lean{L2.band\_r3, with L2.famR3O\_sp, L2.famR3E\_sp, L2.famR3Q\_sp, L2.famR3T1\_sp
+(L2/FamR3.lean)}
+
+\begin{theorem}[$l \equiv 0 \pmod 4$]\label{thm:cov0}
+Every band cell with $l \equiv 0 \pmod 4$, $l \ge 8$, has a solution.
+\end{theorem}
+
+\begin{proof}
+The band consists of the odd $\mu$ with $l/2 + 1 \le \mu \le l-1$ ($l/2$ is even). For
+$l \ge 68$ use the \emph{main intervals}
+\[
+\begin{array}{llll}
+\text{A1, A3:} & [l/2+1,\ 3l/4-2], & \text{U1:} & [(2l+11)/3,\ l-3],\\
+\text{U3:} & [(2l+1)/3,\ l-3], & \text{U5:} & [(2l+7)/3,\ l-3],\\
+\text{U7:} & [(4l+11)/5,\ l-1], & \text{V:} & [(2l+9)/3,\ (4l+3)/5],\\
+\text{T:} & [(8l+11)/9,\ l-1]. & &
+\end{array}
+\]
+Each domain inequality is linear and holds at both ends of the main interval for
+$l \ge 68$, so every $\mu$ of the family's class in its main interval lies in its domain.
+Split by $\mu \bmod 8$.
+\begin{itemize}
+\item $\mu \equiv 1$ or $5$: A1, then U1 or U5, up to $l-3$. The intervals overlap
+  because $(2l+11)/3 \le 3l/4 - 2$ iff $l \ge 68$ and $(2l+7)/3 \le 3l/4-2$ iff
+  $l \ge 52$; and $l - 1$ is never $\equiv 1$ or $5 \pmod 8$.
+\item $\mu \equiv 3$: A3, then U3 ($(2l+1)/3 \le 3l/4 - 2$ iff $l \ge 28$) up to $l-3$;
+  the cell $\mu = l-1$ (when $l \equiv 4 \pmod 8$) is in T, since
+  $(8l+11)/9 \le l-1$ iff $l \ge 20$.
+\item $\mu \equiv 7$: A3, then V ($(2l+9)/3 \le 3l/4-2$ iff $l \ge 60$), then U7 up to
+  $l-1$. A cell strictly between $(4l+3)/5$ and $(4l+11)/5$ would have
+  $5\mu - 4l \in [4,10]$; but $5\mu - 4l \equiv 3 \pmod 8$, since $\mu \equiv 7 \pmod 8$
+  and $4l \equiv 0 \pmod{16}$, so there is none.
+\end{itemize}
+For $8 \le l \le 64$ every band cell was checked against the family domains: all lie in
+some domain except $(l,\mu) = (8,5)$, $(8,7)$, $(12,9)$, $(12,11)$, $(16,11)$,
+$(20,15)$, $(24,17)$ and $(32,23)$, which are the sporadic cells of
+Table~\ref{tab:sporadic}. This finite part is a decision of linear arithmetic for each
+of the fifteen values $l/4 \in [2,16]$, and the formal proof makes it exactly so.
+\end{proof}
+\lean{L2.band\_r0, with L2.famA1\_sp, L2.famA3\_sp, L2.famU1\_sp, L2.famU3\_sp
+(L2/FamR0a.lean) and L2.famU5\_sp, L2.famU7\_sp, L2.famV\_sp, L2.famT\_sp
+(L2/FamR0b.lean)}
+
+The coverage in this class was also re-proved for every $l$, independently, by exact
+lattice geometry (elimination with residue tightening and enumeration of the bounded
+remainder), with the same eight sporadic cells as the only uncovered ones.
+
+\begin{theorem}[the band]\label{thm:band}
+For every $l \ge 5$ and every odd $\mu$ with $l/2 < \mu \le l$, $\SP(l,(\mu+1)/2)$ has
+a solution.
+\end{theorem}
+
+\begin{proof}
+Split by $l \bmod 4$ and apply Theorems~\ref{thm:cov2}, \ref{thm:cov1},
+\ref{thm:cov3} and \ref{thm:cov0}; for even $l$ the band stops at $\mu = l-1$.
+\end{proof}
+\lean{L2.band\_sp (L2/Band.lean)}
+
+Together with Theorem~\ref{thm:R}, Theorem~\ref{thm:band} gives $\SP(l,\delta)$ on the
+whole cone $-l \le 2\delta-1 \le l$ for every $l \ge 5$.
+
+\section{Proof of Theorem A}\label{sec:theorem}
+
+\begin{proof}[Proof of Theorem~A]
+Necessity is Theorem~\ref{thm:nec} at $m = 2$: $2d + l \le 4l+1$. For sufficiency we
+prove by strong induction on $l$ that every in-bound cell $(d,l)$ has a two-colour
+certificate, and conclude by Lemma~\ref{lem:bridge}.
+\begin{enumerate}
+\item If $l \le 4$, the cell is one of the sixteen in-bound cells of
+  Table~\ref{tab:literals}, each an explicit sequence.
+\item If $l \ge 5$ and $l \ge 2d$, Lemma~\ref{lem:split} splits it with
+  $l_1 = \lfloor(2d+1)/3\rfloor$ into two in-bound cells of smaller order; the induction
+  hypothesis gives both, and Lemma~\ref{lem:concat} joins them.
+\item If $l \ge 5$ and $l \le 2d-1$, put $\delta = d - l$ and $\mu = 2\delta - 1$. Then
+  $\mu \le l$ because the cell is in-bound, and $\mu \ge -l$ because $l \le 2d-1$.
+  Theorem~\ref{thm:R} with Theorem~\ref{thm:band} gives a solution of $\SP(l,\delta)$,
+  and Lemma~\ref{lem:S} gives a certificate for $(d,l) = (l+\delta,l)$.\qedhere
+\end{enumerate}
+\end{proof}
+\lean{Langford.twoFold\_exists\_iff, L2.twoFold\_all, L2.twoFold\_exists\_iff\_internal
+(L2/Main.lean)}
+
+\begin{table}[ht]
+\centering\small
+\caption{The sixteen in-bound cells with $l \le 4$: one two-fold sequence each, as its
+$2l$ pairs of positions.}\label{tab:literals}
+\begin{tabular}{@{}cl@{}}
+\toprule
+$(d,l)$ & pairs \\
+\midrule
+$(1,1)$ & $[1,2],[3,4]$ \\
+$(2,1)$ & $[1,3],[2,4]$ \\
+$(1,2)$ & $[1,2],[3,5],[4,6],[7,8]$ \\
+$(2,2)$ & $[1,3],[2,5],[4,7],[6,8]$ \\
+$(3,2)$ & $[1,4],[2,6],[3,7],[5,8]$ \\
+$(1,3)$ & $[1,2],[3,4],[5,7],[6,9],[8,11],[10,12]$ \\
+$(2,3)$ & $[1,4],[2,6],[3,7],[5,8],[9,11],[10,12]$ \\
+$(3,3)$ & $[1,4],[2,6],[3,8],[5,10],[7,11],[9,12]$ \\
+$(4,3)$ & $[1,5],[2,7],[3,9],[4,10],[6,11],[8,12]$ \\
+$(5,3)$ & $[1,8],[2,7],[3,9],[4,10],[5,12],[6,11]$ \\
+$(1,4)$ & $[1,4],[2,3],[5,7],[6,10],[8,11],[9,13],[12,14],[15,16]$ \\
+$(2,4)$ & $[1,3],[2,7],[4,8],[5,9],[6,11],[10,13],[12,15],[14,16]$ \\
+$(3,4)$ & $[1,5],[2,6],[3,8],[4,9],[7,13],[10,16],[11,14],[12,15]$ \\
+$(4,4)$ & $[1,5],[2,7],[3,9],[4,11],[6,13],[8,14],[10,15],[12,16]$ \\
+$(5,4)$ & $[1,6],[2,8],[3,10],[4,12],[5,13],[7,14],[9,15],[11,16]$ \\
+$(6,4)$ & $[1,7],[2,11],[3,10],[4,12],[5,13],[6,15],[8,14],[9,16]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Multiplicity at least three}\label{sec:mge3}
+
+\begin{proposition}\label{prop:sixthree}
+There is no three-fold Langford sequence of order $3$ and defect $6$, although
+$(m,d,l) = (3,6,3)$ satisfies both conditions of Theorem~\ref{thm:nec}.
+\end{proposition}
+
+\begin{proof}
+The positions are $[1,18]$ and the differences are $6$, $7$, $8$, three pairs each.
+A position $x \le 6$ is a left end, since $x - 6 < 1$; a position $x \ge 13$ is a right
+end, since $x + 6 > 18$. As in the proof of Theorem~\ref{thm:nec},
+$\sum R - \sum L = 3(6+7+8) = 63$ and $\sum R + \sum L = 171$, so $\sum L = 54$. The
+left ends are $[1,6]$, with sum $21$, and three positions of $[7,12]$ with sum $33$;
+since $10+11+12 = 33$ is the largest possible such sum, they are $10, 11, 12$. Now $12$
+pairs only with $12 + 6 = 18$; $11$ pairs with $17$ or $18$, hence with $17$; $10$ pairs
+with $16$, $17$ or $18$, hence with $16$. These are three pairs of difference $6$. But
+$7$ is a right end, and its partner $7 - p$ with $p \ge 6$ is a left end in $[1,6]$, so
+$7 - p = 1$ and $p = 6$: a fourth pair of difference $6$.
+\end{proof}
+\lean{Langford.not\_threeFold\_six\_three, L2.not\_threeFold\_six\_three\_internal
+(L2/SixThree.lean)}
+
+The conditions hold at $(3,6,3)$: $2 \cdot 6 + 3 = 15 \le 19$ and
+$3(12+3+1) = 48 \equiv 0 \pmod 4$.
+
+\begin{theorem}[counting and parity do not suffice]\label{thm:notsuff}
+For every $m \ge 3$ there are $d, l \ge 1$ satisfying the conditions of
+Theorem~\ref{thm:nec} with no $m$-fold Langford sequence of order $l$ and defect $d$.
+\end{theorem}
+
+\begin{proof}
+For $m = 3$ take $(d,l) = (6,3)$ (Proposition~\ref{prop:sixthree}). For even $m \ge 4$
+take $(m-1,1)$: it is in-bound, parity is vacuous, and $m-1 \nmid m$. For odd
+$m \ge 5$ take $(m-2,1)$: it is in-bound, $1 \cdot (2(m-2)+2) = 2m - 2 \equiv 0
+\pmod 4$, and $m - 2 \nmid m$ because $m - 2 \mid m$ would force $m - 2 \mid 2$.
+Theorem~\ref{thm:orderone} shows the last two cells empty.
+\end{proof}
+\lean{Langford.not\_sufficient, L2.not\_sufficient\_internal (L2/OrderOne.lean)}
+
+Among other small witnesses, $(7,4)$ at $m = 3$ is empty by Lemma~\ref{lem:Z} below and
+$(3,1)$ at $m = 4$ by Theorem~\ref{thm:orderone}.
+
+\begin{lemma}[an emptiness lemma]\label{lem:Z}
+Let $m \ge 2$. If
+\[
+  \frac{ml}{2} \;<\; d \;<\; \frac{m(2ml-2l+1)}{3m-2},
+\]
+then no $m$-fold Langford sequence of order $l$ and defect $d$ exists.
+\end{lemma}
+
+\begin{proof}
+Put $N = 2ml$, $A = [1,d]$ and $C = [N-d+1,N]$; these are disjoint since $d \le ml$.
+Every position of $A$ is a left end and every position of $C$ a right end, and no pair
+lies inside $A$ or inside $C$, since every difference is at least $d$. A pair from $A$ to
+$C$ has difference at least $N - 2d + 1$, and at most
+$t = \max(0, 3d + l - 1 - N)$ values $p \in [d,d+l-1]$ are that large; so at most $mt$
+pairs join $A$ to $C$, and at least $2d - 2mt$ positions of $A \cup C$ are paired with
+distinct positions of $B = [d+1,N-d]$. Hence $N - 2d \ge 2d - 2mt$, that is
+$4d - N \le 2mt$. If $t = 0$ this contradicts $d > ml/2$, which says $4d - N > 0$. If
+$t > 0$ it contradicts $d < m(2ml-2l+1)/(3m-2)$, which after expanding says exactly
+$4d - N > 2m(3d+l-1-N) = 2mt$.
+\end{proof}
+\status{proved here; not formalized.}
+
+The interval of Lemma~\ref{lem:Z} has length
+$ml(m-2)/(2(3m-2)) + m/(3m-2)$: less than one at $m = 2$, where it contains no integer
+(as Theorem~A requires), $3l/14 + 3/7$ at $m = 3$, $2l/5 + 2/5$ at $m = 4$, and about
+$ml/6$ only as $m$ grows.
+
+\subsection*{Computations for \texorpdfstring{$m \ge 3$}{m >= 3}}
+Every in-bound cell has been decided for $m = 3$ with $l \le 24$, $m = 4$ with $l \le 20$,
+and $m = 5, 6$ with $l \le 12$, each by a checked sequence, an exact integer Farkas
+certificate (\S\ref{sec:lp}), or the parity condition. In every row there is an empty
+band of cells satisfying both conditions of Theorem~\ref{thm:nec}: at $m = 3$ it is
+$d \in [11,18]$ at $l = 8$, $[15,28]$ at $l = 12$ and $[30,55]$ at $l = 24$; at $m = 4$,
+$[14,27]$ at $l = 8$ and $[34,67]$ at $l = 20$. The last realized $d$ below the band is
+about $1.2l$, $1.64l$, $2.1l$ and $2.6l$ for $m = 3,4,5,6$.
+\status{checked on the stated ranges; every witness and every certificate is verified
+by a standard-library checker with exact arithmetic; not formalized.}
+
+\section{The linear-programming picture for \texorpdfstring{$m \ge 3$}{m >= 3}}\label{sec:lp}
+
+Nothing in this section is formalized; it is proved here, and its proofs and finite
+checks were re-derived independently. Fix $(m,d,l)$ and $N = 2ml$.
+
+\begin{lemma}[Farkas certificates]\label{lem:farkas}
+Let $y_1,\dots,y_N$ and $z_d,\dots,z_{d+l-1}$ be integers with
+$y_a + y_{a+p} + z_p \ge 0$ whenever $1 \le a < a + p \le N$ and $p \in [d,d+l-1]$. If
+$\sum_x y_x + m \sum_p z_p < 0$, the cell has no $m$-fold sequence, and its linear
+relaxation (fractional pairings) is infeasible.
+\end{lemma}
+
+\begin{proof}
+Sum the inequality over the $ml$ pairs of a sequence, or over a fractional pairing with
+its weights: every position is covered once and every $p$ exactly $m$ times.
+\end{proof}
+
+The counting bound is the certificate $y_x = |2x - N - 1|$, $z_p = -2p$, whose total is
+$ml\bigl((2m-1)l - 2d + 1\bigr)$.
+
+\begin{lemma}[a family of certificates]\label{lem:familyP}
+For an integer $T \ge 1$ and a sign $s = \pm 1$, put $c = (N+1)/2$,
+$W_T(u) = T/2 - \operatorname{dist}(u, 2T\Z)$, $g(x) = 2sW_T(x - c)$ and
+$z_p = 2|p - T|$. Then $g$ is integer-valued and $y = g$, $z$ satisfy the inequalities of
+Lemma~\ref{lem:farkas}. Moreover
+\[
+  \Phi_s(T) \;=\; \sum_x g(x) + m\sum_p z_p
+  \;=\; 2s\,\sigma_2(ml \bmod 2T) + 2m \sum_{p=d}^{d+l-1} |p - T|,
+\]
+where $\sigma_2(r) = r(T-r)$ for $0 \le r \le T$ and $(r-T)(r-2T)$ for
+$T \le r \le 2T$. The counting bound is the member $T \ge \max(ml, d+l-1)$, $s = -1$,
+with $\Phi = ml((2m-1)l - 2d + 1)$.
+\end{lemma}
+
+\begin{proof}
+$2W_T(x-c) = T - \operatorname{dist}(2x-N-1, 4T\Z)$ is an integer. $W_T$ is
+$1$-Lipschitz and $W_T(u+T) = -W_T(u)$, so with $u = a - c$,
+$g(a) + g(a+p) = 2s[W_T(u) - W_T(u+p-T)] \ge -2|p-T|$. For the closed form, $g$ is
+symmetric about $c$, so $\sum g = 4s\sum_{k=1}^{ml} W_T(k-\tfrac12)$; the sum over a
+period $2T$ vanishes and the partial sums are $r(T-r)/2$ and $(r-T)(r-2T)/2$.
+\end{proof}
+
+\begin{theorem}[explicit empty bands]\label{thm:bands}
+Let $m \ge 3$, $j \ge 1$ with $J = j(j+1) < m$, and $l \ge 2$. Suppose $d$ is an integer
+with
+\[
+  \bigl|\,2Jd - ((2j+1)m - J)l - J\,\bigr| \;<\;
+  \sqrt{(m^2-J^2)\,l^2 - J^2(J+m)/m},
+\]
+let $T_0$ be an integer nearest to $T^* = m((2j+2)l + 2d - 1)/(2(J+m))$, and suppose
+$d \le T_0 \le d+l-1$ and $jT_0 \le ml \le (j+1)T_0$. Then the cell $(m,d,l)$ is empty,
+certified by Lemma~\ref{lem:familyP} with $T = T_0$ and $s = (-1)^{j+1}$. For $j = 1$ the
+side conditions on $T_0$ follow from $2d \ge (m-2)l + m + 3$.
+\end{theorem}
+
+\begin{proof}[Proof outline]
+In the regime $jT \le ml \le (j+1)T$, $d \le T \le d+l-1$ one has $\Phi = 2F_j(T)$ with
+$F_j(T) = (J+m)T^2 - m((2j+2)l + 2d - 1)T + m^2l^2 + md^2 + m(l-1)d + m(l^2-l)/2$.
+Rounding $T^*$ to $T_0$ costs at most $(J+m)/4$. Writing $4(J+m)C - b^2 = mQ_j(d)$ for the
+constant $C$ and the linear coefficient $b$ of $F_j$, with
+$Q_j(d) = 4Jd^2 - 4((2j+1)ml - Jl + J)d + 4m^2l^2 - (4j+2)ml^2 + 2Jl^2 + (4j+2)ml - 2Jl
+- m$, whose discriminant is $16[(m^2-J^2)l^2 + J(J+m)]$, the hypothesis is equivalent
+to $mQ_j(d) + (J+m)^2 < 0$, whence $F_j(T_0) < 0$.
+\end{proof}
+\status{proved here (every algebraic identity also confirmed symbolically); checked
+exactly on $3 \le m \le 30$, $2 \le l \le 200$; for $j \ge 2$ the regime conditions are
+hypotheses, observed to hold at every tested cell; not formalized.}
+
+\begin{lemma}[the outer bound]\label{lem:outer}
+In the regime $jT \le ml \le (j+1)T$, $d\Phi/dT = 4(j+1)(jT - ml) \le 0$ for $T < d$ and
+$d\Phi/dT = 4j((j+1)T - ml) \ge 0$ for $T > d + l - 1$. So within a regime the members
+with $T \in [d,d+l-1]$, where $\Phi = 2F_j(T)$, dominate the others whenever that window
+meets the regime; and if such a member certifies the cell, then $\min_{T \in \mathbb{R}}
+F_j(T) < 0$, that is $Q_j(d) < 0$: $d$ lies strictly between the \emph{outer roots}
+$[(2j+1)ml - Jl + J \mp \sqrt{(m^2-J^2)l^2 + J(J+m)}]/(2J)$.
+\end{lemma}
+\status{proved here; not formalized. Every one of the $14{,}975$ cells certified by the
+family in the ranges scanned lies strictly inside the outer interval of some $j$ with
+positive discriminant (checked).}
+
+Over $m \le 30$, $l \le 200$ the outer radius exceeds the inner radius of
+Theorem~\ref{thm:bands} by at most $0.725$. Letting $l \to \infty$:
+
+\begin{corollary}[band edges for large $l$]\label{cor:edges}
+For each $j \ge 1$ with $J = j(j+1) < m$, the family of Lemma~\ref{lem:familyP}
+certifies an empty band in row $l$ whose edges satisfy
+\[
+  \frac{d}{l} \;\longrightarrow\; \frac{(2j+1)m - J \mp \sqrt{m^2-J^2}}{2J}
+  \qquad (l \to \infty).
+\]
+\end{corollary}
+\status{proved here from Theorem~\ref{thm:bands} and Lemma~\ref{lem:outer}, as a
+statement for large $l$; not formalized.}
+
+Table~\ref{tab:edges} gives the limits for small $m$. The first band ends below the
+tight line at excess $e/l \to (m - \sqrt{m^2-4})/2$, where $e = (2m-1)l - 2d + 1$; this
+is $0.382$, $0.268$, $0.209$, $0.172$ for $m = 3,\dots,6$. The second band ($j = 2$)
+exists from $m = 7$ on and the third from $m = 13$ on.
+
+\begin{table}[ht]
+\centering\small
+\caption{Limits of $d/l$ at the edges of the empty band $j$ (Corollary~\ref{cor:edges}).}
+\label{tab:edges}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+$m$ & $j = 1$ & $j = 2$ & $j = 3$ \\
+\midrule
+3 & $(1.191,\ 2.309)$ & --- & --- \\
+4 & $(1.634,\ 3.366)$ & --- & --- \\
+5 & $(2.104,\ 4.396)$ & --- & --- \\
+6 & $(2.586,\ 5.414)$ & --- & --- \\
+7 & $(3.073,\ 6.427)$ & $(2.116,\ 2.717)$ & --- \\
+8 & $(3.564,\ 7.436)$ & $(2.392,\ 3.274)$ & --- \\
+13 & & $(3.956,\ 5.878)$ & $(3.083,\ 3.500)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The gap between consecutive bands grows linearly in $l$, roughly as
+$(j+1)^2 l/(2m)$ for large $m$. At small $l$ further bands appear: the outer interval of
+a $j$ with $J > m$ is nonempty exactly when $l^2 < J/(J-m)$, which accounts for eight
+certified cells in the row $l = 1$ outside every $J < m$ interval, such as
+$(m,d,l) = (5,2,1)$. At $m = J$ ($m = 2, 6, 12, 20$) a band touches zero at
+$d \in \{jl, jl+1\}$, with $\min\Phi = 0$ (checked for $l \le 30$).
+
+On every row decided in \S\ref{sec:mge3} and on three further complete rows, the band
+certified by this family equals the set of cells certified by general Farkas
+certificates (Lemma~\ref{lem:farkas}): $1{,}219$ cells, none of them realized. All $2{,}840$ emptiness certificates produced in the
+computations were re-verified by independent code, and every certified cell with
+$N \le 30$ was confirmed empty by exhaustive search.
+
+\begin{proposition}[no obstruction of this kind at $m = 2$]\label{prop:m2}
+For $m = 2$, every in-bound $(d,l)$, every integer $T \ge 1$ and both signs,
+$\Phi_s(T) \ge 0$. Equality holds only for $s = +1$ with $d = l$, $2T - 3l \in \{-1,0\}$
+or $d = l+1$, $2T - 3l \in \{0,1\}$; for $s = -1$ on the tight line with
+$T \ge \max(2l, d+l-1)$; and in two degenerate cases ($T = 1$ at $(d,l) = (1,1)$, and
+$(d,l,T,s) = (2,1,2,+1)$). So within this family the counting bound is the only member
+that ever refutes a cell at $m = 2$.
+\end{proposition}
+
+\begin{proof}[Proof outline]
+With $ml = 2l$: for $T \ge 2l$, $\sigma_2 = 2l(T-2l) \ge 0$, so $s = +1$ is harmless, and
+for $s = -1$, $|p-T| \ge T-p$ gives $\Phi \ge 2l(3l-2d+1) \ge 0$. For $l \le T < 2l$,
+$\sigma_2 \le 0$ makes $s = -1$ harmless for $l \ge 2$, and for $s = +1$, $T = l+t$,
+$\Phi = 4[\sum_p|p-T| - (l-t)t] \ge 0$ because the distance sum from an integer to $l$
+consecutive integers is at least $\lfloor l^2/4 \rfloor$. For $T < l$,
+$|\sigma_2| \le T^2/4$ and $\Phi > 0$.
+\end{proof}
+\status{proved here; checked exactly for $l \le 80$, $T \le 8l$, both signs, by two
+implementations; not formalized. It concerns this centred, integer-$T$ family only.}
+
+\begin{lemma}[blow-up]\label{lem:blowup}
+If an $m$-fold Langford sequence of order $l_0$ and defect $d_0$ exists, then for every
+odd $k$ so does one of order $kl_0$ and defect $kd_0 - (k-1)/2$.
+\end{lemma}
+
+\begin{proof}
+Replace position $a$ by the block $[k(a-1)+1,ka]$, and each pair $(a,b)$ by the $k$ pairs
+$(k(a-1)+i,\ k(b-1)+\tau_k(i))$, $i \in [1,k]$. The displacements of $\tau_k$ are
+$[-(k-1)/2,(k-1)/2]$ once each, so a difference $p$ becomes the $k$ differences
+$kp + t$, $|t| \le (k-1)/2$, and consecutive $p$ tile
+$[kd_0 - (k-1)/2,\ kd_0 - (k-1)/2 + kl_0 - 1]$, each value $m$ times.
+\end{proof}
+\status{proved here; checked on $264$ instances; not formalized. The same holds for
+cells with feasible relaxation. We have not checked the literature for this
+multiplication.}
+
+\subsection*{Realized cells between empty bands}
+For $m \ge 7$ a row can contain two empty bands with realized cells between them. In the
+row $m = 7$, $l = 12$ the cells $d = 33$ and $d = 38$ are empty by exact certificates
+while $d = 34,\dots,37$ are realized. Such islands are witnessed, each by a checked
+sequence flanked by certified empty cells in its row, for
+$m \in \{7,8,9,11,13,14,15\}$ (for instance $(m,d,l) = (8,34,10)$, $(9,12,3)$,
+$(11,20,4)$, $(13,15,4)$, $(14,21,5)$, $(15,18,4)$); and for every even $m \ge 8$ by
+Theorem~\ref{thm:orderone} in the row $l = 1$, where $d = m/2$ is realized while
+$d = m/2 - 1$ and $d = m/2 + 1$ are not. For other odd $m$ they are not yet witnessed.
+For $m \le 6$ the certified band is a single interval in every row checked ($l \le 60$).
+
+\begin{conjecture}[C($m$)]\label{conj:C}
+For every $m \ge 3$, an $m$-fold Langford sequence of order $l$ and defect $d$ exists if
+and only if the linear relaxation of the cell is feasible and, for odd $m$, the parity
+condition holds.
+\end{conjecture}
+
+It holds on every decided cell of \S\ref{sec:mge3} and on the islands above. A stronger
+guess is that the certificates of Lemma~\ref{lem:familyP} are the only binding ones, so
+that the relaxation is infeasible exactly when some $\Phi_s(T) < 0$; they agree on all
+$1{,}219$ band cells of the decided rows and, in floating point, on $635$ further cells
+with $m \le 14$. With Proposition~\ref{prop:m2}, that guess would make the relaxation
+feasible at every in-bound cell for $m = 2$, which Theorem~A implies anyway. No closed
+form for the edges of the true empty set is known, and C($m$) is open.
+
+\section{The finite data and the formal development}\label{sec:finite}
+
+\subsection*{The end-to-end certificate}
+The folder \texttt{note/} of the repository \cite{l2lean} holds two standard-library
+Python checkers, \texttt{verify.py} and \texttt{verify\_second.py} (together,
+certificate~0033). Each rebuilds, for every $1 \le l \le L$ and every
+$1 \le d \le \lfloor(3l+1)/2\rfloor$, a two-fold sequence by the constructions of this
+note alone --- concatenation for splittable cells; for the rest, Lemma~S applied to a
+permutation obtained by the reversal, $\tau_l$, the descent of Lemma~\ref{lem:C}, or a
+band family, with the bases and sporadic cells --- and checks it from the definition
+(the positions partition $[1,4l]$; each difference in $[d,d+l-1]$ occurs exactly
+twice). The two scripts were written independently, share no code, and transcribe every
+family table separately. The first also checks each permutation in displacement form
+before lifting, runs every family over its whole domain with $63$ mutated families
+rejected, and re-finds the eight sporadic permutations by its own exact search; the
+second checks the domain of every family to $l = 160$, compares its closed-form $k$-step
+descent with the iterated one on $2{,}701$ chains, and rejects $16$ mutated sequences.
+Both also check the $m$-fold tight line for $m \le 6$ and odd $l \le 41$.
+
+The first script ran to $L = 1000$ ($751{,}000$ cells) and the second to $L = 600$, with
+no failure; both reproduce at $L = 300$ in about fifteen seconds with
+\texttt{python verify.py 300} and \texttt{python verify\_second.py 300}. At $L = 300$
+the $67{,}800$ in-bound cells are reached by $25{,}331$ concatenations, $600$ reversals,
+$150$ applications of $\tau_l$, $19{,}665$ band-family cells, $22{,}052$ descent chains
+and $2$ literal sequences (the cells $(d,l) = (3,4)$ and $(6,4)$, where $\SP$ is empty);
+the route counts of the two scripts agree class by class up to the choice between a
+literal and a construction at $l \le 4$ and the routing of $(7,3)$.
+
+The finite data establish nothing about all $l$: the certificate is the finite witness of
+the theorem, checked to $l = 1000$ by one implementation and to $l = 600$ by a second,
+while the statement for all $l$ rests on the class tables, Theorem~R and the induction,
+and is the formalized Theorem~A.
+
+\subsection*{Other computations}
+Independently of the constructions, every in-bound cell at $m = 2$ with $l \le 54$ was
+realized by a constraint solver or by concatenation, and the cells with $l \le 14$ by a
+second, exhaustive engine; and the numbers of two-fold
+Skolem sequences ($d = 1$) of orders $1,\dots,8$ were recomputed as $1$, $3$, $12$,
+$186$, $3212$, $79238$, $2770026$, $127860956$, in agreement with Gr\"uttm\"uller, Rees
+and Shalaby \cite{GRS} as tabulated in \cite{Alr}. Before the band families were found,
+the signed-permutation problem was solved by exact cover at every cell with
+$l \le 100$ except the two empty cells of Lemma~\ref{lem:I}.
+
+\subsection*{The formal development}
+The repository \cite{l2lean} pins Lean \texttt{v4.35.0-rc2} and the Mathlib tag of the
+same name by a committed manifest. \texttt{Challenge.lean} states the definition and the
+six theorems of \S\ref{sec:intro}; \texttt{Solution.lean} restates them byte for byte and
+closes each with the internal theorem of \texttt{L2/Main.lean}. The library \texttt{L2}
+has these modules, in dependency order:
+\begin{itemize}\setlength{\itemsep}{0pt plus 1pt}
+\item \texttt{Defs} --- the verbatim copy of \texttt{Langford.IsLangford};
+\item \texttt{Pairs} --- endpoints, differences and translations of finite sets of
+  pairs, ported from \cite{gnlean};
+\item \texttt{Rows} --- the row of a block reversal, its values and mirrors
+  (Lemma~\ref{lem:block});
+\item \texttt{SP} --- $\SP$ in graph form, inversion, the reversal, $\tau_l$, Lemma~C
+  and the descent (\S\ref{sec:reduction});
+\item \texttt{FamR0a}, \texttt{FamR0b}, \texttt{FamR1}, \texttt{FamR2}, \texttt{FamR3}
+  --- one definition and one theorem per family, each the class table of
+  Appendix~\ref{app:tables} with the audited domain as hypotheses;
+\item \texttt{Literals} --- the eleven permutations of Table~\ref{tab:sporadic} and the
+  sixteen cells of Table~\ref{tab:literals};
+\item \texttt{Band}, \texttt{Cone} --- Theorems~\ref{thm:cov2}--\ref{thm:band} and
+  Theorem~\ref{thm:R};
+\item \texttt{Multi}, \texttt{LemmaS}, \texttt{Bridge} --- certificates, concatenation,
+  juxtaposition, Lemma~S and Lemma~\ref{lem:bridge};
+\item \texttt{Tight}, \texttt{Necessity}, \texttt{OrderOne}, \texttt{SixThree} ---
+  Theorems~\ref{thm:tight}, \ref{thm:nec}, \ref{thm:orderone}, \ref{thm:notsuff} and
+  Proposition~\ref{prop:sixthree};
+\item \texttt{Main} --- the induction of \S\ref{sec:theorem} and the internal theorems.
+\end{itemize}
+Internals work over $\Z$, where linear arithmetic with negative slopes is decided by
+Lean's \texttt{omega}; the pinned statements are over $\mathbb{N}$, and the casts happen
+once, in \texttt{Bridge} and \texttt{Main}. Finite facts --- the eleven permutations and
+the sixteen literal cells --- are equalities of literal finite sets decided by the
+kernel; there is no search inside the proofs.
+A build-time audit (\texttt{Test/Axioms.lean}) walks every declaration of the development
+--- 1{,}475 constants in about 4{,}500 lines of Lean --- and admits only the axioms
+\texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}; a source guard (\texttt{scripts/check-source.py}) rejects
+\texttt{sorry}, \texttt{axiom}, \texttt{native\_decide}, \texttt{implemented\_by},
+\texttt{extern} and the kernel-bypass options. A standard-library script,
+\texttt{scripts/check\_langford.py}, recomputes the finite content independently of
+Lean: the sixteen literal cells and the eleven permutations from the definitions, every
+family at every domain cell with $l \le 120$ lifted through Lemma~S, the $m$-fold tight
+line for $m \le 6$ and odd $l \le 21$, the row $l = 1$ for $m \le 12$, the emptiness of
+$(3,6,3)$ by exhaustive search, and two controls that must fail.
+
+\section{Prior art}\label{sec:prior}
+
+On 2026-09-26 searches were made of the full texts of \cite{ADH} (arXiv version and
+journal version) and of the thesis \cite{Alk}; of seven further theses from the same
+department; of Nordh's papers on perfect Skolem sets; of arXiv, Crossref, zbMATH Open,
+the On-Line Encyclopedia of Integer Sequences, a public repository of formalized
+conjectures, and the Palomar registry of machine-checked results; and of the works citing
+\cite{ADH}, \cite{BNSS} and Nordh's papers, and the bibliography of the survey
+\cite{FM}. No statement of necessary and sufficient conditions for two-fold or $m$-fold
+Langford sequences with $d \ge 2$ was located. The question is printed as open in
+\cite{ADH} (\S7, identical in both versions) and twice in \cite{Alk}; Table~8 of
+\cite{ADH}, which summarizes known existence results, has $m$-fold Skolem rows and no
+$m$-fold Langford row. The search was bounded, and on 2026-09-27 its blind spots were
+re-examined. The body of the survey \cite{FM} and the Handbook chapter on Skolem-type
+sequences could be searched only through full-text indexes, which contain no $m$-fold
+Langford statement; the 2026 paper of Zhang and Cao on generalized signed Langford
+sequences (its abstract and references) and the 2016 paper of L\'opez and Muntaner-Batle on
+distance labelings (read in full) concern different objects --- a signed Langford
+sequence is, by Nordh's Theorem~15, a one-fold sequence with a different difference set;
+Nowakowski's 1975 master's thesis and Dillon's 1973 paper on the generalized
+Langford--Skolem problem remain unread, and MathSciNet was not consulted. Failure to
+retrieve a paper is not evidence about its contents, and nothing here is a claim of
+priority beyond that wording.
+
+Four connections are worth recording.
+
+\emph{Perfect Skolem sets.} As Remark~\ref{rem:nordh} explains, the objects of this
+note are Nordh's perfect multisets $m \times [d,d+l-1]$ \cite{Nordh}; his Theorem~15 is
+the tight-line bijection, and his necessary conditions reduce to Theorem~\ref{thm:nec}.
+Nordh's \S6 notes that the existence question for general multisets is NP-complete; the multisets here are highly
+structured, and that result is context only.
+
+\emph{Constructions in \cite{ADH}.} Construction~2.7 there is a two-fold Langford family
+on the tight line, and the sequences obtained by concatenating two Langford sequences,
+or interlacing a hooked one with its reverse, exist exactly when $l \ge 2d-1$ or
+$(d,l) \in \{(2,1),(2,2)\}$. Nothing in print constructs two-fold Langford sequences
+inside the unsplittable region.
+
+\emph{Chains and multiplicity.} The generalized Langford sequences of multiplicity $s$
+(the copies of each value in one chain with equal gaps; see \cite{MMNS}) are a different
+object. A chain of four copies contains two disjoint pairs, so such sequences with $s = 4$
+are two-fold Langford sequences, but their span forces $l \ge 3d-2$, far from the
+unsplittable region.
+
+\emph{Defect one.} The $m$-fold Skolem sequences of \cite{BNSS}, and their descendants
+(near, hooked, extended and disjoint variants), are all of defect $1$. The exact counts
+of two-fold Skolem sequences of \cite{GRS} are reproduced by the search (\S\ref{sec:finite}).
+
+In the registry of machine-checked results (read to 2026-09-27), Langford sequences appear
+only as sources of the formalization \cite{gnlean} and of its successor; the repository of
+formalized conjectures contains no Langford or Skolem statement.
+
+\section*{Provenance}
+
+This note and the accompanying Lean development were produced with Claude (Anthropic),
+running with parallel Opus subagents; the mathematics,
+the searches and the checkers arose in that process. JD Jones owns and directed the
+project and is responsible for the submission. No independent human review or
+endorsement by the cited authors is claimed.
+
+\appendix
+
+\section{The class tables}\label{app:tables}
+
+Conventions (\S\ref{sec:band}). Sizes, $M_i = 2(c_i - a_i) + \mu$ and the class runs are
+affine in $(l,\mu)$ on the family's residue class; for the line families they are written
+in $l$ alone. The target order lists the block indices from left to right in target
+position. The type is P, N, C1 or C3 as in Lemma~\ref{lem:block}; a C block contributes
+two runs, $b_i^{+}$ (its positive $x$) and $b_i^{-}$ (its negative $x$). The two chains
+list the runs of each parity in increasing order; in each chain the first run starts at
+$1$ or $2$, each run starts $2$ above the end of the previous one, and the last ends at
+$l$ or $l-1$, all identically in $(l,\mu)$. Every domain below is the set of cells of
+the residue class with $\mu$ odd at which every size is at least $1$ and every type
+condition holds. The tables were generated from the sizes and orders of the audited
+transcription and every identity was checked symbolically; every family was also built
+at every domain cell with $l \le 240$ and checked in displacement form.
+
+% family FA
+\famtable{FA}{$l\equiv 2 \pmod 4$}{2,3,0,4,1}{$(l+4)/2 \le \mu \le (3l-2)/4$}{\texttt{famFA}}{
+$b_{0}$ & $(\mu-1)/2$ & $2l-\mu$ & P & odd $[l-\mu+2,\ l-1]$ \\
+$b_{1}$ & $(l+2)/4$ & $3l/2$ & P & even $[(l+2)/2,\ l]$ \\
+$b_{2}$ & $(3l-4\mu+2)/4$ & $-l/2$ & N & odd $[(2\mu-l+2)/2,\ l-\mu]$ \\
+$b_{3}$ & $(l-2)/4$ & $-l/2$ & N & even $[2,\ (l-2)/2]$ \\
+$b_{4}$ & $(2\mu-l)/4$ & $(2\mu-l-2)/2$ & P & odd $[1,\ (2\mu-l-2)/2]$ \\
+}{$b_{4}$, $b_{2}$, $b_{0}$}{$b_{3}$, $b_{1}$}
+
+% family FB2
+\famtable{FB2}{$l\equiv 2 \pmod 8$}{1,3,0,4,2}{$(3l+6)/4 \le \mu \le l-1$ (so $l \ge 10$)}{\texttt{famFB2}}{
+$b_{0}$ & $(4\mu-l-2)/8$ & $(9l-4\mu-2)/4$ & P & odd $[(5l-4\mu+6)/4,\ l-1]$ \\
+$b_{1}$ & $(l-2)/8$ & $(l+2)/4$ & P & even $[2,\ (l-2)/4]$ \\
+$b_{2}$ & $(3l+2)/8$ & $(5l+2)/4$ & P & even $[(l+6)/4,\ l]$ \\
+$b_{3}$ & $l-\mu$ & $-l/2$ & N & odd $[(4\mu-3l+6)/4,\ (5l-4\mu-2)/4]$ \\
+$b_{4}$ & $(4\mu-3l+2)/8$ & $(4\mu-3l-2)/4$ & P & odd $[1,\ (4\mu-3l-2)/4]$ \\
+}{$b_{4}$, $b_{3}$, $b_{0}$}{$b_{1}$, $b_{2}$}
+
+% family FB6
+\famtable{FB6}{$l\equiv 6 \pmod 8$}{1,3,0,4,2}{$(3l+10)/4 \le \mu \le l-1$}{\texttt{famFB6}}{
+$b_{0}$ & $(4\mu-l+2)/8$ & $(9l-4\mu+2)/4$ & P & even $[(5l-4\mu+6)/4,\ l]$ \\
+$b_{1}$ & $(l+2)/8$ & $(l-2)/4$ & P & odd $[1,\ (l-2)/4]$ \\
+$b_{2}$ & $(3l-2)/8$ & $(5l-2)/4$ & P & odd $[(l+6)/4,\ l-1]$ \\
+$b_{3}$ & $l-\mu$ & $-l/2$ & N & even $[(4\mu-3l+6)/4,\ (5l-4\mu-2)/4]$ \\
+$b_{4}$ & $(4\mu-3l-2)/8$ & $(4\mu-3l+2)/4$ & P & even $[2,\ (4\mu-3l-2)/4]$ \\
+}{$b_{1}$, $b_{2}$}{$b_{4}$, $b_{3}$, $b_{0}$}
+
+% family F4
+\famtable{F4}{$l\equiv 6 \pmod 8$, $\mu = (3l+2)/4$}{2,0,3,1}{$l \ge 6$}{\texttt{famF4}}{
+$b_{0}$ & $(3l-2)/8$ & $(5l-2)/4$ & P & odd $[(l+6)/4,\ l-1]$ \\
+$b_{1}$ & $(l+2)/4$ & $3l/2$ & P & even $[(l+2)/2,\ l]$ \\
+$b_{2}$ & $(l-2)/4$ & $-l/2$ & N & even $[2,\ (l-2)/2]$ \\
+$b_{3}$ & $(l+2)/8$ & $(l-2)/4$ & P & odd $[1,\ (l-2)/4]$ \\
+}{$b_{3}$, $b_{0}$}{$b_{2}$, $b_{1}$}
+
+% family A1
+\famtable{A1}{$l\equiv 0 \pmod 4$, $\mu \equiv 1 \pmod 4$}{8,3,6,7,2,0,5,1,4}{$l \ge 8$, $\mu \ge 5$, $l/2+1 \le \mu \le 3l/4-2$}{\texttt{famA1}}{
+$b_{0}$ & $(\mu-1)/4$ & $(4l-\mu-1)/2$ & P & odd $[(2l-\mu+3)/2,\ l-1]$ \\
+$b_{1}$ & $1$ & $2l-1$ & P & even $\{l\}$ \\
+$b_{2}$ & $(l-\mu+1)/4$ & $(3l-\mu-5)/2$ & P & even $[l/2,\ (2l-\mu-3)/2]$ \\
+$b_{3}$ & $(2\mu-l+2)/4$ & $(2\mu-l)/2$ & P & odd $[1,\ (2\mu-l)/2]$ \\
+$b_{4}$ & $(\mu-1)/4$ & $(4l-\mu-5)/2$ & P & even $[(2l-\mu+1)/2,\ l-2]$ \\
+$b_{5}$ & $(\mu-1)/4$ & $(4l-3\mu-7)/2$ & P & odd $[l-\mu,\ (2l-\mu-5)/2]$ \\
+$b_{6}$ & $(3l-4\mu-4)/4$ & $(2-l)/2$ & N & odd $[(2\mu-l+4)/2,\ l-\mu-2]$ \\
+$b_{7}$ & $(l-4)/4$ & $(2-l)/2$ & N & even $[2,\ (l-4)/2]$ \\
+$b_{8}$ & $1$ & $\mu-2l+2$ & N & odd $\{(2l-\mu-1)/2\}$ \\
+}{$b_{3}$, $b_{6}$, $b_{5}$, $b_{8}$, $b_{0}$}{$b_{7}$, $b_{2}$, $b_{4}$, $b_{1}$}
+
+% family A3
+\famtable{A3}{$l\equiv 0 \pmod 4$, $\mu \equiv 3 \pmod 4$}{8,3,6,7,2,0,5,1,4}{$l \ge 8$, $\mu \ge 7$, $l/2+1 \le \mu \le 3l/4-2$, $\mu \le l-5$}{\texttt{famA3}}{
+$b_{0}$ & $(\mu+1)/4$ & $(4l-\mu-3)/2$ & P & odd $[(2l-\mu+1)/2,\ l-1]$ \\
+$b_{1}$ & $1$ & $2l-1$ & P & even $\{l\}$ \\
+$b_{2}$ & $(l-\mu-1)/4$ & $(3l-\mu-7)/2$ & P & even $[l/2,\ (2l-\mu-5)/2]$ \\
+$b_{3}$ & $(2\mu-l+2)/4$ & $(2\mu-l)/2$ & P & odd $[1,\ (2\mu-l)/2]$ \\
+$b_{4}$ & $(\mu-3)/4$ & $(4l-\mu-3)/2$ & P & even $[(2l-\mu+3)/2,\ l-2]$ \\
+$b_{5}$ & $(\mu+1)/4$ & $(4l-3\mu-5)/2$ & P & odd $[l-\mu,\ (2l-\mu-3)/2]$ \\
+$b_{6}$ & $(3l-4\mu-4)/4$ & $(2-l)/2$ & N & odd $[(2\mu-l+4)/2,\ l-\mu-2]$ \\
+$b_{7}$ & $(l-4)/4$ & $(2-l)/2$ & N & even $[2,\ (l-4)/2]$ \\
+$b_{8}$ & $1$ & $\mu-2l+2$ & N & even $\{(2l-\mu-1)/2\}$ \\
+}{$b_{3}$, $b_{6}$, $b_{5}$, $b_{0}$}{$b_{7}$, $b_{2}$, $b_{8}$, $b_{4}$, $b_{1}$}
+
+% family U1
+\famtable{U1}{$l\equiv 0 \pmod 4$, $\mu \equiv 1 \pmod 8$}{5,7,1,3,4,0,2,6}{$3\mu \ge 2l+11$, $5 \le \mu \le l-3$, $\mu \le 2l-15$}{\texttt{famU1}}{
+$b_{0}$ & $(2l-\mu+1)/8$ & $(6l+\mu-5)/4$ & P & odd $[(2l+\mu+3)/4,\ l-1]$ \\
+$b_{1}$ & $(3\mu-2l-3)/8$ & $(2l+\mu+3)/4$ & P & even $[(2l-\mu+9)/4,\ (\mu-1)/2]$ \\
+$b_{2}$ & $(\mu+3)/4$ & $(4l-\mu-1)/2$ & P & even $[(2l-\mu+1)/2,\ l]$ \\
+$b_{3}$ & $(2l-\mu+1)/8$ & $(2l-\mu-3)/4$ & P & odd $[1,\ (2l-\mu-3)/4]$ \\
+$b_{4}$ & $(2l-\mu-7)/8$ & $(2l-\mu-3)/4$ & P & even $[2,\ (2l-\mu-7)/4]$ \\
+$b_{5}$ & $1$ & $(\mu-2l+1)/2$ & N & even $\{(2l-\mu+1)/4\}$ \\
+$b_{6}$ & $(\mu-1)/4$ & $l-1$ & P & odd $[(2l-\mu+5)/4,\ (2l+\mu-5)/4]$ \\
+$b_{7}$ & $(l-\mu-1)/2$ & $1-l$ & N & even $[(\mu+3)/2,\ (2l-\mu-3)/2]$ \\
+}{$b_{3}$, $b_{6}$, $b_{0}$}{$b_{4}$, $b_{5}$, $b_{1}$, $b_{7}$, $b_{2}$}
+
+% family U3
+\famtable{U3}{$l\equiv 0 \pmod 4$, $\mu \equiv 3 \pmod 8$}{5,8,0,3,6,4,1,7,2}{$3\mu \ge 2l+1$, $7 \le \mu \le l-3$, $\mu \le 2l-29$}{\texttt{famU3}}{
+$b_{0}$ & $(\mu-3)/4$ & $l+1$ & P & even $[(2l-\mu+11)/4,\ (2l+\mu-3)/4]$ \\
+$b_{1}$ & $(\mu+1)/4$ & $(4l-\mu-3)/2$ & P & odd $[(2l-\mu+1)/2,\ l-1]$ \\
+$b_{2}$ & $(2l-\mu+3)/8$ & $(6l+\mu+1)/4$ & P & even $[(2l+\mu+5)/4,\ l]$ \\
+$b_{3}$ & $(2l-\mu-21)/8$ & $(2l-\mu-1)/4$ & P & even $[4,\ (2l-\mu-13)/4]$ \\
+$b_{4}$ & $1$ & $(2l-\mu+1)/2$ & P & even $\{(2l-\mu+3)/4\}$ \\
+$b_{5}$ & $1$ & $(\mu-2l+7)/2$ & N & even $\{(2l-\mu-5)/4\}$ \\
+$b_{6}$ & $(2l-\mu+3)/8$ & $(2l-\mu-17)/4$ & C1 & odd $[1,\ (2l-\mu-9)/4]$; even $\{2\}$ \\
+$b_{7}$ & $(3\mu-2l+7)/8$ & $(2l+\mu-7)/4$ & P & odd $[(2l-\mu-1)/4,\ (\mu-1)/2]$ \\
+$b_{8}$ & $(l-\mu-1)/2$ & $1-l$ & N & odd $[(\mu+3)/2,\ (2l-\mu-3)/2]$ \\
+}{$b_{6}^{+}$, $b_{7}$, $b_{8}$, $b_{1}$}{$b_{6}^{-}$, $b_{3}$, $b_{5}$, $b_{4}$, $b_{0}$, $b_{2}$}
+
+% family U5
+\famtable{U5}{$l\equiv 0 \pmod 4$, $\mu \equiv 5 \pmod 8$}{4,7,0,3,5,1,6,2}{$3\mu \ge 2l+7$, $5 \le \mu \le l-3$, $\mu \le 2l-11$}{\texttt{famU5}}{
+$b_{0}$ & $(\mu-1)/4$ & $l+1$ & P & odd $[(2l-\mu+9)/4,\ (2l+\mu-1)/4]$ \\
+$b_{1}$ & $(\mu+3)/4$ & $(4l-\mu-1)/2$ & P & even $[(2l-\mu+1)/2,\ l]$ \\
+$b_{2}$ & $(2l-\mu-3)/8$ & $(6l+\mu-1)/4$ & P & odd $[(2l+\mu+7)/4,\ l-1]$ \\
+$b_{3}$ & $(2l-\mu-3)/8$ & $(2l-\mu+1)/4$ & P & even $[2,\ (2l-\mu-3)/4]$ \\
+$b_{4}$ & $1$ & $(\mu-2l+1)/2$ & N & odd $\{(2l-\mu+1)/4\}$ \\
+$b_{5}$ & $(2l-\mu-3)/8$ & $(2l-\mu-7)/4$ & P & odd $[1,\ (2l-\mu-7)/4]$ \\
+$b_{6}$ & $(3\mu-2l+1)/8$ & $(2l+\mu-1)/4$ & P & even $[(2l-\mu+5)/4,\ (\mu-1)/2]$ \\
+$b_{7}$ & $(l-\mu-1)/2$ & $1-l$ & N & even $[(\mu+3)/2,\ (2l-\mu-3)/2]$ \\
+}{$b_{5}$, $b_{4}$, $b_{0}$, $b_{2}$}{$b_{3}$, $b_{6}$, $b_{7}$, $b_{1}$}
+
+% family U7
+\famtable{U7}{$l\equiv 0 \pmod 4$, $\mu \equiv 7 \pmod 8$}{1,6,2,4,7,0,8,3,5}{$5\mu \ge 4l+11$, $7 \le \mu \le l-1$, $\mu \le 2l-5$, $3\mu \le 4l+1$}{\texttt{famU7}}{
+$b_{0}$ & $(\mu+1)/8$ & $(8l-\mu+3)/4$ & P & even $[(4l-\mu+7)/4,\ l]$ \\
+$b_{1}$ & $(\mu+1)/8$ & $(3\mu-1)/4$ & P & odd $[(\mu+5)/4,\ (\mu-1)/2]$ \\
+$b_{2}$ & $(\mu+1)/8$ & $(8l-5\mu-1)/4$ & P & even $[(4l-3\mu+5)/4,\ (2l-\mu-1)/2]$ \\
+$b_{3}$ & $(2l-\mu-1)/4$ & $(2l+\mu-1)/2$ & P & odd $[(\mu+3)/2,\ l-1]$ \\
+$b_{4}$ & $(5\mu-4l-3)/8$ & $(4l-3\mu+1)/4$ & P & odd $[l-\mu+2,\ (\mu-3)/4]$ \\
+$b_{5}$ & $(\mu+1)/8$ & $(8l-3\mu+1)/4$ & P & even $[(2l-\mu+3)/2,\ (4l-\mu-1)/4]$ \\
+$b_{6}$ & $l-\mu$ & $(1-\mu)/2$ & N & even $[(5\mu-4l+5)/4,\ (4l-3\mu-3)/4]$ \\
+$b_{7}$ & $(l-\mu+1)/2$ & $\mu-l$ & N & odd $[1,\ l-\mu]$ \\
+$b_{8}$ & $(5\mu-4l-3)/8$ & $(5\mu-4l+1)/4$ & P & even $[2,\ (5\mu-4l-3)/4]$ \\
+}{$b_{7}$, $b_{4}$, $b_{1}$, $b_{3}$}{$b_{8}$, $b_{6}$, $b_{2}$, $b_{5}$, $b_{0}$}
+
+% family V
+\famtable{V}{$l\equiv 0 \pmod 4$, $\mu \equiv 3 \pmod 4$}{8,0,5,7,3,4,1,2,6}{$5\mu \ge 3l+11$, $3\mu \ge 2l+9$, $2\mu \ge l+6$, $7 \le \mu \le l-5$, $5\mu \le 4l+3$}{\texttt{famV}}{
+$b_{0}$ & $(l-\mu+3)/4$ & $(l+\mu-1)/2$ & P & even $[(\mu+1)/2,\ l/2]$ \\
+$b_{1}$ & $(\mu-3)/4$ & $(4l-\mu+1)/2$ & P & odd $[(2l-\mu+5)/2,\ l-1]$ \\
+$b_{2}$ & $(\mu+1)/4$ & $(4l-\mu+1)/2$ & P & even $[(2l-\mu+3)/2,\ l]$ \\
+$b_{3}$ & $(4l-5\mu+7)/4$ & $(2l-\mu+1)/2$ & P & odd $[(2\mu-l)/2,\ (3l-3\mu+3)/2]$ \\
+$b_{4}$ & $(3\mu-2l-5)/4$ & $(2l-\mu+1)/2$ & P & even $[l-\mu+3,\ (\mu-3)/2]$ \\
+$b_{5}$ & $(5\mu-3l-7)/4$ & $(\mu-l-1)/2$ & C3 & even $[2,\ (3\mu-2l-5)/2]$; odd $[1,\ (2\mu-l-4)/2]$ \\
+$b_{6}$ & $(2\mu-l-2)/4$ & $(5l-4\mu+6)/2$ & P & odd $[(3l-3\mu+7)/2,\ (2l-\mu+1)/2]$ \\
+$b_{7}$ & $(4l-5\mu+7)/4$ & $(1-\mu)/2$ & N & even $[(3\mu-2l-1)/2,\ l-\mu+1]$ \\
+$b_{8}$ & $(l-\mu-1)/4$ & $(\mu-3l-1)/2$ & N & even $[(l+4)/2,\ (2l-\mu-1)/2]$ \\
+}{$b_{5}^{-}$, $b_{3}$, $b_{6}$, $b_{1}$}{$b_{5}^{+}$, $b_{7}$, $b_{4}$, $b_{0}$, $b_{8}$, $b_{2}$}
+
+% family T
+\famtable{T}{$l\equiv 0 \pmod 4$, $\mu \equiv 3 \pmod 8$}{2,3,6,0,4,1,5}{$9\mu \ge 8l+11$, $11 \le \mu \le l-1$, $3\mu \le 4l-3$, $7\mu \le 8l-3$}{\texttt{famT}}{
+$b_{0}$ & $(\mu+1)/4$ & $(4l-\mu+1)/2$ & P & even $[(2l-\mu+3)/2,\ l]$ \\
+$b_{1}$ & $(\mu-3)/8$ & $(8l-\mu-1)/4$ & P & odd $[(4l-\mu+7)/4,\ l-1]$ \\
+$b_{2}$ & $(8l-7\mu+5)/8$ & $(\mu+1)/4$ & C3 & even $[2,\ (4l-3\mu+1)/4]$; odd $[1,\ l-\mu]$ \\
+$b_{3}$ & $(9\mu-8l-3)/8$ & $(\mu+1)/4$ & P & odd $[l-\mu+2,\ (5\mu-4l-3)/4]$ \\
+$b_{4}$ & $(\mu-3)/8$ & $(8l-5\mu+3)/4$ & P & even $[(4l-3\mu+9)/4,\ (2l-\mu-1)/2]$ \\
+$b_{5}$ & $(\mu+1)/4$ & $2l-\mu$ & P & odd $[(4l-3\mu+5)/4,\ (4l-\mu-1)/4]$ \\
+$b_{6}$ & $l-\mu$ & $(1-\mu)/2$ & N & odd $[(5\mu-4l+5)/4,\ (4l-3\mu-3)/4]$ \\
+}{$b_{2}^{-}$, $b_{3}$, $b_{6}$, $b_{5}$, $b_{1}$}{$b_{2}^{+}$, $b_{4}$, $b_{0}$}
+
+% family FA3
+\famtable{FA3}{$l\equiv 1 \pmod 4$, $\mu \equiv 3 \pmod 4$}{6,1,3,4,0,5,2}{$(l+5)/2 \le \mu \le l-6$}{\texttt{famFA3}}{
+$b_{0}$ & $(\mu+1)/4$ & $(4l-\mu+1)/2$ & P & odd $[(2l-\mu+3)/2,\ l]$ \\
+$b_{1}$ & $(\mu+1)/4$ & $(2l-\mu-1)/2$ & P & even $[(l-\mu+2)/2,\ (l-1)/2]$ \\
+$b_{2}$ & $(l-1)/4$ & $(3l-1)/2$ & P & even $[(l+3)/2,\ l-1]$ \\
+$b_{3}$ & $(l-\mu-2)/4$ & $(l-\mu)/2$ & P & even $[2,\ (l-\mu-2)/2]$ \\
+$b_{4}$ & $(l-\mu+2)/4$ & $(l-\mu)/2$ & P & odd $[1,\ (l-\mu)/2]$ \\
+$b_{5}$ & $(2\mu-l-1)/4$ & $(l+1)/2$ & P & odd $[(l-\mu+4)/2,\ (\mu-1)/2]$ \\
+$b_{6}$ & $(l-\mu)/2$ & $-l$ & N & odd $[(\mu+3)/2,\ (2l-\mu-1)/2]$ \\
+}{$b_{4}$, $b_{5}$, $b_{6}$, $b_{0}$}{$b_{3}$, $b_{1}$, $b_{2}$}
+
+% family FA1
+\famtable{FA1}{$l\equiv 1 \pmod 4$, $\mu \equiv 1 \pmod 4$}{7,1,3,4,0,5,2,6}{$(l+5)/2 \le \mu \le l-4$}{\texttt{famFA1}}{
+$b_{0}$ & $(\mu-1)/4$ & $(4l-\mu-1)/2$ & P & even $[(2l-\mu+3)/2,\ l-1]$ \\
+$b_{1}$ & $(\mu-5)/4$ & $(2l-\mu+1)/2$ & P & odd $[(l-\mu+6)/2,\ (l-3)/2]$ \\
+$b_{2}$ & $(l-1)/4$ & $(3l+3)/2$ & P & odd $[(l+5)/2,\ l]$ \\
+$b_{3}$ & $(l-\mu)/4$ & $(l-\mu+2)/2$ & P & even $[2,\ (l-\mu)/2]$ \\
+$b_{4}$ & $(l-\mu+4)/4$ & $(l-\mu+2)/2$ & P & odd $[1,\ (l-\mu+2)/2]$ \\
+$b_{5}$ & $(2\mu-l-1)/4$ & $(l+1)/2$ & P & even $[(l-\mu+4)/2,\ (\mu-1)/2]$ \\
+$b_{6}$ & $1$ & $l$ & P & odd $\{(l+1)/2\}$ \\
+$b_{7}$ & $(l-\mu)/2$ & $-l$ & N & even $[(\mu+3)/2,\ (2l-\mu-1)/2]$ \\
+}{$b_{4}$, $b_{1}$, $b_{6}$, $b_{2}$}{$b_{3}$, $b_{5}$, $b_{7}$, $b_{0}$}
+
+% family FT
+\famtable{FT}{$l\equiv 1 \pmod 4$, $\mu = l-2$}{5,1,3,0,4,2}{$l \ge 9$}{\texttt{famFT}}{
+$b_{0}$ & $(l-1)/4$ & $(3l-1)/2$ & P & even $[(l+3)/2,\ l-1]$ \\
+$b_{1}$ & $(l-5)/4$ & $(l+1)/2$ & P & odd $[3,\ (l-3)/2]$ \\
+$b_{2}$ & $(l-1)/4$ & $(3l+3)/2$ & P & odd $[(l+5)/2,\ l]$ \\
+$b_{3}$ & $1$ & $1$ & P & odd $\{1\}$ \\
+$b_{4}$ & $(l-1)/4$ & $(l+1)/2$ & P & even $[2,\ (l-1)/2]$ \\
+$b_{5}$ & $1$ & $-l$ & N & odd $\{(l+1)/2\}$ \\
+}{$b_{3}$, $b_{1}$, $b_{5}$, $b_{2}$}{$b_{4}$, $b_{0}$}
+
+% family FL1
+\famtable{FL1}{$l\equiv 1 \pmod 8$, $\mu = (l+1)/2$}{6,0,2,4,5,1,3}{$l \ge 17$}{\texttt{famFL1}}{
+$b_{0}$ & $1$ & $l$ & P & odd $\{(l+1)/2\}$ \\
+$b_{1}$ & $(l-1)/8$ & $(7l-3)/4$ & P & even $[(3l+5)/4,\ l-1]$ \\
+$b_{2}$ & $(l-9)/8$ & $(3l+1)/4$ & P & odd $[(l+11)/4,\ (l-3)/2]$ \\
+$b_{3}$ & $(l-1)/4$ & $(3l+3)/2$ & P & odd $[(l+5)/2,\ l]$ \\
+$b_{4}$ & $(l-1)/8$ & $(l+3)/4$ & P & even $[2,\ (l-1)/4]$ \\
+$b_{5}$ & $(l+7)/8$ & $(l+3)/4$ & P & odd $[1,\ (l+3)/4]$ \\
+$b_{6}$ & $(l-1)/4$ & $-l$ & N & even $[(l+7)/4,\ (3l-3)/4]$ \\
+}{$b_{5}$, $b_{2}$, $b_{0}$, $b_{3}$}{$b_{4}$, $b_{6}$, $b_{1}$}
+
+% family FL5
+\famtable{FL5}{$l\equiv 5 \pmod 8$, $\mu = (l+1)/2$}{5,1,3,4,0,2}{$l \ge 13$}{\texttt{famFL5}}{
+$b_{0}$ & $(l+3)/8$ & $(7l+1)/4$ & P & odd $[(3l+5)/4,\ l]$ \\
+$b_{1}$ & $(l+3)/8$ & $(3l-3)/4$ & P & even $[(l+3)/4,\ (l-1)/2]$ \\
+$b_{2}$ & $(l-1)/4$ & $(3l-1)/2$ & P & even $[(l+3)/2,\ l-1]$ \\
+$b_{3}$ & $(l-5)/8$ & $(l-1)/4$ & P & even $[2,\ (l-5)/4]$ \\
+$b_{4}$ & $(l+3)/8$ & $(l-1)/4$ & P & odd $[1,\ (l-1)/4]$ \\
+$b_{5}$ & $(l-1)/4$ & $-l$ & N & odd $[(l+7)/4,\ (3l-3)/4]$ \\
+}{$b_{4}$, $b_{5}$, $b_{0}$}{$b_{3}$, $b_{1}$, $b_{2}$}
+
+% family R3O
+\famtable{R3O}{$l\equiv 3 \pmod 4$, $\mu \equiv 1 \pmod 4$}{6,1,3,4,0,5,2}{$(l+3)/2 \le \mu \le l-6$}{\texttt{famR3O}}{
+$b_{0}$ & $(\mu-1)/4$ & $(4l-\mu-1)/2$ & P & even $[(2l-\mu+3)/2,\ l-1]$ \\
+$b_{1}$ & $(\mu-1)/4$ & $(2l-\mu+1)/2$ & P & odd $[(l-\mu+4)/2,\ (l-1)/2]$ \\
+$b_{2}$ & $(l+1)/4$ & $(3l+1)/2$ & P & odd $[(l+3)/2,\ l]$ \\
+$b_{3}$ & $(l-\mu-2)/4$ & $(l-\mu)/2$ & P & even $[2,\ (l-\mu-2)/2]$ \\
+$b_{4}$ & $(l-\mu+2)/4$ & $(l-\mu)/2$ & P & odd $[1,\ (l-\mu)/2]$ \\
+$b_{5}$ & $(2\mu-l+1)/4$ & $(l-1)/2$ & P & even $[(l-\mu+2)/2,\ (\mu-1)/2]$ \\
+$b_{6}$ & $(l-\mu)/2$ & $-l$ & N & even $[(\mu+3)/2,\ (2l-\mu-1)/2]$ \\
+}{$b_{4}$, $b_{1}$, $b_{2}$}{$b_{3}$, $b_{5}$, $b_{6}$, $b_{0}$}
+
+% family R3E
+\famtable{R3E}{$l\equiv 3 \pmod 4$, $\mu \equiv 3 \pmod 4$}{7,0,2,4,5,1,6,3}{$(l+7)/2 \le \mu \le l-4$}{\texttt{famR3E}}{
+$b_{0}$ & $1$ & $l$ & P & even $\{(l+1)/2\}$ \\
+$b_{1}$ & $(\mu+1)/4$ & $(4l-\mu+1)/2$ & P & odd $[(2l-\mu+3)/2,\ l]$ \\
+$b_{2}$ & $(\mu-3)/4$ & $(2l-\mu-1)/2$ & P & even $[(l-\mu+4)/2,\ (l-3)/2]$ \\
+$b_{3}$ & $(l-3)/4$ & $(3l+1)/2$ & P & even $[(l+5)/2,\ l-1]$ \\
+$b_{4}$ & $(l-\mu)/4$ & $(l-\mu+2)/2$ & P & even $[2,\ (l-\mu)/2]$ \\
+$b_{5}$ & $(l-\mu+4)/4$ & $(l-\mu+2)/2$ & P & odd $[1,\ (l-\mu+2)/2]$ \\
+$b_{6}$ & $(2\mu-l-3)/4$ & $(l+3)/2$ & P & odd $[(l-\mu+6)/2,\ (\mu-1)/2]$ \\
+$b_{7}$ & $(l-\mu)/2$ & $-l$ & N & odd $[(\mu+3)/2,\ (2l-\mu-1)/2]$ \\
+}{$b_{5}$, $b_{6}$, $b_{7}$, $b_{1}$}{$b_{4}$, $b_{2}$, $b_{0}$, $b_{3}$}
+
+% family R3Q
+\famtable{R3Q}{$l\equiv 3 \pmod 4$, $\mu \equiv 3 \pmod 4$}{6,0,2,4,5,1,3}{$(l+3)/2 \le \mu \le (2l-1)/3$}{\texttt{famR3Q}}{
+$b_{0}$ & $(2\mu-l-1)/2$ & $l$ & P & even $[l-\mu+2,\ \mu-1]$ \\
+$b_{1}$ & $(\mu+1)/4$ & $(4l-\mu+1)/2$ & P & odd $[(2l-\mu+3)/2,\ l]$ \\
+$b_{2}$ & $(2l-3\mu+3)/4$ & $(2l-\mu-1)/2$ & P & even $[(\mu+1)/2,\ l-\mu]$ \\
+$b_{3}$ & $(l-\mu)/2$ & $l+\mu-1$ & P & even $[\mu+1,\ l-1]$ \\
+$b_{4}$ & $(\mu-3)/4$ & $(\mu-1)/2$ & P & even $[2,\ (\mu-3)/2]$ \\
+$b_{5}$ & $(\mu+1)/4$ & $(\mu-1)/2$ & P & odd $[1,\ (\mu-1)/2]$ \\
+$b_{6}$ & $(l-\mu)/2$ & $-l$ & N & odd $[(\mu+3)/2,\ (2l-\mu-1)/2]$ \\
+}{$b_{5}$, $b_{6}$, $b_{1}$}{$b_{4}$, $b_{2}$, $b_{0}$, $b_{3}$}
+
+% family R3T1
+\famtable{R3T1}{$l\equiv 3 \pmod 4$, $\mu = l-2$}{5,1,3,0,4,2}{$l \ge 7$}{\texttt{famR3T1}}{
+$b_{0}$ & $(l-3)/4$ & $(3l+1)/2$ & P & even $[(l+5)/2,\ l-1]$ \\
+$b_{1}$ & $(l-3)/4$ & $(l+3)/2$ & P & odd $[3,\ (l-1)/2]$ \\
+$b_{2}$ & $(l+1)/4$ & $(3l+1)/2$ & P & odd $[(l+3)/2,\ l]$ \\
+$b_{3}$ & $1$ & $1$ & P & odd $\{1\}$ \\
+$b_{4}$ & $(l-3)/4$ & $(l-1)/2$ & P & even $[2,\ (l-3)/2]$ \\
+$b_{5}$ & $1$ & $-l$ & N & even $\{(l+1)/2\}$ \\
+}{$b_{3}$, $b_{1}$, $b_{2}$}{$b_{4}$, $b_{5}$, $b_{0}$}
+
+% family TT
+\famtable{TT}{$l$ odd, $\mu = l$}{0,1}{$l \ge 3$ (this is $\tau_l$)}{\texttt{tauGraph}}{
+$b_{0}$ & $(l+1)/2$ & $l$ & P & odd $[1,\ l]$ \\
+$b_{1}$ & $(l-1)/2$ & $l$ & P & even $[2,\ l-1]$ \\
+}{$b_{0}$}{$b_{1}$}
+
+
+\begin{thebibliography}{99}
+
+\bibitem{ADH}
+A.~H.~Alkasasbeh, D.~Dyer and J.~Howell,
+\emph{Graceful labellings of variable windmills using Skolem-type sequences},
+Ars Combin. \textbf{159} (2024), 109--131; doi:10.61091/ars159-11.
+Preprint version: \emph{Graceful labellings of variable windmills using Skolem
+sequences}, arXiv:2112.04265v1 (2021).
+
+\bibitem{Alk}
+A.~H.~Alkasasbeh,
+\emph{Graceful labellings of new families of windmill and snake graphs},
+PhD thesis, Memorial University of Newfoundland, 2021; handle 20.500.14783/2068.
+
+\bibitem{Alr}
+F.~Alruhaymi,
+\emph{Mathematical and algorithmic methods for finding disjoint Rosa-type sequences},
+MSc thesis, Memorial University of Newfoundland, 2018, Table~4.2.
+
+\bibitem{BNSS}
+C.~Baker, R.~Nowakowski, N.~Shalaby and A.~Sharary,
+\emph{M-fold and extended m-fold Skolem sequences},
+Utilitas Math. \textbf{45} (1994), 153--167; Zbl~0808.05001.
+
+\bibitem{FM}
+N.~Franceti\'c and E.~Mendelsohn,
+\emph{A survey of Skolem-type sequences and Rosa's use of them},
+Math. Slovaca \textbf{59} (2009), 39--76; doi:10.2478/s12175-008-0110-3.
+
+\bibitem{GRS}
+M.~Gr\"uttm\"uller, R.~S.~Rees and N.~Shalaby,
+\emph{Cyclically indecomposable triple systems that are decomposable},
+J. Combin. Math. Combin. Comput. \textbf{63} (2007), 103--122.
+
+\bibitem{Lean4}
+L.~de~Moura and S.~Ullrich,
+\emph{The Lean 4 theorem prover and programming language},
+in: Automated Deduction --- CADE 28, Lecture Notes in Comput. Sci.
+\textbf{12699}, Springer, 2021, 625--635.
+
+\bibitem{Mathlib}
+The mathlib Community,
+\emph{The Lean mathematical library},
+in: Proc. 9th ACM SIGPLAN Int. Conf. on Certified Programs and Proofs
+(CPP 2020), ACM, 2020, 367--381.
+
+\bibitem{MMNS}
+M.~Mata-Montero, S.~Normore and N.~Shalaby,
+\emph{Generalized Langford sequences: new results and algorithms},
+Int. Math. Forum \textbf{9} (2014), 155--181; doi:10.12988/imf.2014.38161.
+
+\bibitem{Nordh}
+G.~Nordh,
+\emph{Perfect Skolem sets},
+Discrete Math. \textbf{308} (2008), 1653--1664; doi:10.1016/j.disc.2006.12.003;
+arXiv:math/0506155 (Theorem~15 in the numbering of v1).
+
+\bibitem{OKeefe}
+E.~S.~O'Keefe,
+\emph{Verification of a conjecture of Th.~Skolem},
+Math. Scand. \textbf{9} (1961), 80--82; doi:10.7146/math.scand.a-10624.
+
+\bibitem{Simpson}
+J.~E.~Simpson,
+\emph{Langford sequences: perfect and hooked},
+Discrete Math. \textbf{44} (1983), 97--104; doi:10.1016/0012-365X(83)90008-0.
+
+\bibitem{Skolem}
+T.~Skolem,
+\emph{On certain distributions of integers in pairs with given differences},
+Math. Scand. \textbf{5} (1957), 57--68; doi:10.7146/math.scand.a-10490.
+
+\bibitem{gnlean}
+\emph{gn-lean}: a Lean~4 formalization of the existence of good partitions of
+$\{1,\dots,n\}$, whose Langford machinery the present development reuses; registry entry
+\texttt{PALOMAR-2026-09-07-000013}, \url{https://github.com/JD-Jones-ASES/gn-lean}.
+
+\bibitem{l2lean}
+\emph{l2-lean}: a Lean~4 formalization of Theorems~A and~B of this note,
+\url{https://github.com/JD-Jones-ASES/l2-lean}.
+
+\end{thebibliography}
+
+\end{document}

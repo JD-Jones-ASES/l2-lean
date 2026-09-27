@@ -1,0 +1,91 @@
+verify.py (a two-fold Langford sequence at every in-bound cell) -- L = 300  [default: literal only where no closed form applies]
+python 3.14.2
+[self-test] checker negative controls: ok
+[literals] census witnesses l <= 4 re-checked: 16, failures 0
+[bases] explicit sigma (l,mu)=(5,3) [3, 5, 2, 4, 1]: ok
+[bases] explicit sigma (l,mu)=(9,5) [6, 5, 9, 8, 1, 7, 4, 3, 2]: ok
+[bases] explicit sigma (l,mu)=(7,3) [6, 4, 7, 3, 5, 2, 1]: ok
+[sporadic] (l,mu)=(8,5) SPORADIC-search nodes=9 0.00s sigma=[6, 5, 7, 2, 4, 8, 1, 3] ok
+[sporadic] (l,mu)=(8,7) SPORADIC-search nodes=8 0.00s sigma=[5, 4, 6, 3, 1, 7, 2, 8] ok
+[sporadic] (l,mu)=(12,9) SPORADIC-search nodes=15 0.00s sigma=[8, 7, 9, 6, 4, 10, 2, 11, 3, 1, 12, 5] ok
+[sporadic] (l,mu)=(12,11) SPORADIC-search nodes=13 0.00s sigma=[7, 6, 8, 4, 3, 9, 1, 10, 5, 2, 12, 11] ok
+[sporadic] (l,mu)=(16,11) SPORADIC-search nodes=23 0.00s sigma=[11, 10, 12, 9, 8, 13, 2, 14, 5, 7, 15, 3, 1, 16, 4, 6] ok
+[sporadic] (l,mu)=(20,15) SPORADIC-search nodes=38 0.00s sigma=[13, 12, 14, 11, 10, 15, 8, 16, 7, 4, 17, 1, 5, 18, 3, 19, 2, 20, 9, 6] ok
+[sporadic] (l,mu)=(24,17) SPORADIC-search nodes=24 0.00s sigma=[16, 15, 17, 14, 13, 18, 12, 19, 11, 9, 20, 4, 1, 21, 5, 22, 6, 3, 23, 2, 24, 8, 10, 7] ok
+[sporadic] (l,mu)=(32,23) SPORADIC-search nodes=1727 0.02s sigma=[21, 20, 22, 19, 18, 23, 17, 24, 16, 14, 25, 11, 15, 26, 4, 27, 1, 3, 28, 6, 29, 5, 13, 30, 2, 7, 32, 31, 9, 12, 10, 8] ok
+  ... l = 50 done, 1925 cells, 0 failures, 0.1s
+  ... l = 100 done, 7600 cells, 0 failures, 0.7s
+  ... l = 150 done, 17025 cells, 0 failures, 2.5s
+  ... l = 200 done, 30200 cells, 0 failures, 5.8s
+  ... l = 250 done, 47125 cells, 0 failures, 11.1s
+  ... l = 300 done, 67800 cells, 0 failures, 19.0s
+[A] in-bound cells 1 <= l <= 300, 1 <= d <= floor((3l+1)/2): 67800; verified 67800; failures 0
+[A] cells by top-level route (columns: total = mu > 0 direct + mu < 0 via INV):
+   literal                           2 =       2 +       0
+   concatenation                 25331 =   25331 +       0
+   SP REV                          600 =     300 +     300
+   SP TT                           150 =     149 +       1
+   SP band family                19665 =   11174 +    8491
+   CINV chain                    22052 =   11026 +   11026
+   total                         67800
+[A] SP band family cells by family, and CINV-chain cells by chain base (direct + INV):
+   CINV             A1                     1386 =     693 +     693
+   CINV             A3                     1432 =     716 +     716
+   CINV             BASE(7,3)               196 =      98 +      98
+   CINV             BASE-r1                 312 =     156 +     156
+   CINV             F4                      324 =     162 +     162
+   CINV             FA                     2858 =    1429 +    1429
+   CINV             FA1                    2170 =    1085 +    1085
+   CINV             FA3                    1998 =     999 +     999
+   CINV             FB2                     970 =     485 +     485
+   CINV             FB6                     848 =     424 +     424
+   CINV             FL1                     286 =     143 +     143
+   CINV             FL5                     334 =     167 +     167
+   CINV             FT                      396 =     198 +     198
+   CINV             R3E                    2014 =    1007 +    1007
+   CINV             R3O                    2146 =    1073 +    1073
+   CINV             R3Q                     334 =     167 +     167
+   CINV             R3T1                    470 =     235 +     235
+   CINV             SPORADIC-search         454 =     227 +     227
+   CINV             T                       122 =      61 +      61
+   CINV             TT                     1076 =     538 +     538
+   CINV             U1                      472 =     236 +     236
+   CINV             U3                      410 =     205 +     205
+   CINV             U5                      512 =     256 +     256
+   CINV             U7                      358 =     179 +     179
+   CINV             V                       174 =      87 +      87
+   band             A1                     1368 =     684 +     684
+   band             A3                     1370 =     685 +     685
+   band             BASE-r1                   4 =       2 +       2
+   band             F4                       74 =      37 +      37
+   band             FA                     2738 =    1369 +    1369
+   band             FA1                    2358 =    1332 +    1026
+   band             FA3                    2320 =    1296 +    1024
+   band             FB2                    1064 =     703 +     361
+   band             FB6                     990 =     666 +     324
+   band             FL1                      72 =      36 +      36
+   band             FL5                      72 =      36 +      36
+   band             FT                       76 =      73 +       3
+   band             R3E                    2358 =    1332 +    1026
+   band             R3O                    2392 =    1332 +    1060
+   band             R3Q                      74 =      37 +      37
+   band             R3T1                     78 =      74 +       4
+   band             SPORADIC-search          15 =       8 +       7
+   band             T                        36 =      36 +       0
+   band             U1                      552 =     359 +     193
+   band             U3                      533 =     341 +     192
+   band             U5                      553 =     360 +     193
+   band             U7                      378 =     281 +      97
+   band             V                       190 =      95 +      95
+[A] literal census witnesses used, as (l, d) (unsplittable cells, l <= 4): 2: [(4, 3), (4, 6)]
+[B] band cells l/2 < mu <= l, 5 <= l <= 400: 20097; sigma failures/uncovered 0
+   l = 0 (mod 4) first-family counts: {'A1': 1225, 'A3': 1225, 'SPORADIC-search': 8, 'T': 48, 'U1': 635, 'U3': 612, 'U5': 637, 'U7': 500, 'V': 159}
+   l = 1 (mod 4) first-family counts: {'BASE-r1': 2, 'FA1': 2401, 'FA3': 2352, 'FL1': 48, 'FL5': 49, 'FT': 98, 'TT': 99}
+   l = 2 (mod 4) first-family counts: {'F4': 50, 'FA': 2450, 'FB2': 1225, 'FB6': 1225}
+   l = 3 (mod 4) first-family counts: {'R3E': 2401, 'R3O': 2401, 'R3Q': 49, 'R3T1': 99, 'TT': 99}
+   full-domain counts (every family holding the cell, each checked): {'A1': 1225, 'A3': 1225, 'F4': 50, 'FA': 2450, 'FA1': 2401, 'FA3': 2352, 'FB2': 1225, 'FB6': 1225, 'FL1': 48, 'FL5': 49, 'FT': 98, 'R3E': 2401, 'R3O': 2401, 'R3Q': 833, 'R3T1': 99, 'T': 283, 'U1': 800, 'U3': 816, 'U5': 817, 'U7': 500, 'V': 640}
+[B] l <= 400 first-family counts vs the note's coverage tables: all match
+[B] negative controls (mutated family sizes/orders at 21 families; swapped endpoints in a lifted witness): 63 of 63 mutants rejected
+[C] m-fold tight line, m copies of Table 1, 1 <= m <= 6, odd l <= 41: 126 cells, failures 0
+elapsed 21.1 s
+VERDICT: ALL VERIFIED -- every in-bound cell with l <= 300 has a checked two-fold Langford sequence

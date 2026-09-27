@@ -31,7 +31,7 @@ python scripts/check_langford.py
 ```
 
 The `Test` target audits every constant whose name begins with `L2.`, `Langford.`, `_private.L2.` or
-`_private.Solution.` (DESK_FILLS at the time of writing, floor 600), permits only `propext`,
+`_private.Solution.` (1,475 at the time of writing, floor 1,300), permits only `propext`,
 `Classical.choice` and `Quot.sound`, and fails if any of the six compared theorems is missing. A
 placeholder in a proof compiles with a warning; this audit is what fails the build. Challenge.lean
 intentionally contains six proof placeholders; Solution.lean and the modules it imports contain
@@ -41,7 +41,7 @@ the kernel-bypass options in `L2/`, Solution.lean and `Test/`, the same tokens e
 Challenge.lean, and any `debug.` option in the `[leanOptions]` table of lakefile.toml.
 
 Lean `v4.35.0-rc2` and Mathlib `v4.35.0-rc2` (commit `065356127b1dc0016f66b7283ce0ce2c4055aa55`) are
-pinned by the committed manifest; `lake update` is never run. A clean build takes DESK_FILLS.
+pinned by the committed manifest; `lake update` is never run. A build after `lake exe cache get` takes about eight minutes on a 16-core, 16 GB PC; each module takes 20–26 s, most of it the Mathlib import.
 
 ## The finite computations
 
@@ -51,13 +51,12 @@ evaluated by `decide`; there is no search inside any proof.
 
 | Computation | Size |
 | --- | --- |
-| The sixteen two-fold certificates `twoFold_lit_d_l`, every in-bound cell with `l ≤ 4` | two colours of `l` pairs each, at most 16 positions; DESK_FILLS |
-| The eleven `SP` solutions `sp_5_3`, `sp_7_3`, `sp_8_5`, `sp_8_7`, `sp_9_5`, `sp_12_9`, `sp_12_11`, `sp_16_11`, `sp_20_15`, `sp_24_17` | permutations of 5 to 24 points; DESK_FILLS |
-| `sp_32_23`, by `decide +kernel` | a permutation of 32 points; DESK_FILLS |
+| The sixteen two-fold certificates `twoFold_lit_d_l`, every in-bound cell with `l ≤ 4` | two colours of `l` pairs each, at most 16 positions; all sixteen inside the 21 s build of L2/Literals.lean |
+| The eleven `SP` solutions `sp_5_3`, `sp_7_3`, `sp_8_5`, `sp_8_7`, `sp_9_5`, `sp_12_9`, `sp_12_11`, `sp_16_11`, `sp_20_15`, `sp_24_17` | permutations of 5 to 24 points; the same module build |
+| `sp_32_23`, by `decide +kernel` | a permutation of 32 points; the same module build |
 
 The family theorems are linear arithmetic over `ℤ` (`omega`), split by the sign and parity of the
-value as the class tables direct. The heaviest family theorems and their build times:
-DESK_FILLS.
+value as the class tables direct. The five family modules build in 22–26 s each, L2/FamR1.lean (with the eight-block family FA1) the longest; no theorem needs a raised heartbeat limit, and no `omega` call takes more than a few seconds.
 
 Mutation controls: DESK_FILLS.
 

@@ -1,0 +1,219 @@
+verify_second.py -- L = 300, started 2026-09-27 08:23:06
+python 3.14.2; stdlib only; KILL = C:\GitHub_Files\Claude-Repos\l2-lean-desk\note-cert\KILL
+[1] literal witnesses (l <= 4)
+  16 literal witnesses (l <= 4) re-checked: all pass; in-bound cells with l <= 4: 16, missing: []
+[2] checker negative control
+  negative control: 16 of 16 mutated two-fold witnesses rejected; sigma checker control: ok
+[3] family transcription scan (every family, l <= 160, all odd 1 <= mu <= l in its class)
+  FA    sp-greedy claim 6      order 23041                        in-domain pass   380 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  FB2   sp-greedy claim 6      order 13042                        in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  FB6   sp-greedy claim 6      order 13042                        in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  F4    sp-greedy claim 6      order 2031                         in-domain pass    20 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 800
+  A1    band-r0 claim 2        order 836720514                    in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  A3    band-r0 claim 3        order 836720514                    in-domain pass   190 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  U1    band-r0 claim 4        order 57134026                     in-domain pass   120 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  U3    band-r0 claim 5        order 580364172                    in-domain pass   126 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  U5    band-r0 claim 6        order 47035162                     in-domain pass   127 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  U7    band-r0 claim 7        order 162470835                    in-domain pass    80 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  V     band-r0 claim 8        order 805734126                    in-domain pass    96 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  T     band-r0 claim 9        order 2360415                      in-domain pass    46 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  TT1   band-r1 claim 4 (TT)   order 01                           in-domain pass    39 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1560
+  FT    band-r1 claim 4        order 513042                       in-domain pass    38 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1558
+  FA1   band-r1 claim 3        order 71340526                     in-domain pass   361 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  FA3   band-r1 claim 2        order 6134052                      in-domain pass   342 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  FL1   band-r1 claim 4        order 6024513                      in-domain pass    18 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 756
+  FL5   band-r1 claim 4        order 513402                       in-domain pass    19 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 798
+  TT3   band-r3 claim 6 (TT)   order 01                           in-domain pass    40 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1600
+  R3T1  band-r3 claim 5        order 513042                       in-domain pass    39 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 1599
+  R3O   band-r3 claim 2        order 6134052                      in-domain pass   361 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  R3E   band-r3 claim 3        order 70245163                     in-domain pass   361 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  R3Q   band-r3 claim 4        order 6024513                      in-domain pass   133 | in-domain FAIL 0 | outside-domain, sizes ok: pass 0, fail 0
+  SPORADIC_R0: 8 of 8 explicit sigmas pass
+  BASE_R1: 2 of 2 explicit sigmas pass
+  BASE(7,3) sigma [6,4,7,3,5,2,1]: pass
+[4] CINV closed form cross-check
+  CINV closed form vs iterated Lemma C + INV: 2701 chains (l <= 150), 0 mismatches
+[5] band census (every band cell, 5 <= l <= 400; fixed family order per class)
+      order l = 0 (mod 4): A1, A3, U1, U3, U5, U7, V, T, SPORADIC_R0
+      order l = 1 (mod 4): TT1, FT, FA1, FA3, FL1, FL5, BASE_R1
+      order l = 2 (mod 4): FA, FB2, FB6, F4
+      order l = 3 (mod 4): TT3, R3T1, R3O, R3E, R3Q
+  l = 0 (mod 4), 5 <= l <= 400: 5049 band cells; SPORADIC_R0 8, A3 1225, A1 1225, U5 637, U7 500, U1 635, T 48, U3 612, V 159
+  l = 1 (mod 4), 5 <= l <= 400: 5049 band cells; BASE_R1 2, TT1 99, FT 98, FL5 49, FA1 2401, FL1 48, FA3 2352
+  l = 2 (mod 4), 5 <= l <= 400: 4950 band cells; F4 50, FA 2450, FB2 1225, FB6 1225
+  l = 3 (mod 4), 5 <= l <= 400: 5049 band cells; R3T1 99, TT3 99, R3Q 49, R3O 2401, R3E 2401
+[6] main sweep: every in-bound cell 1 <= l <= 300, 1 <= d <= floor((3l+1)/2)
+  ... l = 50 done (1925 cells so far, 0 failures, 2.2 s)
+  ... l = 100 done (7600 cells so far, 0 failures, 2.8 s)
+  ... l = 150 done (17025 cells so far, 0 failures, 4.2 s)
+  ... l = 200 done (30200 cells so far, 0 failures, 7.3 s)
+  ... l = 250 done (47125 cells so far, 0 failures, 12.5 s)
+  ... l = 300 done (67800 cells so far, 0 failures, 20.7 s)
+  per-cell routes written to C:\GitHub_Files\Claude-Repos\l2-lean-desk\note-cert\routes_second_300.json (67800 cells)
+  cells built and checked: 67800; failures: 0; every cell with l <= 300 verified
+  top-level routes by class:
+    concatenation                                   25326
+    SP CINV chain (base FA)                          2858
+    SP band family FA                                2738
+    SP band family R3O                               2392
+    SP band family FA1                               2358
+    SP band family R3E                               2358
+    SP band family FA3                               2320
+    SP CINV chain (base FA1)                         2170
+    SP CINV chain (base R3O)                         2146
+    SP CINV chain (base R3E)                         2014
+    SP CINV chain (base FA3)                         1998
+    SP CINV chain (base A3)                          1432
+    SP CINV chain (base A1)                          1386
+    SP band family A3                                1370
+    SP band family A1                                1368
+    SP CINV chain (base TAU(divisor))                1076
+    SP band family FB2                               1064
+    SP band family FB6                                990
+    SP CINV chain (base FB2)                          970
+    SP CINV chain (base FB6)                          848
+    SP REV(mu=1)                                      592
+    SP band family U5                                 553
+    SP band family U1                                 552
+    SP band family U3                                 533
+    SP CINV chain (base U5)                           512
+    SP CINV chain (base U1)                           472
+    SP CINV chain (base R3T1)                         470
+    SP CINV chain (base SPORADIC_R0)                  454
+    SP CINV chain (base U3)                           410
+    SP CINV chain (base FT)                           396
+    SP band family U7                                 378
+    SP CINV chain (base U7)                           358
+    SP CINV chain (base FL5)                          334
+    SP CINV chain (base R3Q)                          334
+    SP CINV chain (base F4)                           324
+    SP CINV chain (base BASE_R1)                      312
+    SP CINV chain (base FL1)                          286
+    SP CINV chain (base BASE(7,3))                    194
+    SP band family V                                  190
+    SP CINV chain (base V)                            174
+    SP TAU(mu=l)                                      149
+    SP CINV chain (base T)                            122
+    SP band family R3T1                                78
+    SP band family FT                                  76
+    SP band family F4                                  74
+    SP band family R3Q                                 74
+    SP band family FL1                                 72
+    SP band family FL5                                 72
+    SP band family T                                   36
+    literal                                            16
+    SP band family SPORADIC_R0                         15
+    SP band family BASE_R1                              4
+    SP base (7,3) [sp-greedy claim 5]                   2
+  of the SP cells, 19814 go through Lemma INV (mu < 0)
+  top-level routes, exact labels (direct mu > 0 / through INV mu < 0):
+    concat                                     25326 /       0
+    SP:CINV<-FA                                 1429 /    1429
+    SP:FA                                       1369 /    1369
+    SP:R3O                                      1332 /    1060
+    SP:FA1                                      1332 /    1026
+    SP:R3E                                      1332 /    1026
+    SP:FA3                                      1296 /    1024
+    SP:CINV<-FA1                                1085 /    1085
+    SP:CINV<-R3O                                1073 /    1073
+    SP:CINV<-R3E                                1007 /    1007
+    SP:CINV<-FA3                                 999 /     999
+    SP:CINV<-A3                                  716 /     716
+    SP:CINV<-A1                                  693 /     693
+    SP:A3                                        685 /     685
+    SP:A1                                        684 /     684
+    SP:CINV<-TAU(divisor)                        538 /     538
+    SP:FB2                                       703 /     361
+    SP:FB6                                       666 /     324
+    SP:CINV<-FB2                                 485 /     485
+    SP:CINV<-FB6                                 424 /     424
+    SP:REV(mu=1)                                 296 /     296
+    SP:U5                                        360 /     193
+    SP:U1                                        359 /     193
+    SP:U3                                        341 /     192
+    SP:CINV<-U5                                  256 /     256
+    SP:CINV<-U1                                  236 /     236
+    SP:CINV<-R3T1                                235 /     235
+    SP:CINV<-SPORADIC_R0                         227 /     227
+    SP:CINV<-U3                                  205 /     205
+    SP:CINV<-FT                                  198 /     198
+    SP:U7                                        281 /      97
+    SP:CINV<-U7                                  179 /     179
+    SP:CINV<-FL5                                 167 /     167
+    SP:CINV<-R3Q                                 167 /     167
+    SP:CINV<-F4                                  162 /     162
+    SP:CINV<-BASE_R1                             156 /     156
+    SP:CINV<-FL1                                 143 /     143
+    SP:CINV<-BASE(7,3)                            97 /      97
+    SP:V                                          95 /      95
+    SP:CINV<-V                                    87 /      87
+    SP:TAU(mu=l)                                 148 /       1
+    SP:CINV<-T                                    61 /      61
+    SP:R3T1                                       74 /       4
+    SP:FT                                         73 /       3
+    SP:F4                                         37 /      37
+    SP:R3Q                                        37 /      37
+    SP:FL1                                        36 /      36
+    SP:FL5                                        36 /      36
+    SP:T                                          36 /       0
+    literal                                       16 /       0
+    SP:SPORADIC_R0                                 8 /       7
+    SP:BASE_R1                                     2 /       2
+    SP:BASE(7,3)                                   1 /       1
+  leaf uses by class (every block placed over all cells, concatenation pieces included):
+    SP TAU(mu=l)                                      16516
+    SP band family FT                                  9300
+    SP band family R3T1                                8428
+    SP band family FB6                                 5138
+    SP band family FB2                                 5117
+    SP band family FA                                  4396
+    SP CINV chain (base FA)                            4382
+    SP band family R3O                                 3829
+    SP band family FA1                                 3775
+    SP band family R3E                                 3700
+    SP band family FA3                                 3662
+    literal                                            3543
+    SP band family T                                   3408
+    SP CINV chain (base FA1)                           3337
+    SP CINV chain (base R3O)                           3260
+    SP band family U7                                  3082
+    SP CINV chain (base R3E)                           3054
+    SP CINV chain (base FA3)                           2985
+    SP CINV chain (base A3)                            2247
+    SP band family A3                                  2183
+    SP band family A1                                  2165
+    SP CINV chain (base A1)                            2117
+    SP CINV chain (base TAU(divisor))                  2061
+    SP CINV chain (base FB2)                           1486
+    SP band family SPORADIC_R0                         1401
+    SP CINV chain (base FB6)                           1289
+    SP REV(mu=1)                                       1134
+    SP CINV chain (base R3T1)                           915
+    SP band family U5                                   871
+    SP band family U1                                   853
+    SP band family U3                                   840
+    SP CINV chain (base SPORADIC_R0)                    786
+    SP CINV chain (base U5)                             780
+    SP CINV chain (base FT)                             778
+    SP CINV chain (base U1)                             709
+    SP CINV chain (base BASE_R1)                        692
+    SP CINV chain (base U3)                             621
+    SP CINV chain (base R3Q)                            612
+    SP band family BASE_R1                              581
+    SP CINV chain (base FL5)                            571
+    SP CINV chain (base U7)                             525
+    SP CINV chain (base FL1)                            498
+    SP CINV chain (base F4)                             466
+    SP band family F4                                   389
+    SP CINV chain (base BASE(7,3))                      368
+    SP band family V                                    318
+    SP CINV chain (base V)                              251
+    SP CINV chain (base T)                              179
+    SP band family FL1                                  172
+    SP band family FL5                                  162
+    SP band family R3Q                                  162
+    SP base (7,3) [sp-greedy claim 5]                     2
+  literal witnesses used: 16 distinct: [(1, 1), (2, 1), (1, 2), (2, 2), (3, 2), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4)]
+[7] m-fold tight line (paper Table 1, m copies)
+  m-fold tight line, m = 1..6, odd l = 1..41: 126 cells, 0 failures (each on the line (2m-1)l = 2d-1)
+VERDICT: PASS -- every in-bound two-fold cell with l <= 300 built from closed forms (plus 16 literal witnesses at l <= 4) and verified by the exact checker: yes; sections {'literals': True, 'negctl': True, 'domscan': True, 'cinv': True, 'band': True, 'main': True, 'mfold': True}; 20.8 s
