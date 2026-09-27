@@ -84,13 +84,90 @@ def cinvGraph (n δ : ℤ) (G : Finset (ℤ × ℤ)) : Finset (ℤ × ℤ) :=
   (G.image (fun q => (q.1, q.2 + (2 * δ - 1))) ∪
     (tauGraph (2 * δ - 1)).image (fun q => (q.1 + n, q.2))).image Prod.swap
 
+/-- Shifting the sources of a row by `n` gives the row with source start moved by `n`. -/
+theorem image_shift_fst_row (a c m n : ℤ) :
+    (row a c m).image (fun q => (q.1 + n, q.2)) = row (a + n) c m := by
+  unfold row
+  rw [Finset.image_image]
+  refine Finset.image_congr ?_
+  intro r _
+  simp only [Function.comp_apply, Prod.mk.injEq, and_true]
+  ring
+
+/-- `τ_μ` for `μ = 2δ − 1`, with its sources shifted by `n`: the rows `(n + r, δ + 1 − r)` and
+`(n + δ + r, 2δ − r)`. -/
+theorem image_shift_tauGraph (n δ : ℤ) :
+    (tauGraph (2 * δ - 1)).image (fun q => (q.1 + n, q.2)) =
+      row n 0 δ ∪ row (δ + n) δ (δ - 1) := by
+  have e1 : (2 * δ - 1 + 1) / 2 = δ := by omega
+  have e2 : (2 * δ - 1 - 1) / 2 = δ - 1 := by omega
+  unfold tauGraph
+  rw [e1, e2, Finset.image_union, image_shift_fst_row, image_shift_fst_row, zero_add]
+
+/-- Shifting the targets by `μ = 2δ − 1` turns values at `δ` into values at `1 − δ`. -/
+theorem image_val_shift_snd (δ : ℤ) (G : Finset (ℤ × ℤ)) :
+    (G.image (fun q => (q.1, q.2 + (2 * δ - 1)))).image (val (1 - δ)) = G.image (val δ) := by
+  rw [Finset.image_image]
+  refine Finset.image_congr ?_
+  intro q _
+  simp only [Function.comp_apply, val]
+  ring
+
+/-- Shifting the targets by `μ = 2δ − 1` turns mirror values at `δ` into mirror values at
+`1 − δ`. -/
+theorem image_mir_shift_snd (δ : ℤ) (G : Finset (ℤ × ℤ)) :
+    (G.image (fun q => (q.1, q.2 + (2 * δ - 1)))).image (mir (1 - δ)) = G.image (mir δ) := by
+  rw [Finset.image_image]
+  refine Finset.image_congr ?_
+  intro q _
+  simp only [Function.comp_apply, mir]
+  ring
+
 /-- The step: from `SP(n, δ)` with `δ ≥ 1`, shifting the targets by `μ = 2δ − 1` and appending
-`τ_μ` on the new sources solves `SP(n + μ, 1 − δ)`. -/
+`τ_μ` on the new sources solves `SP(n + μ, 1 − δ)`. The shifted solution keeps its values and
+mirrors, which tile `[1 − n, n]`; the two rows of `τ_μ` contribute the values `[1 − (n + μ), −n]`
+and the mirrors `[n + 1, n + μ]`. -/
 theorem SP.cinv_aux {n δ : ℤ} {G : Finset (ℤ × ℤ)} (h : SP n δ G) (hδ : 1 ≤ δ) :
     SP (n + (2 * δ - 1)) (1 - δ)
       (G.image (fun q => (q.1, q.2 + (2 * δ - 1))) ∪
         (tauGraph (2 * δ - 1)).image (fun q => (q.1 + n, q.2))) := by
-  sorry
+  have hn := h.order_pos
+  rw [image_shift_tauGraph]
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · have hs : (G.image (fun q => (q.1, q.2 + (2 * δ - 1)))).image Prod.fst = G.image Prod.fst := by
+      rw [Finset.image_image]
+      rfl
+    ext x
+    simp only [image_union_fst, Finset.mem_union, hs, h.sources, mem_image_fst_row,
+      Finset.mem_Icc]
+    omega
+  · have ht : (G.image (fun q => (q.1, q.2 + (2 * δ - 1)))).image Prod.snd =
+        (G.image Prod.snd).image (fun t => t + (2 * δ - 1)) := by
+      rw [Finset.image_image, Finset.image_image]
+      rfl
+    ext x
+    have hG : x ∈ (Finset.Icc 1 n).image (fun t => t + (2 * δ - 1)) ↔
+        2 * δ ≤ x ∧ x ≤ n + (2 * δ - 1) := by
+      rw [Finset.mem_image]
+      constructor
+      · rintro ⟨y, hy, rfl⟩
+        rw [Finset.mem_Icc] at hy
+        omega
+      · intro hx
+        exact ⟨x - (2 * δ - 1), Finset.mem_Icc.2 (by omega), by ring⟩
+    simp only [image_union_snd, Finset.mem_union, ht, h.targets, hG, mem_image_snd_row,
+      Finset.mem_Icc]
+    omega
+  · ext x
+    rw [image_union_val, image_union_mir, image_val_shift_snd, image_mir_shift_snd,
+      Finset.mem_union, Finset.mem_union, Finset.mem_union, or_or_or_comm, ← Finset.mem_union,
+      h.values]
+    simp only [image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc]
+    omega
+  · refine (card_union_le_of_le (Finset.card_image_le.trans h.card_le)
+      (card_union_le_of_le (card_row_le _ _ _) (card_row_le _ _ _))).trans ?_
+    omega
 
 /-- The step followed by inversion: from `SP(n, δ)` with `δ ≥ 1`, a solution of `SP(n + μ, δ)`,
 `μ = 2δ − 1`. -/
