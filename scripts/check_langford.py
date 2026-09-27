@@ -12,6 +12,9 @@ recomputes, in plain Python with exact integers and no dependence on the Lean de
   * the cone (Theorem R) and the induction on l, replayed for small l;
   * the m-fold tight line for m <= 6 and odd l <= 21;
   * the row l = 1 for m <= 12 against d | m, and the cell (6, 3) at m = 3, by exhaustive search;
+  * the residue bound, the forced-endpoint bound and the rigidity of the counting bound against
+    exhaustive search on small cells, the cells (3m - 3, 3) and (2m - 1, 2) for m <= 200, both
+    bounds at m = 2 for l <= 40, and one cell that the residue bound rejects;
   * two controls whose failure is the expected outcome.
 
 The family tables below are transcribed from the Lean definitions in L2/FamR0a.lean,
@@ -738,6 +741,51 @@ def order_one_colours(m, d):
 
 
 # ---------------------------------------------------------------------------------------------
+# The bounds (L2/Residue.lean, L2/Forced.lean, L2/Straddle.lean), as pinned in Challenge.lean
+# ---------------------------------------------------------------------------------------------
+
+def tsub(a, b):
+    """Subtraction on the natural numbers as Lean truncates it: a - b, and 0 when b > a."""
+    return a - b if a >= b else 0
+
+
+def counting_holds(m, d, l):
+    """The counting bound of Langford.necessary: 2d + l <= 2ml + 1."""
+    return 2 * d + l <= 2 * m * l + 1
+
+
+def parity_holds(m, d, l):
+    """The parity condition of Langford.necessary: for odd m, l(2d + l + 1) = 0 (mod 4)."""
+    return m % 2 == 0 or (l * (2 * d + l + 1)) % 4 == 0
+
+
+def residue_sides(m, d, l, t):
+    """Langford.residue_bound at T = t: the two sides (ml % T)(T - ml % T) and
+    m * sum_{i < l} ((d + i - T) + (T - (d + i))), with truncated subtraction."""
+    r = (m * l) % t
+    return r * tsub(t, r), m * sum(tsub(d + i, t) + tsub(t, d + i) for i in range(l))
+
+
+def residue_holds(m, d, l, t):
+    """The residue bound at T = t."""
+    left, right = residue_sides(m, d, l, t)
+    return left <= right
+
+
+def forced_holds(m, d, l):
+    """Langford.forced_endpoint: 6mld + ml <= 4d^2 + 2(ml)^2 + ml^2."""
+    return 6 * m * l * d + m * l <= 4 * d * d + 2 * (m * l) * (m * l) + m * l * l
+
+
+def straddles(m, l, pairs):
+    """The right side of Langford.tight_iff_straddle: ml < i + s_i for every position i <= ml."""
+    s = {}
+    for a, b in pairs:
+        s[a] = s[b] = b - a
+    return all(m * l < i + s[i] for i in range(1, m * l + 1))
+
+
+# ---------------------------------------------------------------------------------------------
 
 FAMILY_INDEX = {}
 
@@ -873,6 +921,54 @@ def main():
             bad.append(m)
     report(not bad, "the witnesses of not_sufficient, 3 <= m <= 12, meet the necessary conditions and "
            "have no sequence" + (f"; bad {bad}" if bad else ""))
+
+    print("")
+    print("The bounds (L2/Residue.lean, L2/Forced.lean, L2/Straddle.lean):")
+    grid = [(m, d, l) for m in range(1, 5) for l in range(1, 7) if 2 * m * l <= 20
+            for d in range(1, (2 * m * l + 1 - l) // 2 + 2)]
+    realized, count, bad_res, bad_forced, bad_rigid = [], 0, [], [], []
+    for m, d, l in grid:
+        sols, _ = search(m, d, l, first_only=False)
+        if not sols:
+            continue
+        realized.append((m, d, l))
+        count += len(sols)
+        bad_res += [(m, d, l, t) for t in range(1, 2 * m * l + 3) if not residue_holds(m, d, l, t)]
+        if not forced_holds(m, d, l):
+            bad_forced.append((m, d, l))
+        tight = 2 * d + l == 2 * m * l + 1
+        bad_rigid += [(m, d, l) for pairs in sols if straddles(m, l, pairs) != tight]
+    report(not bad_res, f"exhaustive search on the {len(grid)} cells with m <= 4, l <= 6, 2ml <= 20 and d "
+           f"up to one past the counting line: at each of the {len(realized)} cells with a sequence the "
+           "residue bound holds for every T in [1, 2ml + 2]"
+           + (f"; fails at {bad_res[:5]}" if bad_res else ""))
+    report(not bad_forced, f"the forced-endpoint bound holds at each of the {len(realized)} cells with a "
+           "sequence" + (f"; fails at {bad_forced[:5]}" if bad_forced else ""))
+    report(not bad_rigid, f"rigidity: each of the {count} sequences found has 2d + l = 2ml + 1 exactly when "
+           "ml < i + s_i for every position i <= ml" + (f"; fails at {bad_rigid[:5]}" if bad_rigid else ""))
+    top = range(3, 201)
+    bad = [m for m in top if not (counting_holds(m, 3 * m - 3, 3) and parity_holds(m, 3 * m - 3, 3))
+           or forced_holds(m, 3 * m - 3, 3) != (m == 3)]
+    report(not bad, "(d, l) = (3m - 3, 3), 3 <= m <= 200: meets counting and parity, and fails the "
+           "forced-endpoint bound exactly for m >= 4 (m = 3 is the cell (6, 3))"
+           + (f"; bad {bad[:5]}" if bad else ""))
+    bad = [m for m in top if not counting_holds(m, 2 * m - 1, 2) or forced_holds(m, 2 * m - 1, 2)
+           or parity_holds(m, 2 * m - 1, 2) != (m % 2 == 0)]
+    report(not bad, "(d, l) = (2m - 1, 2), 3 <= m <= 200: meets counting (and parity exactly for even m), "
+           "and fails the forced-endpoint bound" + (f"; bad {bad[:5]}" if bad else ""))
+    bad, count = [], 0
+    for l in range(1, 41):
+        for d in range(1, (3 * l + 1) // 2 + 1):
+            count += 1
+            if not (forced_holds(2, d, l) and all(residue_holds(2, d, l, t) for t in range(1, 4 * l + 3))):
+                bad.append((d, l))
+    report(not bad, f"m = 2: the residue bound (every T <= 4l + 2) and the forced-endpoint bound hold at "
+           f"every in-bound cell with l <= 40: {count} cells" + (f"; fail at {bad[:5]}" if bad else ""))
+    left, right = residue_sides(7, 9, 4, 11)
+    report(not residue_holds(7, 9, 4, 11) and (left, right) == (30, 28)
+           and counting_holds(7, 9, 4) and parity_holds(7, 9, 4),
+           f"control: the residue bound rejects (m, d, l) = (7, 9, 4) at T = 11 (right side {right} < left "
+           f"side {left}), a cell that meets counting and parity, as it must")
 
     print("")
     print("Controls:")
