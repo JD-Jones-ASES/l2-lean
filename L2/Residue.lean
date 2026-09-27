@@ -109,7 +109,8 @@ theorem sum_tri_lt {T : ℤ} (hT : 0 < T) (r : ℕ) (hr : (r : ℤ) ≤ T) :
     push_cast
     ring
 
-/-- Adding a full block of `T` odd numbers in front changes the sign of the sum of the wave. -/
+/-- The sum of the wave at the first `T + N` odd numbers is minus its sum at the first `N`: the first block of `T`
+sums to zero, and the antiperiod negates every later term. -/
 theorem sum_tri_add {t : ℕ} (ht : 0 < (t : ℤ)) (N : ℕ) :
     ∑ k ∈ Finset.range (t + N), tri (t : ℤ) (2 * (k : ℤ) + 1) =
       - ∑ k ∈ Finset.range N, tri (t : ℤ) (2 * (k : ℤ) + 1) := by
