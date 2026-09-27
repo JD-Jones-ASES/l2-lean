@@ -4,3 +4,4 @@
 *.trace
 *.hash
 note/certificates/*/routes*.json
+__pycache__/

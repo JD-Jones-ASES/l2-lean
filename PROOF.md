@@ -35,6 +35,65 @@ that of the top `ml` (`Nec.sum_le_top`) and at least that of `[1, ml]` (`Nec.bot
 `2d + l ≤ 2ml + 1`. Since `ΣR + ΣL = ml(2ml + 1)`, the parity of `4ΣR` gives
 `l(2d + l + 1) ≡ 0 (mod 4)` for odd `m`. Both are `necessary_internal`.
 
+## The residue bound (`L2/Residue.lean`)
+
+For `T ≥ 1` let `r = ml mod T` and `S(T) = Σ_{p=d}^{d+l−1} |p − T|`. `residue_bound_internal` proves
+`r(T − r) ≤ m·S(T)` for every `m`-fold sequence; the pinned statement writes `|p − T|` as `(p − T) + (T − p)`
+with truncated subtraction, at `p = d + i` for `i < l`.
+
+The potential is the triangle wave `Res.tri T y = T − min(y mod 4T, 4T − y mod 4T)`, that is
+`T − dist(y, 4Tℤ)`. It has antiperiod `2T` (`Res.tri_add_two_mul`: `tri T (y + 2T) = −tri T y`), is even
+(`Res.tri_neg`), moves by at most `1` per step (`Res.tri_succ`) and so has Lipschitz constant `1`
+(`Res.tri_lipschitz`), and equals `T − y` on `[0, 2T]` (`Res.tri_eq`). On the positions put
+`V(x) = tri T (2x − 2ml − 1)`, so that `V(x + T) = −V(x)`.
+
+- Block sums. With `g(N) = Σ_{k<N} tri T (2k + 1)`: `g(r) = r(T − r)` for `r ≤ T` (`Res.sum_tri_lt`), so
+  `g(T) = 0`; the antiperiod gives `g(T + N) = −g(N)` (`Res.sum_tri_add`), hence
+  `g(qT + r) = (−1)^q r(T − r)` (`Res.sum_tri_mod`). Reflecting the lower half of the positions with
+  `Res.tri_neg`, `Σ_{x=1}^{2ml} V(x) = 2g(ml) = ±2r(T − r)` (`Res.sum_positions`, after the reindexing
+  `Res.sum_Icc_one`).
+- Weighted pair sums. `Res.sum_left_weighted` and `Res.sum_right_weighted` are `Nec.sum_right_sub_left`
+  with a weight `w`: the sum of `w` over the left (right) ends is the sum over `p` of the sum of `w(a)`
+  (`w(a + p)`) over `a ∈ A p`. With `Nec.left_right_union` and `Nec.left_right_disjoint`,
+  `Σ_{x=1}^{2ml} w(x) = Σ_p Σ_{a ∈ A p} (w(a) + w(a + p))`.
+- The edge inequality, `Res.edge`. With `y = 2a − 2ml − 1`, the position `a + p` gives
+  `2(a + p) − 2ml − 1 = y + 2(p − T) + 2T`, so the antiperiod turns `V(a) + V(a + p)` into
+  `tri T y − tri T (y + 2(p − T))`, which the Lipschitz bound puts in `[−2|p − T|, 2|p − T|]`. For either
+  sign `σ = ±1`, `0 ≤ σ(V(a) + V(a + p)) + 2|p − T|`.
+- Assembly. Summing the edge inequality over the pairs, with `σ` chosen so that `σ · 2g(ml) = −2r(T − r)`,
+  and using `|A p| = m`, gives `0 ≤ −2r(T − r) + 2m·S(T)` over `ℤ`. `Res.sum_window` rewrites the sum
+  over `[d, d + l − 1]` as the sum over `p = d + i`, `i < l`, and the cast back to the pinned form over `ℕ`
+  loses nothing, since `r < T`.
+
+`residue_bound_window` is the closed form inside the window `d ≤ T ≤ d + l − 1`: there
+`2S(T) = u(u + 1) + v(v + 1)` with `u = T − d` and `v = d + l − 1 − T` (`Res.sum_dist_low`,
+`Res.sum_dist_high`), so `2r(T − r) ≤ m(u(u + 1) + v(v + 1))`.
+
+Two cases recover earlier theorems (remarks, not separate Lean statements). For `T > ml` with
+`T ≥ d + l − 1`, `r = ml` and `2S(T) = 2lT − l(2d + l − 1)`, and the bound reads `2d + l ≤ 2ml + 1`. At
+`l = 1` and `T = d`, `S(d) = 0` forces `r = 0`, that is `d ∣ m`.
+
+## The forced-endpoint bound, the order-three cells and the top of order two (`L2/Forced.lean`)
+
+Write `n = ml`; the counting bound gives `d ≤ n`. The positions `1, …, d` are left ends, since a right end
+`a + p` has `a ≥ 1` and `p ≥ d`; and every left end `a` has `a + d ≤ 2n`, since its partner is
+`a + p ≤ 2n`. So the left ends are `[1, d]` together with the set `E` of the `n − d` left ends above `d`,
+all in `[d + 1, 2n − d]`. `Nec.sum_Icc_d` gives `2 Σ_{x=1}^{d} x = d(d + 1)`, and `Nec.sum_le_top` bounds
+`2ΣE ≤ (n − d)(3n − d + 1)`, twice the sum of the top `n − d` positions of `[1, 2n − d]`. The distance sum
+and the total `ΣL + ΣR = n(2n + 1)` fix `4ΣL = 4n² + 3n − 2nd − nl`, so
+`4n² + 3n − 2nd − nl ≤ 4d² + 6n² − 8nd + 2n`; `Frc.endpoint_arith` does this arithmetic. The result is
+`forced_endpoint_internal`, `6nd + n ≤ 4d² + 2n² + nl`; with the excess `e = (2m − 1)l − 2d + 1` it reads
+`ne ≤ (l − 1 + e)² = 4(n − d)²`.
+
+`not_order_three_internal`: at `(d, l) = (3m − 3, 3)`, `2d + l = 6m − 3 ≤ 6m + 1`, and for odd `m`,
+`l(2d + l + 1) = 18m − 6 ≡ 0 (mod 4)`. For `m = 3` the cell is `(6, 3)`, empty by
+`not_threeFold_six_three_internal` (below). For `m ≥ 4` the forced-endpoint bound would read
+`54m² − 51m ≤ 54m² − 63m + 36`, that is `12m ≤ 36`, which fails.
+
+`not_order_two_top_internal` (not a compared theorem): for `m ≥ 3` the top `(2m − 1, 2)` of the order-two
+row is empty, since there the bound reads `24m² − 10m ≤ 24m² − 12m + 4`, that is `m ≤ 2`. For even `m` the
+cell meets both necessary conditions; for odd `m` the parity condition already excludes it.
+
 ## Certificates and the bridge (`L2/Pairs.lean`, `L2/Multi.lean`, `L2/Bridge.lean`)
 
 The constructions produce sets of pairs of integer positions. `pairEndpoints`, `pairDifferences`,
@@ -163,6 +222,24 @@ left ends by `cl` and its right ends by `(m − 1 + c)l`; the blocks `[cl + 1, (
 `m(2d₀ − 1) − (d₀ − 1)`, which is the tight case `2d + l = 2ml + 1`; `tight_exists_internal` solves
 for `d₀` and applies the bridge.
 
+## Rigidity of the counting bound (`L2/Straddle.lean`)
+
+`tight_iff_straddle_internal`: an `m`-fold sequence has `2d + l = 2ml + 1` if and only if `ml < i + s_i`
+for every position `i ≤ ml`, that is, every pair straddles the middle. The tool is a strict form of
+`Nec.bottom_le_sum`: a set `L` of positive integers with an element above `|L|` has
+`|L|(|L| + 1) < 2ΣL` (`Str.bottom_lt_sum`, by induction on the maximum), so a set of positive integers
+with the sum of `[1, |L|]` is `[1, |L|]` (`Str.bottom_eq`). Write `n = ml`.
+
+- (→) Equality makes the gap `ΣR − ΣL` of the distance sum equal to `n²`, and with `ΣL + ΣR = n(2n + 1)`
+  this gives `2ΣL = n(n + 1)`, so the left ends are `[1, n]` (`Str.bottom_eq`). A position `i ≤ n` is then
+  a left end, its partner `i + s_i` (`Nec.value_left`) is a right end, hence not in `[1, n]`, and
+  `n < i + s_i`.
+- (←) If `n < i + s_i` for every `i ≤ n`, no right end is at most `n`: a right end `a + p ≤ n` has its left
+  end `a ≤ n` with `s_a = p` (`Nec.value_left`), and `a + p ≤ n` contradicts the hypothesis at `a`. So the
+  `n` right ends are `[n + 1, 2n]`, with `2ΣR = n(3n + 1)`; the total gives `2ΣL = n(n + 1)`, and the
+  distance sum reads `n(3n + 1) = n(n + 1) + n(2d + l − 1)`. Cancelling `n ≥ 1` (this is where `m ≥ 1` is
+  used) gives `2d + l = 2n + 1`.
+
 ## The row l = 1 (`L2/OrderOne.lean`)
 
 With one difference `d`, the positions `1, …, 2m` fall into blocks of length `d` that alternate
@@ -183,7 +260,8 @@ cell meets both necessary conditions.
 
 `not_sufficient_internal`: for `m = 3` the cell `(6, 3)`; for even `m ≥ 4` the cell `(m − 1, 1)`;
 for odd `m ≥ 5` the cell `(m − 2, 1)`. Each meets the necessary conditions, and the last two have no
-sequence because `d ∤ m`.
+sequence because `d ∤ m`. The witnesses may also be taken in order three for every `m`:
+`not_order_three` gives the cell `(3m − 3, 3)` (`L2/Forced.lean`).
 
 ## References
 

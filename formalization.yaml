@@ -2,7 +2,7 @@
 version: "v0.4"
 
 project:
-  name: "Two-fold Langford sequences exist exactly when 3l ≥ 2d − 1; the m-fold counting bound and its attainment"
+  name: "Two-fold Langford sequences exist exactly when 3l ≥ 2d − 1; the m-fold counting bound, a residue bound, and their attainment"
   description: >-
     A Lean 4 characterization of two-fold Langford sequences. An m-fold Langford sequence of order l
     and defect d fills the positions 1, ..., 2ml so that every p in [d, d + l - 1] occupies the
@@ -10,8 +10,14 @@ project:
     sequence exists exactly when 3l >= 2d - 1. For every m, (2m - 1)l >= 2d - 1 is necessary, with
     l(2d + l + 1) = 0 (mod 4) for odd m, and the bound is attained whenever 2d + l = 2ml + 1; the
     row of order one exists exactly when d divides m; no three-fold sequence of order 3 and defect 6
-    exists; and for every m >= 3 the necessary conditions are not sufficient. Alkasasbeh, Dyer and
-    Howell define these sequences and ask for necessary and sufficient conditions when m >= 2; this
+    exists; and for every m >= 3 the necessary conditions are not sufficient. For every T >= 1, with
+    r = ml mod T, every m-fold sequence satisfies the residue bound r(T - r) <= m * sum |p - T| over
+    p in [d, d + l - 1], which contains the counting bound and the necessity half of the order-one
+    theorem. Every m-fold sequence satisfies the forced-endpoint bound
+    6mld + ml <= 4d^2 + 2(ml)^2 + ml^2. For every m >= 3 the cell (d, l) = (3m - 3, 3) meets the
+    necessary conditions and admits no m-fold sequence. Equality 2d + l = 2ml + 1 holds exactly when
+    every pair straddles the middle, that is ml < i + s_i for every position i <= ml. Alkasasbeh,
+    Dyer and Howell define these sequences and ask for necessary and sufficient conditions when m >= 2; this
     repository answers the question for m = 2. Necessity is a distance sum. Sufficiency at m = 2 is
     strong induction on l: sixteen literal cells, concatenation, and otherwise a mirror-symmetric
     sequence built by Lemma S from a signed permutation, which is found on the whole cone by
@@ -207,13 +213,17 @@ related_formalizations:
 
 status:
   scope: >-
-    Six compared declarations over one compared definition, Langford.IsLangford. They characterize
+    Ten compared declarations over one compared definition, Langford.IsLangford. They characterize
     two-fold Langford sequences, give the necessary conditions for every m and their attainment on
     the tight line, settle the row of order one, exclude the cell (6, 3) at m = 3, and show that for
-    every m >= 3 the necessary conditions are not sufficient. No sufficient condition for m >= 3 and
-    no count of sequences is claimed; the note's linear-relaxation results are not formalized. The
-    intentional placeholders of Challenge.lean are excluded from proof counts; Solution.lean does
-    not import Challenge.lean.
+    every m >= 3 the necessary conditions are not sufficient. Four more hold for every m: the residue
+    bound (Langford.residue_bound), the forced-endpoint bound (Langford.forced_endpoint), the empty
+    cells (3m - 3, 3) for m >= 3 (Langford.not_order_three) and the rigidity of the counting bound
+    (Langford.tight_iff_straddle). No complete existence characterization for m >= 3 is claimed (the
+    tight line and the row l = 1 are the only sufficient families proved), and no count of
+    sequences; the note's linear-relaxation results, including its certificate-family theorems, are
+    not formalized. The intentional placeholders of Challenge.lean are excluded from proof counts;
+    Solution.lean does not import Challenge.lean.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Classical.choice", "Quot.sound"]
@@ -248,15 +258,38 @@ status:
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
       comparator_config: "comparator.json"
+    - declaration: "Langford.residue_bound"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "Langford.forced_endpoint"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "Langford.not_order_three"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "Langford.tight_iff_straddle"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
 
 automation:
   methods:
     - method: "agent"
-      models: ["Claude (Anthropic)"]
+      models: ["Claude (Anthropic)", "GPT-6 (OpenAI)"]
       framework: "Claude Code with parallel subagents"
       tool_setup: >-
-        The project was directed by its author. Claude (Anthropic) was used throughout; the theorem,
-        its proof, the searches, the checkers and the repository were produced in that process.
+        The project was directed by its author. Claude (Anthropic) was used throughout; the theorems,
+        their proofs, the searches, the checkers and the repository were produced in that process. A
+        review of the six-theorem version by an OpenAI model proposed the residue bound, the
+        forced-endpoint bound, the order-three cells and the rigidity statement; they were
+        re-derived, checked by exact arithmetic and then formalized.
         Lean v4.35.0-rc2 and Mathlib v4.35.0-rc2 (commit 065356127b1dc0016f66b7283ce0ce2c4055aa55)
         are pinned by the committed manifest and lake update is never run; there are no GitHub
         Actions workflows. There is no native_decide; the kernel computations are twenty-seven
@@ -325,6 +358,35 @@ alignment:
       note: >-
         For every m >= 3 some (d, l) with d, l >= 1 meets the conditions of necessary and admits
         no m-fold sequence: (6, 3) for m = 3, (m - 1, 1) for even m, (m - 2, 1) for odd m >= 5.
+    - source: "This development: the residue bound"
+      lean: "Langford.residue_bound"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For every T >= 1, with r = ml mod T, every m-fold sequence satisfies
+        r(T - r) <= m * sum |p - T| over p in [d, d + l - 1], the distance written as
+        (p - T) + (T - p) with truncated subtraction at p = d + i, i < l.
+    - source: "This development: the forced-endpoint bound"
+      lean: "Langford.forced_endpoint"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        Every m-fold sequence satisfies 6mld + ml <= 4d^2 + 2(ml)^2 + ml^2, that is
+        ml * e <= (l - 1 + e)^2 for the excess e = (2m - 1)l - 2d + 1.
+    - source: "This development: one empty order-three cell for every m >= 3"
+      lean: "Langford.not_order_three"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For every m >= 3 the cell (d, l) = (3m - 3, 3) meets the conditions of necessary and admits
+        no m-fold sequence.
+    - source: "This development: the rigidity of the counting bound"
+      lean: "Langford.tight_iff_straddle"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        An m-fold sequence has 2d + l = 2ml + 1 if and only if ml < i + s i for every position
+        i <= ml, that is, every pair straddles the middle.
 
 acknowledgements: >-
   Ahmad H. Alkasasbeh, Danny Dyer and Jared Howell for the definitions, Table 1 and the question;
