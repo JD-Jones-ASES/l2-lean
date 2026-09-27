@@ -22,6 +22,7 @@
 \newtheorem*{thmB}{Theorem B}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
 
@@ -69,12 +70,18 @@ signed displacements are prescribed; an inversion symmetry and a composition lem
 reduce that problem to a band near its diagonal, which is closed by twenty-one
 block-reversal families and the two-block reversal $\tau_l$, each proved by a class
 table, together with eleven explicit permutations. For every $m$ we prove the counting bound $(2m-1)l \ge 2d-1$ with a
-parity condition for odd $m$, show that the bound is attained for every $m$, settle the
-order $l = 1$ (a sequence exists if and only if $d \mid m$), and show that for every
-$m \ge 3$ counting and parity are not sufficient. These statements are formalized and
-machine-checked in Lean~4. For $m \ge 3$ we also describe, with exact Farkas
-certificates and closed-form edges, the empty bands inside the counting bound; that part
-is proved on paper and not formalized, and the general characterization remains open.
+parity condition for odd $m$, show that the bound is attained for every $m$ and only by
+sequences in which every pair straddles the midpoint, and settle the order $l = 1$ (a
+sequence exists if and only if $d \mid m$). We prove a forced-endpoint bound and a family
+of necessary conditions, $r(T-r) \le m\sum_{p=d}^{d+l-1}|p-T|$ with $r = ml \bmod T$ for
+every integer $T \ge 1$, which contains the counting bound and the necessity half of the
+order-one result. For every $m \ge 3$ the cell $(d,l) = (3m-3,3)$ satisfies counting and
+parity and has no sequence, so counting and parity are not sufficient. These
+statements are formalized and machine-checked in Lean~4. For $m \ge 3$ we also describe,
+with exact Farkas certificates and closed-form edges, the empty bands inside the counting
+bound, and give an exact finite test that detects every negative member of that
+certificate family; that part is proved on paper and not formalized, and the general
+characterization remains open.
 \end{abstract}
 
 \maketitle
@@ -112,32 +119,54 @@ Let $m, d, l \ge 1$.
 \item No three-fold Langford sequence of order $3$ and defect $6$ exists.
 \item For every $m \ge 3$ the conditions of \textup{(i)} are not sufficient: some
   $(d,l)$ satisfies them and has no $m$-fold Langford sequence.
+\item If an $m$-fold Langford sequence of order $l$ and defect $d$ exists, then for every
+  integer $T \ge 1$, with $r = ml \bmod T$,
+  \[
+    r(T-r) \;\le\; m \sum_{p=d}^{d+l-1} |p - T| .
+  \]
+\item If an $m$-fold Langford sequence of order $l$ and defect $d$ exists, then
+  $6mld \le 4d^2 + 2m^2l^2 + ml(l-1)$.
+\item For every $m \ge 3$ the cell $(d,l) = (3m-3,3)$ satisfies the conditions of
+  \textup{(i)} and has no $m$-fold Langford sequence.
+\item If $s$ is an $m$-fold Langford sequence of order $l$ and defect $d$, then
+  $(2m-1)l = 2d-1$ if and only if $ml < i + s_i$ for every $i \in [1,ml]$, that is, if
+  and only if every pair has its left end in $[1,ml]$ and its right end in $[ml+1,2ml]$.
 \end{enumerate}
 \end{thmB}
 
 At $m = 2$ the parity clause of (i) is vacuous and Theorem~A says that (i) is exact. At
 $m = 1$ the conditions of (i) are Simpson's, and exactness there is his theorem
 \cite{Simpson}; at $d = 1$ they are the conditions of \cite{BNSS}. Part (v) shows that
-nothing of the kind holds for $m \ge 3$; explicit witnesses are $(d,l) = (6,3)$ at
-$m = 3$, $(m-1,1)$ for even $m \ge 4$ and $(m-2,1)$ for odd $m \ge 5$.
+nothing of the kind holds for $m \ge 3$, where counting and parity give no complete
+existence characterization; explicit witnesses are $(d,l) = (6,3)$ at $m = 3$,
+$(m-1,1)$ for even $m \ge 4$ and $(m-2,1)$ for odd $m \ge 5$, and by (viii) they can be
+taken in order three for every $m$. Sufficient families do exist for every $m$: the
+tight line (ii) and the row $d \mid m$ of (iii). Part (vi) is a family of necessary
+conditions, one for every $T$, which contains the counting bound of (i) (take
+$T \ge \max(ml, d+l-1)$) and the necessity half of (iii) (take $l = 1$ and $T = d$). Part
+(vii) comes from the forced left ends $[1,d]$ and proves (viii) for $m \ge 4$, and (ix)
+says that the bound of (i) is attained only when every pair straddles the midpoint.
 
 \subsection*{What is formalized}
-Theorem~A and all five parts of Theorem~B are formalized and machine-checked in Lean~4
+Theorem~A and all nine parts of Theorem~B are formalized and machine-checked in Lean~4
 with Mathlib \cite{Lean4,Mathlib}, in the accompanying repository \cite{l2lean}, as the
 theorems
 \begin{center}\small
 \begin{tabular}{@{}ll@{}}
 \texttt{Langford.twoFold\_exists\_iff} (Theorem A) & \texttt{Langford.order\_one\_iff} (B(iii))\\
 \texttt{Langford.necessary} (B(i)) & \texttt{Langford.not\_threeFold\_six\_three} (B(iv))\\
-\texttt{Langford.tight\_exists} (B(ii)) & \texttt{Langford.not\_sufficient} (B(v))
+\texttt{Langford.tight\_exists} (B(ii)) & \texttt{Langford.not\_sufficient} (B(v))\\
+\texttt{Langford.residue\_bound} (B(vi)) & \texttt{Langford.forced\_endpoint} (B(vii))\\
+\texttt{Langford.not\_order\_three} (B(viii)) & \texttt{Langford.tight\_iff\_straddle} (B(ix))
 \end{tabular}
 \end{center}
 about the definition \texttt{Langford.IsLangford} (Definition~\ref{def:seq}). Every numbered
 statement below that carries a \emph{Lean} line is proved there under the name given.
 Statements that carry a \emph{Status} line instead are proved on paper in this note and
 are not formalized, or are finite computations; they are Remark~\ref{rem:nordh},
-Corollary~\ref{cor:evenm}, Lemma~\ref{lem:I}, Lemma~\ref{lem:Z}, the computations for
-$m \ge 3$ in \S\ref{sec:mge3}, and the whole of \S\ref{sec:lp}. The note is the human-readable account
+Corollary~\ref{cor:evenm}, Remark~\ref{rem:residuecert},
+Corollary~\ref{cor:residuecases}, Lemma~\ref{lem:I}, Lemma~\ref{lem:Z}, the computations
+for $m \ge 3$ in \S\ref{sec:mge3}, and the whole of \S\ref{sec:lp}. The note is the human-readable account
 of the formalized proof: it follows the route the formalization takes, so that a reader
 can check one against the other without reading Lean.
 
@@ -173,15 +202,16 @@ better than $4l^2$. For sufficiency put
 No part of the argument depends on Simpson's theorem.
 
 \subsection*{Beyond \texorpdfstring{$m = 2$}{m = 2}}
-Section~\ref{sec:allm} proves Theorem~B(i)--(iii) and the juxtaposition lemma, which
-gives, with Theorem~A, a sequence at every cell with $3l \ge 2d-1$ for every even $m$
-(Corollary~\ref{cor:evenm}). Section~\ref{sec:mge3} proves (iv) and (v), and
-\S\ref{sec:lp} describes the picture for $m \ge 3$: an elementary emptiness lemma, a
-one-parameter family of integer Farkas certificates whose optimum yields closed-form
-empty bands with edges
-$d/l \to [(2j+1)m - J \mp \sqrt{m^2-J^2}]/(2J)$, $J = j(j+1) < m$, realized cells
-between two empty bands, and a conjecture. Section~\ref{sec:prior} lists the prior art
-that was searched.
+Section~\ref{sec:allm} proves Theorem~B(i)--(iii), (vi), (vii) and (ix) and the
+juxtaposition lemma, which gives, with Theorem~A, a sequence at every cell with
+$3l \ge 2d-1$ for every even $m$ (Corollary~\ref{cor:evenm}). Section~\ref{sec:mge3}
+proves (iv), (v) and (viii), and \S\ref{sec:lp} describes the picture for $m \ge 3$: an
+elementary emptiness lemma, a one-parameter family of integer Farkas certificates whose
+optimum yields closed-form empty bands with edges
+$d/l \to [(2j+1)m - J \mp \sqrt{m^2-J^2}]/(2J)$, $J = j(j+1) < m$, a quadratic
+inequality that holds at every integer $T$ without regime hypotheses, an exact finite
+test that detects every negative member of the family, realized cells between two empty
+bands, and a conjecture. Section~\ref{sec:prior} lists the prior art that was searched.
 
 \section{Definitions, fidelity and certificates}\label{sec:defs}
 
@@ -310,7 +340,19 @@ $\sum R + \sum L = H(2H+1)$, so
 and the left side is divisible by $4$. For odd $m$, $m$ is invertible modulo $4$.
 \end{proof}
 \lean{Langford.necessary, L2.necessary\_internal, L2.Nec.sum\_le\_top,
-L2.Nec.bottom\_le\_sum, L2.Nec.sum\_right\_sub\_left (L2/Necessity.lean)}
+L2.Nec.bottom\_le\_sum, L2.Nec.sum\_right\_sub\_left (L2/Necessity.lean); the equality
+clause: Langford.tight\_iff\_straddle, L2.tight\_iff\_straddle\_internal (L2/Straddle.lean)}
+
+The equality case is formalized in the sequence form: for an $m$-fold Langford sequence
+$s$ of order $l$ and defect $d$, $2d + l = 2ml + 1$ if and only if $ml < i + s_i$ for
+every $i \in [1,ml]$. The two forms agree. If every pair straddles the midpoint, each
+$i \le ml$ is a left end and its partner $i + s_i$ exceeds $ml$. Conversely, if
+$ml < i + s_i$ for every $i \le ml$ and some $i \le ml$ were a right end, its partner
+$a = i - s_i \ge 1$ would be a left end with $s_a = s_i$ and $a + s_a = i \le ml$,
+contrary to the hypothesis at $a$; so $[1,ml]$ consists of left ends, and since there are $ml$ of them, the right ends are
+$[ml+1,2ml]$. The formal proof uses the same sums: at equality $2\sum L = ml(ml+1)$,
+which forces $L = [1,ml]$; conversely, if no right end lies in $[1,ml]$, then
+$R = [ml+1,2ml]$ and the distance sum gives $2d + l - 1 = 2ml$.
 
 For even $m$ the parity condition is vacuous (if $l$ is odd, $2d + l + 1$ is even). For
 odd $m$ it says: $l \equiv 0 \pmod 4$ allows every $d$, $l \equiv 1 \pmod 4$ needs $d$
@@ -421,6 +463,155 @@ copies juxtaposed (Lemma~\ref{lem:juxt}) give an $m$-fold one.
 \end{proof}
 \lean{Langford.order\_one\_iff, L2.dvd\_of\_order\_one, L2.order\_one\_of\_dvd,
 L2.order\_one\_iff\_internal (L2/OrderOne.lean)}
+
+\subsection*{A family of necessary conditions}
+For an integer $T$ write
+\[
+  S(T) \;=\; \sum_{p=d}^{d+l-1} |p - T|
+\]
+for the total distance from $T$ to the differences.
+
+\begin{theorem}[the residue bound]\label{thm:residue}
+Let $m, d, l \ge 1$. If an $m$-fold Langford sequence of order $l$ and defect $d$ exists,
+then for every integer $T \ge 1$, with $r = ml \bmod T$,
+\[
+  r(T-r) \;\le\; m\,S(T).
+\]
+\end{theorem}
+
+\begin{proof}
+Put $n = ml$ and take the pair form. For an integer $y$ let
+$w(y) = T - \operatorname{dist}(y, 4T\Z)$, the triangle wave of period $4T$ with values
+in $[-T,T]$, and put $V(x) = w(2x - 2n - 1)$ for $x \in \Z$. Three properties of $w$ are
+used: it is even; it is $1$-Lipschitz, $|w(y) - w(y')| \le |y - y'|$, as a distance to a
+set is; and $w(y + 2T) = -w(y)$, because shifting $y$ by $2T$ turns its distance
+$\delta \in [0,2T]$ to $4T\Z$ into $2T - \delta$. Hence $V(x + T) = -V(x)$ and
+$|V(x) - V(x')| \le 2|x - x'|$.
+
+\emph{The edge inequality.} Let $(a, a+p)$ be a pair of the sequence. Then
+$V(a+p) = -V(a+p-T)$, so
+\[
+  |V(a) + V(a+p)| \;=\; |V(a) - V(a+p-T)| \;\le\; 2|p - T|,
+\]
+and for either sign $\sigma \in \{1,-1\}$, $\sigma\,(V(a) + V(a+p)) + 2|p - T| \ge 0$.
+Every position of $[1,2n]$ is an end of exactly one pair, and every $p \in [d,d+l-1]$ is
+the difference of exactly $m$ pairs, so the sum over the $ml$ pairs is
+\begin{equation}\label{eq:residuesum}
+  \sigma \sum_{x=1}^{2n} V(x) + 2m\,S(T) \;\ge\; 0 .
+\end{equation}
+
+\emph{The total.} As $x$ runs over $[1,2n]$, $2x - 2n - 1$ runs over
+$\pm 1, \pm 3, \dots, \pm(2n-1)$, and $w$ is even, so $\sum_{x=1}^{2n} V(x) = 2g(n)$ with
+$g(N) = \sum_{k=0}^{N-1} w(2k+1)$. For $0 \le k \le T-1$ one has $0 < 2k+1 < 2T$, so
+$w(2k+1) = T - 2k - 1$, and $g(r) = \sum_{k<r} (T - 2k - 1) = r(T-r)$ for
+$0 \le r \le T$; in particular $g(T) = 0$, the terms $T-1, T-3, \dots, 1-T$ cancelling.
+Since $2(k+T) + 1 = (2k+1) + 2T$, the terms of index $k + T$ are the negatives of those
+of index $k$, and $g(N + T) = g(T) - g(N) = -g(N)$. Writing $n = qT + r$ with
+$0 \le r < T$,
+\[
+  \sum_{x=1}^{2n} V(x) \;=\; 2(-1)^q\, r(T-r).
+\]
+
+\emph{The sign.} With $\sigma = -(-1)^q$, \eqref{eq:residuesum} reads
+$-2r(T-r) + 2mS(T) \ge 0$.
+\end{proof}
+\lean{Langford.residue\_bound, L2.residue\_bound\_internal (L2/Residue.lean)}
+
+In the formal statement $|p - T|$ is written $(p - T) + (T - p)$ with truncated
+subtraction, and $p = d + i$ with $0 \le i < l$. The development follows the proof above:
+the triangle wave and its antiperiod, evenness and Lipschitz bound, the block sums
+$g$, the total over the positions, and the edge inequality summed over the pairs.
+
+\begin{remark}\label{rem:residuecert}
+The potential of the proof is the certificate of Lemma~\ref{lem:familyP}
+(\S\ref{sec:lp}): $V(x) = 2W_T(x - c)$ with $c = ml + \tfrac12$, and $(y,z) =
+(\sigma V, 2|p - T|)$ is the member with $s = \sigma$. Theorem~\ref{thm:residue} says
+that the total of this certificate, with the sign chosen to minimize it, is nonnegative
+whenever a sequence exists; it holds for every $T \ge 1$, and in this form it is
+formalized. The summation uses only that every position is covered once and every $p$
+exactly $m$ times, so, as in Lemma~\ref{lem:farkas}, the bound also holds for fractional
+pairings: a cell that violates it has an infeasible linear relaxation.
+\end{remark}
+\status{proved here; the statement for fractional pairings is not formalized.}
+
+\begin{corollary}[the window form]\label{cor:window}
+If an $m$-fold Langford sequence of order $l$ and defect $d$ exists and
+$d \le T \le d+l-1$, then with $r = ml \bmod T$, $u = T - d$ and $v = d + l - 1 - T$,
+\[
+  2r(T-r) \;\le\; m\bigl(u(u+1) + v(v+1)\bigr).
+\]
+\end{corollary}
+
+\begin{proof}
+For $T$ in the window the distances $|p - T|$ are $u, u-1, \dots, 0$ for $p \le T$ and
+$1, 2, \dots, v$ for $p > T$, so $2S(T) = u(u+1) + v(v+1)$.
+\end{proof}
+\lean{L2.residue\_bound\_window (L2/Residue.lean)}
+
+\begin{corollary}[special cases]\label{cor:residuecases}
+In Theorem~\ref{thm:residue}:
+\begin{enumerate}
+\item for $T \ge \max(ml, d+l-1)$ the bound is the counting bound $2d + l \le 2ml + 1$
+  of Theorem~\ref{thm:nec};
+\item for $l = 1$ and $T = d$ it says $d \mid m$, the necessity half of
+  Theorem~\ref{thm:orderone};
+\item for $T = d$ it says $r(d-r) \le ml(l-1)/2$, where $r = ml \bmod d$.
+\end{enumerate}
+\end{corollary}
+
+\begin{proof}
+(i) Every $p$ is at most $T$, so $mS(T) = mlT - m\sum_p p$; and $r(T-r) = ml(T - ml)$,
+since $r = ml$ if $T > ml$ and both sides vanish if $T = ml$. The bound becomes
+$m\sum_p p \le (ml)^2$, that is $ml(2d+l-1)/2 \le (ml)^2$, that is $2d + l - 1 \le 2ml$.
+(ii) Here $S(d) = 0$ and $r = m \bmod d$, and $r(d-r) \le 0$ with $0 \le r < d$ forces
+$r = 0$. (iii) $S(d) = 0 + 1 + \dots + (l-1) = l(l-1)/2$.
+\end{proof}
+\status{proved here from Theorem~\ref{thm:residue}; the corollary is not stated in the
+development, where the counting bound and the order-one theorem are proved directly
+(Theorems~\ref{thm:nec} and~\ref{thm:orderone}).}
+
+\begin{theorem}[the forced-endpoint bound]\label{thm:forced}
+Let $m, d, l \ge 1$ and put $e = (2m-1)l - 2d + 1$. If an $m$-fold Langford sequence of
+order $l$ and defect $d$ exists, then
+\[
+  ml\,e \;\le\; (l - 1 + e)^2, \qquad\text{equivalently}\qquad
+  6mld \;\le\; 4d^2 + 2m^2l^2 + ml(l-1).
+\]
+\end{theorem}
+
+\begin{proof}
+Put $n = ml$ and let $L$ and $R$ be the sets of left and right ends, as in the proof of
+Theorem~\ref{thm:nec}. From $\sum R - \sum L = n(2d+l-1)/2$ and
+$\sum R + \sum L = n(2n+1)$,
+\[
+  4\sum L \;=\; n(4n + 3 - 2d - l).
+\]
+By Theorem~\ref{thm:nec} and $l \ge 1$, $d \le n$. Every position $x \in [1,d]$ is a left
+end, since a right end $a + p$ has $a \ge 1$ and $p \ge d$; and every left end $a$
+satisfies $a \le 2n - d$, since $a + p \le 2n$ and $p \ge d$. So $L$ consists of $[1,d]$
+and a set $E$ of $n - d$ integers in $[d+1, 2n-d]$, and $\sum E$ is at most the sum of
+the $n - d$ largest integers of that interval, $[n+1, 2n-d]$:
+\[
+  2\sum L \;\le\; d(d+1) + (n-d)(3n-d+1).
+\]
+With the value of $4\sum L$ this becomes $0 \le 4d^2 - 6nd + 2n^2 + n(l-1)$, the second
+form. Since $l - 1 + e = 2(n-d)$, the right side equals $(l - 1 + e)^2 - ne$.
+\end{proof}
+\lean{Langford.forced\_endpoint, L2.forced\_endpoint\_internal (L2/Forced.lean)}
+
+The development states the second form as $6mld + ml \le 4d^2 + 2(ml)^2 + ml^2$. The
+bound is the case $T = d$ of Theorem~\ref{thm:residue}, weakened. Write
+$n = ml = qd + r$ with $0 \le r < d$; then
+\[
+  (n - d)(n - 2d) + r(d-r) \;=\; (1-q)\,d\,\bigl((2-q)d - 2r\bigr) \;\ge\; 0,
+\]
+since for $q = 0$ both factors are positive, for $q = 1$ the first vanishes, and for
+$q \ge 2$ both are at most $0$. With Corollary~\ref{cor:residuecases}(iii),
+$ml(l-1)/2 \ge r(d-r) \ge -(n-d)(n-2d)$, and
+$2(n-d)(n-2d) + ml(l-1) = 4d^2 - 6nd + 2n^2 + n(l-1)$. In the notation of
+\S\ref{sec:lp} the forced-endpoint bound is $2F_1(d) \ge 0$, and the inequality used is
+the case $j = 1$, $T = d$ of \eqref{eq:Kbound}. The direct proof above is the one
+formalized; it needs only the endpoint sets and their sums.
 
 \section{The reduction at \texorpdfstring{$m = 2$}{m = 2}}\label{sec:reduction}
 
@@ -991,6 +1182,43 @@ $7 - p = 1$ and $p = 6$: a fourth pair of difference $6$.
 The conditions hold at $(3,6,3)$: $2 \cdot 6 + 3 = 15 \le 19$ and
 $3(12+3+1) = 48 \equiv 0 \pmod 4$.
 
+\begin{theorem}[order three]\label{thm:orderthree}
+For every $m \ge 3$ the cell $(d,l) = (3m-3,3)$ satisfies both conditions of
+Theorem~\ref{thm:nec}, and no $m$-fold Langford sequence of order $3$ and defect $3m-3$
+exists.
+\end{theorem}
+
+\begin{proof}
+Here $2d + l = 6m - 3 \le 6m + 1 = 2ml + 1$, and for odd $m$,
+$l(2d+l+1) = 18m - 6 = 6(3m-1) \equiv 0 \pmod 4$ because $3m - 1$ is even. The excess is
+$e = 3(2m-1) - 2(3m-3) + 1 = 4$ and $ml = 3m$, so Theorem~\ref{thm:forced} would give
+$12m \le 36$, which fails for $m \ge 4$. At $m = 3$ the cell is $(6,3)$, empty by
+Proposition~\ref{prop:sixthree}.
+\end{proof}
+\lean{Langford.not\_order\_three, L2.not\_order\_three\_internal (L2/Forced.lean)}
+
+The cells $(3m-3,3)$ lie two defects below the tight line of order three, which is
+$d = 3m - 1$. For $m = 2$ the cell is $(3,3)$, which has a two-fold sequence (Theorem~A;
+Table~\ref{tab:literals}); so among the cells $(3m-3,3)$ with $m \ge 2$ exactly the one
+at $m = 2$ is realized.
+
+\begin{proposition}[the top of order two]\label{prop:ordertwotop}
+For every $m \ge 3$ there is no $m$-fold Langford sequence of order $2$ and defect
+$2m-1$.
+\end{proposition}
+
+\begin{proof}
+Here $ml = 2m$ and $e = 2(2m-1) - 2(2m-1) + 1 = 1$, so Theorem~\ref{thm:forced} would
+give $2m \le 4$. (In the notation of \S\ref{sec:lp}, $F_1(2m-1) = 2 - m < 0$.)
+\end{proof}
+\lean{L2.not\_order\_two\_top\_internal (L2/Forced.lean)}
+
+The defect $2m-1$ is the largest the counting bound allows in order two
+($2d + 2 \le 4m + 1$). For even $m \ge 4$ the cell satisfies both conditions of
+Theorem~\ref{thm:nec}, the parity condition being vacuous; for odd $m$ the parity
+condition already excludes it ($l \equiv 2 \pmod 4$), so it is a witness only for even
+$m$. At $m = 2$ the cell $(3,2)$ is realized (Theorem~A).
+
 \begin{theorem}[counting and parity do not suffice]\label{thm:notsuff}
 For every $m \ge 3$ there are $d, l \ge 1$ satisfying the conditions of
 Theorem~\ref{thm:nec} with no $m$-fold Langford sequence of order $l$ and defect $d$.
@@ -1005,8 +1233,10 @@ Theorem~\ref{thm:orderone} shows the last two cells empty.
 \end{proof}
 \lean{Langford.not\_sufficient, L2.not\_sufficient\_internal (L2/OrderOne.lean)}
 
-Among other small witnesses, $(7,4)$ at $m = 3$ is empty by Lemma~\ref{lem:Z} below and
-$(3,1)$ at $m = 4$ by Theorem~\ref{thm:orderone}.
+By Theorem~\ref{thm:orderthree} the witnesses may be taken uniformly in order three,
+$(d,l) = (3m-3,3)$ for every $m \ge 3$. Among other small witnesses, $(7,4)$ at $m = 3$
+is empty by Lemma~\ref{lem:Z} below and $(3,1)$ at $m = 4$ by
+Theorem~\ref{thm:orderone}.
 
 \begin{lemma}[an emptiness lemma]\label{lem:Z}
 Let $m \ge 2$. If
@@ -1087,6 +1317,16 @@ $g(a) + g(a+p) = 2s[W_T(u) - W_T(u+p-T)] \ge -2|p-T|$. For the closed form, $g$ 
 symmetric about $c$, so $\sum g = 4s\sum_{k=1}^{ml} W_T(k-\tfrac12)$; the sum over a
 period $2T$ vanishes and the partial sums are $r(T-r)/2$ and $(r-T)(r-2T)/2$.
 \end{proof}
+
+Since $|\sigma_2(ml \bmod 2T)| = r(T-r)$ with $r = ml \bmod T$, the smaller of the two
+totals is $\min_s \Phi_s(T) = 2H(T)$, where
+\[
+  H(T) \;=\; mS(T) - r(T-r), \qquad S(T) = \sum_{p=d}^{d+l-1} |p - T| ;
+\]
+$H(T)$ is half the minimum certificate total, and the statement that it is nonnegative
+whenever a sequence exists is the residue bound, Theorem~\ref{thm:residue}, which is
+formalized. With Theorem~A it gives the inequality of Proposition~\ref{prop:m2} below,
+though not its equality cases.
 
 \begin{theorem}[explicit empty bands]\label{thm:bands}
 Let $m \ge 3$, $j \ge 1$ with $J = j(j+1) < m$, and $l \ge 2$. Suppose $d$ is an integer
@@ -1213,6 +1453,201 @@ $[kd_0 - (k-1)/2,\ kd_0 - (k-1)/2 + kl_0 - 1]$, each value $m$ times.
 cells with feasible relaxation. We have not checked the literature for this
 multiplication.}
 
+\subsection*{The quadratic inequality without regime hypotheses}
+For $j \ge 1$ put
+\begin{gather*}
+  J = j(j+1), \qquad a = m + J, \qquad b = m\bigl((2j+2)l + 2d - 1\bigr),\\
+  C = m^2l^2 + md^2 + m(l-1)d + \frac{ml(l-1)}{2},
+\end{gather*}
+and $F_j(T) = aT^2 - bT + C$. The coefficients are integers, and $F_j$ is the polynomial
+of Theorem~\ref{thm:bands}.
+
+\begin{theorem}[the quadratic inequality]\label{thm:quad}
+If an $m$-fold Langford sequence of order $l$ and defect $d$ exists, then
+$F_j(T) \ge 0$ for every $j \ge 1$ and every integer $T$.
+\end{theorem}
+
+\begin{proof}
+Put $n = ml$. For an integer $T \ge 1$ let
+\[
+  K_j(T) = (n - jT)\bigl(n - (j+1)T\bigr), \qquad
+  P(T) = T^2 - (2d+l-1)T + d^2 + (l-1)d + \frac{l(l-1)}{2} ;
+\]
+expanding, $F_j(T) = K_j(T) + mP(T)$. Two inequalities hold for every integer $T \ge 1$,
+whether or not a sequence exists.
+
+First, write $n = qT + r$ with $0 \le r < T$ and put $h = j - q$. Then
+\[
+  K_j(T) + r(T-r) \;=\; hT\bigl((h+1)T - 2r\bigr),
+\]
+which is positive for $h \ge 1$, zero for $h = 0$, and for $h \le -1$ a product of two
+factors that are at most $0$. So
+\begin{equation}\label{eq:Kbound}
+  K_j(T) \;\ge\; -r(T-r).
+\end{equation}
+
+Second, $P(T) \ge S(T)$. If $d \le T \le d+l-1$ and $u = T - d$, then
+$P(T) = u^2 - (l-1)u + l(l-1)/2$, which is $S(T)$ by the closed form in the proof of
+Corollary~\ref{cor:window}. If $T < d$, then $P(T) - S(T) = u(u-1)$ with
+$u = d - T \ge 1$; if $T > d+l-1$, then $P(T) - S(T) = v(v-1)$ with
+$v = T - (d+l-1) \ge 1$. Both are nonnegative because $u$ and $v$ are positive integers.
+
+Hence $F_j(T) \ge mS(T) - r(T-r) = H(T)$ for every integer $T \ge 1$, and $H(T) \ge 0$
+by Theorem~\ref{thm:residue}. For $T \le 0$ the three terms $aT^2$, $-bT$ and $C$ are
+nonnegative and $C > 0$.
+\end{proof}
+\status{proved here; not formalized.}
+
+Theorem~\ref{thm:bands} is the special case $T = T_0$ with its regime hypotheses, which
+make $\Phi = 2F_j(T_0)$, and with the worst-case rounding cost $a/4$. Theorem~\ref{thm:quad}
+needs neither; in particular the regime conditions, which Theorem~\ref{thm:bands} takes
+as hypotheses for $j \ge 2$, are not needed for the emptiness of the cell. The
+forced-endpoint bound is $2F_1(d) \ge 0$ (Theorem~\ref{thm:forced}). A negative $F_j(T)$
+at an integer $T \ge 1$ is a negative $H(T)$, that is, a negative member of the family
+of Lemma~\ref{lem:familyP} at the same $T$.
+
+\subsection*{Exact rounding and a finite test}
+Put
+\[
+  t_j = \Bigl\lfloor \frac{b + a}{2a} \Bigr\rfloor, \qquad \rho_j = b - 2at_j,
+\]
+so that $t_j$ is an integer nearest to $b/(2a)$, ties rounded up, and put
+\[
+  X = 2Jd - \bigl((2j+1)m - J\bigr)l - J, \qquad D = (m^2 - J^2)l^2 + J(m+J).
+\]
+
+\begin{proposition}[exact rounding and a finite cutoff]\label{prop:rounding}
+Let $j \ge 1$, with $t_j$, $\rho_j$, $X$ and $D$ as above.
+\begin{enumerate}
+\item $-a \le \rho_j < a$, $t_j$ minimizes $F_j$ over the integers, and
+  $4aF_j(t_j) = 4aC - b^2 + \rho_j^2$. So $F_j(t_j) < 0$ if and only if
+  $4aC - b^2 + \rho_j^2 < 0$.
+\item $J(4aC - b^2) = m(X^2 - D)$ and $D = (m+J)\bigl(ml^2 - J(l^2-1)\bigr)$. So
+  $F_j(t_j) < 0$ if and only if $mX^2 + J\rho_j^2 < mD$.
+\item If $F_j(t_j) < 0$, then $J(l^2 - 1) < ml^2$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(i) The bounds on $\rho_j$ restate $t_j \le (b+a)/(2a) < t_j + 1$. For every $T$,
+$4aF_j(T) = (2aT - b)^2 + 4aC - b^2$, so $F_j$ is smallest over the integers at an integer
+nearest to $b/(2a)$, and $2at_j - b = -\rho_j$. (ii) Both identities are checked by
+expanding. (iii) If $F_j(t_j) < 0$, then $4aC - b^2 < -\rho_j^2 \le 0$, so by (ii)
+$D > X^2 \ge 0$, and $m + J > 0$.
+\end{proof}
+\status{proved here; checked exactly on the grid described below; not formalized.}
+
+Part (i) is a test in exact integer arithmetic, with no square root.
+Theorem~\ref{thm:bands} replaces $\rho_j^2$ by its worst case $a^2$: its hypothesis is
+$mX^2 + Ja^2 < mD$, and the outer interval of Lemma~\ref{lem:outer} is $X^2 < D$. For
+$l \ge 2$, part (iii) gives $J < ml^2/(l^2-1) \le 4m/3$, so only the indices with
+$j(j+1) < 4m/3$, of which there are $O(\sqrt m)$, need to be tested; this counts tests,
+each an exact comparison of integers, not bit operations. The cutoff cannot be
+simplified to $J < m$, the range of Theorem~\ref{thm:bands}: Example~\ref{ex:19123}
+below has $J = 20 > m = 19$. For $l = 1$ the condition in (iii) is vacuous; that row is
+settled by Theorem~\ref{thm:orderone}.
+
+\begin{theorem}[completeness for the family]\label{thm:complete}
+Let $l \ge 2$. Some member of the family of Lemma~\ref{lem:familyP}, an integer
+$T \ge 1$ with a sign $s$, has $\Phi_s(T) < 0$ if and only if the counting bound fails,
+$(2m-1)l < 2d - 1$, or $F_j(t_j) < 0$ for some $j \ge 1$ with $J(l^2 - 1) < ml^2$.
+\end{theorem}
+
+\begin{proof}
+Since $\min_s \Phi_s(T) = 2H(T)$, the left side says that $H(T) < 0$ for some integer
+$T \ge 1$. Put $n = ml$ and $e = (2m-1)l - 2d + 1$.
+
+If the counting bound fails, the member $T \ge \max(n, d+l-1)$, $s = -1$, has
+$\Phi = ne < 0$. If $F_j(t_j) < 0$, then $t_j \ge 1$, because $F_j > 0$ at the integers
+$T \le 0$, and $H(t_j) \le F_j(t_j) < 0$ by the proof of Theorem~\ref{thm:quad}.
+
+Conversely, suppose that the counting bound holds and $H(T) < 0$. By
+Proposition~\ref{prop:rounding}(iii) it suffices to find $j \ge 1$ and an integer $T'$
+with $F_j(T') < 0$, since then $F_j(t_j) \le F_j(T') < 0$. If $T \ge n$, then
+$mS(T) \ge m\sum_p (T - p) = nT - m\sum_p p$ and $r(T-r) = n(T - n)$, so
+$H(T) \ge n^2 - m\sum_p p = ne/2 \ge 0$, a contradiction. So $T < n$; put
+$j = \lfloor n/T \rfloor \ge 1$. Then $jT \le n < (j+1)T$, so $h = 0$ in the proof of
+Theorem~\ref{thm:quad}, and $H(T) = K_j(T) + mS(T)$.
+\begin{itemize}
+\item If $d \le T \le d+l-1$, then $S(T) = P(T)$ and $F_j(T) = H(T) < 0$.
+\item If $T < d$, let $\eta(u) = K_j(u) + m\sum_p (p - u)$ for real $u$. Then
+  $\eta(T) = H(T)$, and $\eta'(u) = 2(j+1)(ju - n) \le 0$ for $u \le n/j$. If $n/j < d$,
+  then $\eta(n/j) \le \eta(T) < 0$; but $K_j(n/j) = 0$ and every $p$ exceeds $n/j$, so
+  $\eta(n/j) > 0$. Hence $T < d \le n/j$, and $F_j(d) = \eta(d) \le \eta(T) < 0$, since
+  $\sum_p (p - d) = S(d) = P(d)$.
+\item If $T > d+l-1$, let $\eta(u) = K_j(u) + m\sum_p (u - p)$ for real $u$. Then
+  $\eta(T) = H(T)$, and $\eta'(u) = 2j((j+1)u - n) \ge 0$ for $u \ge n/(j+1)$. If
+  $n/(j+1) > d+l-1$, then $\eta(n/(j+1)) \le \eta(T) < 0$; but $K_j(n/(j+1)) = 0$ and
+  every $p$ is below $n/(j+1)$, so $\eta(n/(j+1)) > 0$. Hence
+  $n/(j+1) \le d+l-1 < T$, and $F_j(d+l-1) = \eta(d+l-1) \le \eta(T) < 0$.\qedhere
+\end{itemize}
+\end{proof}
+\status{proved here; checked exactly on the grid described below; not formalized.}
+
+The real variable $u$ is used only on intervals where the distance sum is linear in
+$u$; the closed form of $S$ inside the window is not used at non-integer points. The
+theorem is completeness for this family only: the finite test detects exactly the
+negative members of the family of Lemma~\ref{lem:familyP}. It is not completeness for
+the linear relaxation, whose infeasibility may have other certificates, and it says
+nothing about existence at cells that pass the test; it proves neither
+Conjecture~\ref{conj:C} below nor the stronger guess stated after it. For $l = 1$ the
+family is exact by Theorem~\ref{thm:orderone}: at $T = d$, $S(d) = 0$ and
+$H(d) = -r(d-r)$ with $r = m \bmod d$, which is negative exactly when $d \nmid m$, and
+when $d \mid m$ a sequence exists, so by Lemma~\ref{lem:farkas} no member of the family
+is negative.
+
+\begin{example}\label{ex:794}
+The cell $(m,d,l) = (7,9,4)$ satisfies the counting bound ($22 \le 57$) and the parity
+condition ($4 \cdot 23 \equiv 0 \pmod 4$). For $j = 2$,
+$(a,b,C,t_2,\rho_2) = (13,287,1582,11,1)$ and $F_2(11) = -2$, so the cell is empty. The
+worst-case expression of Theorem~\ref{thm:bands} is $4aC - b^2 + a^2 = 64 > 0$, so its
+inner test does not reach this cell, while $4aC - b^2 + \rho_2^2 = -104$. In the form
+of Theorem~\ref{thm:residue}, at $T = 11$: $ml \bmod 11 = 6$ and
+$7\,(2 + 1 + 0 + 1) = 28 < 6 \cdot (11 - 6) = 30$.
+\end{example}
+
+\begin{example}\label{ex:19123}
+The cell $(m,d,l) = (19,12,3)$ satisfies the counting bound and the parity condition
+($3 \cdot 28 \equiv 0 \pmod 4$). For $j = 4$, so $J = 20 > m$,
+$(a,b,C,t_4,\rho_4) = (39,1007,6498,13,-7)$ and $F_4(13) = -2$, so the cell is empty. The
+index lies inside the cutoff, $J(l^2-1) = 160 < ml^2 = 171$, and outside the range
+$J < m$ of Theorem~\ref{thm:bands}. In the form of Theorem~\ref{thm:residue}, at
+$T = 13$: $57 \bmod 13 = 5$ and $19\,(1 + 0 + 1) = 38 < 5 \cdot 8 = 40$.
+\end{example}
+\status{exact integer arithmetic, repeated by the checker described below; not
+formalized.}
+
+The two uniform families of \S\ref{sec:mge3} in this language: at $(d,l) = (3m-3,3)$,
+$F_1(3m-2) = -4(m-2)$, negative for every $m \ge 3$, including $m = 3$; at
+$(d,l) = (2m-1,2)$, $F_1(2m-1) = 2 - m$. In both, $T$ lies in the window and
+$\lfloor ml/T \rfloor = 1$, so these values are $H(T)$.
+
+\emph{Finite checks.} A standard-library checker in exact integer arithmetic tested this
+subsection on the grid $1 \le m \le 20$, $1 \le l \le 20$,
+$1 \le d \le \lfloor ((2m-1)l+1)/2 \rfloor + 2$, which runs two defects past the counting
+line: $42{,}900$ triples. On every triple the finite test (the counting bound, then
+$F_j(t_j)$ for the indices within the cutoff) agrees with a direct scan of $H(T)$ over
+every integer $T$ with $1 \le T \le \max(ml, d+l-1)$, beyond which $H$ is constant. The
+test rejects $28{,}645$ triples that satisfy the counting bound; for the $1{,}026$ of them
+with $m \le 10$ and $l \le 8$ the checker rebuilt the integer weights of the certificate,
+checked every edge inequality and confirmed the negative total. On the grid, $98$
+first-detected obstructions are missed by the worst-case rounding inequality of
+Theorem~\ref{thm:bands}; this count includes cells of order one and cells that fail the
+parity condition, and is not a count of new empty cells. The checker also verified the
+two examples, the identities $4d^2 - 6mld + 2m^2l^2 + ml(l-1) = 2F_1(d) = (l-1+e)^2 - mle$
+for $m, l \le 30$ and $d \le ml$, and the identities of the two uniform families for
+$3 \le m \le 1000$, and it reproduces the empty bands of \S\ref{sec:mge3} in the rows
+$(m,l) = (3,8)$, $(3,12)$, $(3,24)$ and $(4,20)$: $d \in [11,18]$, $[15,28]$, $[30,55]$
+and $[34,67]$. A second check decided every cell with $m \le 4$, $l \le 6$ and
+$2ml \le 20$, up to one defect past the counting line, by exhaustive search ($79$ cells,
+$41$ realized): the
+residue bound, for every $T \le 2ml + 2$, and the forced-endpoint bound hold at every
+realized cell, the equality case of Theorem~\ref{thm:nec}, in its sequence form, holds
+for every sequence found, and among the $38$ empty cells the residue bound rejects $28$ and
+the forced-endpoint bound $8$. At $m = 2$, where Theorem~A realizes every in-bound cell,
+both bounds hold at every in-bound cell with $l \le 400$, the residue bound for every
+$T \le 4l + 2$; the second check also confirmed the two examples.
+
 \subsection*{Realized cells between empty bands}
 For $m \ge 7$ a row can contain two empty bands with realized cells between them. In the
 row $m = 7$, $l = 12$ the cells $d = 33$ and $d = 38$ are empty by exact certificates
@@ -1284,7 +1719,7 @@ $l \le 100$ except the two empty cells of Lemma~\ref{lem:I}.
 \subsection*{The formal development}
 The repository \cite{l2lean} pins Lean \texttt{v4.35.0-rc2} and the Mathlib tag of the
 same name by a committed manifest. \texttt{Challenge.lean} states the definition and the
-six theorems of \S\ref{sec:intro}; \texttt{Solution.lean} restates them byte for byte and
+ten theorems of \S\ref{sec:intro}; \texttt{Solution.lean} restates them byte for byte and
 closes each with the internal theorem of the same name in the library \texttt{L2}, which
 has these modules:
 \begin{itemize}\setlength{\itemsep}{0pt plus 1pt}
@@ -1307,16 +1742,25 @@ has these modules:
 \item \texttt{Tight}, \texttt{Necessity}, \texttt{OrderOne}, \texttt{SixThree} ---
   Theorems~\ref{thm:tight}, \ref{thm:nec}, \ref{thm:orderone}, \ref{thm:notsuff} and
   Proposition~\ref{prop:sixthree};
+\item \texttt{Residue} --- the residue bound, Theorem~\ref{thm:residue} and
+  Corollary~\ref{cor:window};
+\item \texttt{Forced} --- the forced-endpoint bound, the order-three cells and the top
+  of order two, Theorems~\ref{thm:forced} and~\ref{thm:orderthree} and
+  Proposition~\ref{prop:ordertwotop};
+\item \texttt{Straddle} --- the rigidity of the counting bound, the equality clause of
+  Theorem~\ref{thm:nec};
 \item \texttt{Main} --- the induction of \S\ref{sec:theorem} and the internal theorems.
 \end{itemize}
 Internals work over $\Z$, where linear arithmetic with negative slopes is decided by
 Lean's \texttt{omega}; the pinned statements are over $\mathbb{N}$, and the casts happen
-once, in \texttt{Bridge} and \texttt{Main}. Finite facts --- the eleven permutations, the
+in \texttt{Bridge} and \texttt{Main}, and inside the proof of the residue bound, whose
+potential takes negative values. Finite facts --- the eleven permutations, the
 sixteen literal cells, and in the proof for $(6,3)$ the three-element subsets of $[7,12]$
 with sum $33$ --- are decided by the kernel on literal finite sets; there is no other
 search inside the proofs.
 A build-time audit (\texttt{Test/Axioms.lean}) walks every declaration of the development
---- 1{,}475 constants in about 4{,}500 lines of Lean --- and admits only the axioms
+--- \texttt{\detokenize{DESK_FILLS}} constants in about \texttt{\detokenize{DESK_FILLS}}
+lines of Lean --- and admits only the axioms
 \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}; a source guard (\texttt{scripts/check-source.py}) rejects
 \texttt{sorry}, \texttt{axiom}, \texttt{native\_decide}, \texttt{implemented\_by},
 \texttt{extern} and the kernel-bypass options. A standard-library script,
@@ -1324,7 +1768,9 @@ A build-time audit (\texttt{Test/Axioms.lean}) walks every declaration of the de
 Lean: the sixteen literal cells and the eleven permutations from the definitions, every
 family at every domain cell with $l \le 120$ lifted through Lemma~S, the $m$-fold tight
 line for $m \le 6$ and odd $l \le 21$, the row $l = 1$ for $m \le 12$, the emptiness of
-$(3,6,3)$ by exhaustive search, and two controls that must fail.
+$(3,6,3)$ by exhaustive search, the bounds of Theorems~\ref{thm:residue}
+and~\ref{thm:forced} against brute-force existence on small cells, and two controls that
+must fail.
 
 \section{Prior art}\label{sec:prior}
 
@@ -1346,9 +1792,15 @@ sequences (its abstract and references) and the 2017 paper of L\'opez and Muntan
 distance labelings (read in full) concern different objects --- a signed Langford
 sequence is, by Nordh's Theorem~15, a one-fold sequence with a different difference set;
 Nowakowski's 1975 master's thesis and Dillon's 1973 paper on the generalized
-Langford--Skolem problem remain unread, and MathSciNet was not consulted. Failure to
+Langford--Skolem problem remain unread, and MathSciNet was not searched. Failure to
 retrieve a paper is not evidence about its contents, and nothing here is a claim of
 priority beyond that wording.
+
+The residue bound and the forced-endpoint bound were the subject of a targeted search on
+2026-09-27 (the same sources, with the terms weight function, linear programming and
+Farkas); no condition of this kind was located, and Nordh's parity and density
+conditions (Remark~\ref{rem:nordh}) are the only comparable ones, reducing to the
+counting bound. No claim of novelty is made beyond that wording.
 
 Four connections follow.
 
