@@ -34,6 +34,8 @@ lake exe cache get
 lake build
 python scripts/check-source.py
 python scripts/check_langford.py
+python scripts/check_bounds.py
+python scripts/check_family.py
 ```
 
 The `Test` target audits every constant whose name begins with `L2.`, `Langford.`, `_private.L2.` or
@@ -48,8 +50,8 @@ Challenge.lean, and any `debug.` option in the `[leanOptions]` table of lakefile
 
 Lean `v4.35.0-rc2` and Mathlib `v4.35.0-rc2` (commit `065356127b1dc0016f66b7283ce0ce2c4055aa55`) are
 pinned by the committed manifest; `lake update` is never run. A build from an empty `.lake/build` after
-`lake exe cache get`, one module at a time, takes DESK_FILLS on a 16-core, 16 GB PC; each module takes
-20–27 s (the three modules of the bounds 21–22 s each), most of it the Mathlib import.
+`lake exe cache get`, one module at a time, takes about ten and a half minutes (638 s for the 27 targets) on a 16-core, 16 GB PC; each module takes
+20–27 s of wall time (the three modules of the bounds 23 s each, 16–17 s of it Lean time), most of it the Mathlib import.
 
 ## The finite computations
 
@@ -59,17 +61,18 @@ of L2/Literals.lean, each a few equalities of literal finite sets of integer pai
 `{10, 11, 12}` is the only three-element subset of `[7, 12]` with sum 33 (a `decide` over its 64
 subsets), three interval sums and two cardinalities. There is no other search inside any proof. The
 modules of the bounds, L2/Residue.lean, L2/Forced.lean and L2/Straddle.lean, contain no `decide` and no
-search; their arithmetic is `omega`, `linarith`, `nlinarith`, `linear_combination` and `ring`.
+search; their arithmetic is `omega`, `linarith`, `nlinarith`, `linear_combination` and `ring`, with `norm_num`, `simp` and
+`push_cast` for bookkeeping.
 
 | Computation | Size |
 | --- | --- |
-| The sixteen two-fold certificates `twoFold_lit_<d>_<l>`, every in-bound cell with `l ≤ 4` | two colours of `l` pairs each, at most 16 positions; all sixteen inside the 21 s build of L2/Literals.lean |
+| The sixteen two-fold certificates `twoFold_lit_<d>_<l>`, every in-bound cell with `l ≤ 4` | two colours of `l` pairs each, at most 16 positions; all sixteen inside the 23 s build of L2/Literals.lean |
 | Ten of the eleven `SP` solutions, `sp_5_3`, `sp_7_3`, `sp_8_5`, `sp_8_7`, `sp_9_5`, `sp_12_9`, `sp_12_11`, `sp_16_11`, `sp_20_15`, `sp_24_17`, by `decide` | permutations of 5 to 24 points; the same module build |
 | `sp_32_23`, by `decide +kernel` | a permutation of 32 points; the same module build |
 | `three_subset_sum_33` and five literal sums and cardinalities in L2/SixThree.lean, by `decide` | 64 subsets of `[7, 12]`; sums of intervals inside `[1, 18]` |
 
 The family theorems are linear arithmetic over `ℤ` (`omega`), split by the sign and parity of the
-value as the class tables direct. The five family modules build in 23–27 s each, L2/FamR1.lean (with the eight-block family FA1) the longest; no theorem needs a raised heartbeat limit, and no `omega` call takes more than a few seconds.
+value as the class tables direct. The five family modules build in 23–27 s each, L2/FamR0b.lean and L2/FamR1.lean (with the eight-block family FA1) the longest, up to 27 s; no theorem needs a raised heartbeat limit, and no `omega` call takes more than a few seconds.
 
 Mutation controls, each run once in a scratch copy and reverted: (a) one pair of the literal certificate
 `twoFold_lit_4_4` altered — its `decide` fails; (b) one entry of `sp_12_9` altered — its `decide` fails;
@@ -77,7 +80,7 @@ Mutation controls, each run once in a scratch copy and reverted: (a) one pair of
 dependencies while `scripts/check-source.py` reports the line; (d) the hypothesis of `twoFold_all`
 weakened to `2d ≤ 3l + 3` — the proof fails; (e) a declared `axiom` and a `native_decide` in a scratch
 lemma — the audit reports both (the second as an auxiliary axiom) and the source guard flags both;
-(f) one block size of `famA1` changed by one — `famA1_sp` fails. For the modules of the bounds: DESK_FILLS.
+(f) one block size of `famA1` changed by one — `famA1_sp` fails. For the modules of the bounds: (g) `4 * T` replaced by `2 * T` in the definition of `tri` — `tri_add_two_mul`, `tri_neg` and `tri_succ` fail (their `rw` finds no remainder modulo `4 * T`) and so does `tri_eq` (`omega`: the wave is no longer `T − y` on `[0, 2T]`); (h) the hypothesis of `not_order_three_internal` weakened to `2 ≤ m` — its `omega` step to `m = 3` fails (at `m = 2` the cell `(3, 3)` has a sequence); (i) `hm : 1 ≤ m` of `tight_iff_straddle_internal` replaced by `0 ≤ m` — the `omega` for `m ≠ 0` fails; (j) a `sorry` in `Res.tri_lipschitz` — Solution still compiles, and `lake build Test` fails on five `sorryAx` dependencies (`tri_lipschitz`, `edge`, `residue_bound_internal`, `residue_bound_window`, `Langford.residue_bound`) while `scripts/check-source.py` reports the line..
 
 `scripts/check_langford.py` recomputes the finite content with the standard library and exact
 integers, independently of Lean: the sixteen literal certificates and the eleven `SP` solutions
@@ -94,7 +97,11 @@ rigidity equivalence for every sequence; the cells `(3m − 3, 3)` and `(2m − 
 against the forced-endpoint bound; both bounds at `m = 2` on every in-bound cell with `l ≤ 40` (every
 `T ≤ 4l + 2`); the cell `(m, d, l) = (7, 9, 4)`, which meets counting and parity and which the residue
 bound rejects at `T = 11` (`28 < 30`); and two controls. The family tables in the script are transcribed
-from the Lean definitions. It runs in under ten seconds and ends:
+from the Lean definitions. Two further scripts replay the checks behind the note's account of the bounds:
+`scripts/check_bounds.py` (the brute-force grid above; the cells `(3m − 3, 3)` and `(2m − 1, 2)` for
+`3 ≤ m ≤ 400`; the cells `(7, 9, 4)` and `(19, 12, 3)`; at `m = 2` the forced-endpoint bound to `l = 400` and
+the residue bound to `l = 60`, or to `l = 400` with `--full`, about half an hour) and `scripts/check_family.py`
+(the note's certificate-family theorems on 42,900 triples, a few seconds). It runs in under ten seconds and ends:
 
 ```text
 ok    control: A1 at (4, 2) with the target starts of its first two blocks exchanged does not solve SP, as it must not
@@ -111,7 +118,7 @@ sequence at every in-bound cell to `l = 300` by two independent implementations;
 ## Not checked here
 
 - Existence for `m ≥ 3`: no complete characterization is claimed. The negative theorems
-  (`not_sufficient`, `not_order_three`) and the two sufficient families (the tight line and the row
+  (`not_sufficient`, `not_order_three`) and the two formalized sufficient families (the tight line and the row
   `l = 1`) are proved; the note's linear relaxation for `m ≥ 3` and its conjecture are not formalized.
 - The note's certificate-family theorems (the quadratic inequality, the exact rounding test, the
   completeness of the family) are proved on paper and not formalized; the residue bound, which is

@@ -47,8 +47,9 @@ forced-endpoint bound caps the sum of the left ends, which the distance sum fixe
 left ends and no left end exceeds `2ml − d`; at `(3m − 3, 3)` it reads `12m ≤ 36`. `L2/Pairs.lean` adapts code
 from the gn-lean development (PALOMAR-2026-09-07-000013; MIT; the same author).
 
-Not claimed: no complete existence characterization for `m ≥ 3` (the tight line and the row `l = 1` are the only
-sufficient families proved); no count or closed form for the number of sequences; the linear-relaxation results
+Not claimed: no complete existence characterization for `m ≥ 3` (the formalized sufficient families are the
+tight line and the row `l = 1`; the note adds, on paper, every cell with `3l ≥ 2d − 1` for even `m`, from the
+two-fold theorem and juxtaposition); no count or closed form for the number of sequences; the linear-relaxation results
 of the note in `note/` are not formalized, and the quadratic-family theorems of the note (§ on the
 linear-programming picture) are paper-only.
 
@@ -67,6 +68,8 @@ lake exe cache get
 lake build
 python scripts/check-source.py
 python scripts/check_langford.py
+python scripts/check_bounds.py
+python scripts/check_family.py
 ```
 
 [PROOF.md](PROOF.md) gives the mathematics with the Lean name of every step, [VERIFICATION.md](VERIFICATION.md)

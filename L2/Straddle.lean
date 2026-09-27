@@ -50,8 +50,8 @@ theorem bottom_eq (L : Finset ℕ) (hL : ∀ x ∈ L, 1 ≤ x) (hsum : 2 * ∑ x
 
 end Str
 
-/-- Equality in the counting bound is rigid: `2d + l = 2ml + 1` if and only if every position `i ≤ ml` is the left end
-of its pair, that is `ml < i + s i`. -/
+/-- Equality in the counting bound is rigid: `2d + l = 2ml + 1` if and only if every pair straddles the midpoint:
+every position `i ≤ ml` has `ml < i + s i`. -/
 theorem tight_iff_straddle_internal (m d l : ℕ) (hm : 1 ≤ m) (hd : 1 ≤ d) (hl : 1 ≤ l) (s : ℕ → ℕ)
     (hs : Langford.IsLangford m d l s) :
     2 * d + l = 2 * m * l + 1 ↔ ∀ i : ℕ, 1 ≤ i → i ≤ m * l → m * l < i + s i := by

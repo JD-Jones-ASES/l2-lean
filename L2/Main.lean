@@ -18,7 +18,9 @@ cells with `l ≤ 4` are literal; a cell with `l ≥ 2d` is the concatenation of
 `(d + l₁, l − l₁)` with `l₁ = ⌊(2d + 1)/3⌋`; every other cell with `l ≥ 5` comes from a solution of
 `SP(l, d − l)` on the cone. With the bridge to sequences and the necessary conditions this gives the
 characterisation of two-fold Langford sequences, and the tight line, the row of order one and the
-cell `(6, 3)` give the statements for every multiplicity.
+cell `(6, 3)` give the statements for every multiplicity. The modules `Residue`, `Forced` and `Straddle` (the
+residue bound, the forced-endpoint bound with the order-three cells, the rigidity of the counting bound) are
+imported here so that `Solution` reaches every internal theorem through this module.
 -/
 
 namespace L2

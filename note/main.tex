@@ -485,7 +485,7 @@ $w(y) = T - \operatorname{dist}(y, 4T\Z)$, the triangle wave of period $4T$ with
 in $[-T,T]$, and put $V(x) = w(2x - 2n - 1)$ for $x \in \Z$. Three properties of $w$ are
 used: it is even; it is $1$-Lipschitz, $|w(y) - w(y')| \le |y - y'|$, as a distance to a
 set is; and $w(y + 2T) = -w(y)$, because shifting $y$ by $2T$ turns its distance
-$\delta \in [0,2T]$ to $4T\Z$ into $2T - \delta$. Hence $V(x + T) = -V(x)$ and
+$\theta \in [0,2T]$ to $4T\Z$ into $2T - \theta$. Hence $V(x + T) = -V(x)$ and
 $|V(x) - V(x')| \le 2|x - x'|$.
 
 \emph{The edge inequality.} Let $(a, a+p)$ be a pair of the sequence. Then
@@ -493,11 +493,11 @@ $V(a+p) = -V(a+p-T)$, so
 \[
   |V(a) + V(a+p)| \;=\; |V(a) - V(a+p-T)| \;\le\; 2|p - T|,
 \]
-and for either sign $\sigma \in \{1,-1\}$, $\sigma\,(V(a) + V(a+p)) + 2|p - T| \ge 0$.
+and for either sign $s \in \{1,-1\}$, $s\,(V(a) + V(a+p)) + 2|p - T| \ge 0$.
 Every position of $[1,2n]$ is an end of exactly one pair, and every $p \in [d,d+l-1]$ is
 the difference of exactly $m$ pairs, so the sum over the $ml$ pairs is
 \begin{equation}\label{eq:residuesum}
-  \sigma \sum_{x=1}^{2n} V(x) + 2m\,S(T) \;\ge\; 0 .
+  s \sum_{x=1}^{2n} V(x) + 2m\,S(T) \;\ge\; 0 .
 \end{equation}
 
 \emph{The total.} As $x$ runs over $[1,2n]$, $2x - 2n - 1$ runs over
@@ -512,7 +512,7 @@ $0 \le r < T$,
   \sum_{x=1}^{2n} V(x) \;=\; 2(-1)^q\, r(T-r).
 \]
 
-\emph{The sign.} With $\sigma = -(-1)^q$, \eqref{eq:residuesum} reads
+\emph{The sign.} With $s = -(-1)^q$, \eqref{eq:residuesum} reads
 $-2r(T-r) + 2mS(T) \ge 0$.
 \end{proof}
 \lean{Langford.residue\_bound, L2.residue\_bound\_internal (L2/Residue.lean)}
@@ -525,7 +525,7 @@ $g$, the total over the positions, and the edge inequality summed over the pairs
 \begin{remark}\label{rem:residuecert}
 The potential of the proof is the certificate of Lemma~\ref{lem:familyP}
 (\S\ref{sec:lp}): $V(x) = 2W_T(x - c)$ with $c = ml + \tfrac12$, and $(y,z) =
-(\sigma V, 2|p - T|)$ is the member with $s = \sigma$. Theorem~\ref{thm:residue} says
+(s V, 2|p - T|)$ is the member with $s = s$. Theorem~\ref{thm:residue} says
 that the total of this certificate, with the sign chosen to minimize it, is nonnegative
 whenever a sequence exists; it holds for every $T \ge 1$, and in this form it is
 formalized. The summation uses only that every position is covered once and every $p$
@@ -1033,7 +1033,7 @@ $\mu \equiv 3 \pmod 4$, then $\mu \le l-6$ because $l - 4 \equiv 1 \pmod 4$, and
 applies. The case $\mu = l-2$ is FT for $l \ge 9$ and the base $(5,3)$ at $l = 5$. The
 case $\mu = l$ is $\tau_l$.
 \end{proof}
-\lean{L2.band\_r1, with L2.famFA1\_sp, L2.famFA3\_sp, L2.famFT\_sp, L2.famFL1\_sp,
+\lean{L2.band\_r1 (L2/Band.lean), with L2.famFA1\_sp, L2.famFA3\_sp, L2.famFT\_sp, L2.famFL1\_sp,
 L2.famFL5\_sp (L2/FamR1.lean)}
 
 \begin{theorem}[$l \equiv 3 \pmod 4$]\label{thm:cov3}
@@ -1047,7 +1047,7 @@ $2 \le t \le q-1$ is R3E. What remains is $t = q$ with $q$ even, so $q \ge 2$; t
 $3t = 3q \ge 2q+2$, and R3Q applies (its domain in these coordinates is $t$ even,
 $2q+2 \le 3t$, $t \le q$).
 \end{proof}
-\lean{L2.band\_r3, with L2.famR3O\_sp, L2.famR3E\_sp, L2.famR3Q\_sp, L2.famR3T1\_sp
+\lean{L2.band\_r3 (L2/Band.lean), with L2.famR3O\_sp, L2.famR3E\_sp, L2.famR3Q\_sp, L2.famR3T1\_sp
 (L2/FamR3.lean)}
 
 \begin{theorem}[$l \equiv 0 \pmod 4$]\label{thm:cov0}
@@ -1086,7 +1086,7 @@ $(20,15)$, $(24,17)$ and $(32,23)$, which are the sporadic cells of
 Table~\ref{tab:sporadic}. This finite part is a decision of linear arithmetic for each
 of the fifteen values $l/4 \in [2,16]$, and the formal proof makes it exactly so.
 \end{proof}
-\lean{L2.band\_r0, with L2.famA1\_sp, L2.famA3\_sp, L2.famU1\_sp, L2.famU3\_sp
+\lean{L2.band\_r0 (L2/Band.lean), with L2.famA1\_sp, L2.famA3\_sp, L2.famU1\_sp, L2.famU3\_sp
 (L2/FamR0a.lean) and L2.famU5\_sp, L2.famU7\_sp, L2.famV\_sp, L2.famT\_sp
 (L2/FamR0b.lean)}
 
@@ -1196,6 +1196,9 @@ $12m \le 36$, which fails for $m \ge 4$. At $m = 3$ the cell is $(6,3)$, empty b
 Proposition~\ref{prop:sixthree}.
 \end{proof}
 \lean{Langford.not\_order\_three, L2.not\_order\_three\_internal (L2/Forced.lean)}
+
+The residue bound alone also settles the family, $m = 3$ included: at $T = 3m-2$ one has
+$r = 2$ and $S(T) = 2$, and $2(3m-4) > 2m$ for every $m \ge 3$.
 
 The cells $(3m-3,3)$ lie two defects below the tight line of order three, which is
 $d = 3m - 1$. For $m = 2$ the cell is $(3,3)$, which has a two-fold sequence (Theorem~A;
@@ -1614,19 +1617,19 @@ index lies inside the cutoff, $J(l^2-1) = 160 < ml^2 = 171$, and outside the ran
 $J < m$ of Theorem~\ref{thm:bands}. In the form of Theorem~\ref{thm:residue}, at
 $T = 13$: $57 \bmod 13 = 5$ and $19\,(1 + 0 + 1) = 38 < 5 \cdot 8 = 40$.
 \end{example}
-\status{exact integer arithmetic, repeated by the checker described below; not
-formalized.}
+\status{Examples~\ref{ex:794} and~\ref{ex:19123}: exact integer arithmetic, repeated by the checker
+described below; not formalized.}
 
 The two uniform families of \S\ref{sec:mge3} in this language: at $(d,l) = (3m-3,3)$,
 $F_1(3m-2) = -4(m-2)$, negative for every $m \ge 3$, including $m = 3$; at
 $(d,l) = (2m-1,2)$, $F_1(2m-1) = 2 - m$. In both, $T$ lies in the window and
 $\lfloor ml/T \rfloor = 1$, so these values are $H(T)$.
 
-\emph{Finite checks.} A standard-library checker in exact integer arithmetic tested this
-subsection on the grid $1 \le m \le 20$, $1 \le l \le 20$,
+\emph{Finite checks.} The script \texttt{scripts/check\_family.py} of the repository, standard-library
+Python in exact integer arithmetic, tests this subsection on the grid $1 \le m \le 20$, $1 \le l \le 20$,
 $1 \le d \le \lfloor ((2m-1)l+1)/2 \rfloor + 2$, which runs two defects past the counting
 line: $42{,}900$ triples. On every triple the finite test (the counting bound, then
-$F_j(t_j)$ for the indices within the cutoff) agrees with a direct scan of $H(T)$ over
+$F_j(t_j)$ for the indices within the cutoff, and for $j \le ml$ when $l = 1$) agrees with a direct scan of $H(T)$ over
 every integer $T$ with $1 \le T \le \max(ml, d+l-1)$, beyond which $H$ is constant. The
 test rejects $28{,}645$ triples that satisfy the counting bound; for the $1{,}026$ of them
 with $m \le 10$ and $l \le 8$ the checker rebuilt the integer weights of the certificate,
@@ -1638,15 +1641,16 @@ two examples, the identities $4d^2 - 6mld + 2m^2l^2 + ml(l-1) = 2F_1(d) = (l-1+e
 for $m, l \le 30$ and $d \le ml$, and the identities of the two uniform families for
 $3 \le m \le 1000$, and it reproduces the empty bands of \S\ref{sec:mge3} in the rows
 $(m,l) = (3,8)$, $(3,12)$, $(3,24)$ and $(4,20)$: $d \in [11,18]$, $[15,28]$, $[30,55]$
-and $[34,67]$. A second check decided every cell with $m \le 4$, $l \le 6$ and
+and $[34,67]$. A second script, \texttt{scripts/check\_bounds.py}, decides every cell with $m \le 4$, $l \le 6$ and
 $2ml \le 20$, up to one defect past the counting line, by exhaustive search ($79$ cells,
 $41$ realized): the
 residue bound, for every $T \le 2ml + 2$, and the forced-endpoint bound hold at every
 realized cell, the equality case of Theorem~\ref{thm:nec}, in its sequence form, holds
 for every sequence found, and among the $38$ empty cells the residue bound rejects $28$ and
 the forced-endpoint bound $8$. At $m = 2$, where Theorem~A realizes every in-bound cell,
-both bounds hold at every in-bound cell with $l \le 400$, the residue bound for every
-$T \le 4l + 2$; the second check also confirmed the two examples.
+the forced-endpoint bound holds at every in-bound cell with $l \le 400$, and the residue bound,
+for every $T \le 4l + 2$, with $l \le 60$ in the script's default run and $l \le 400$ with its
+option \texttt{--full} (about half an hour); the second script also confirms the two examples.
 
 \subsection*{Realized cells between empty bands}
 For $m \ge 7$ a row can contain two empty bands with realized cells between them. In the
@@ -1749,12 +1753,13 @@ has these modules:
   Proposition~\ref{prop:ordertwotop};
 \item \texttt{Straddle} --- the rigidity of the counting bound, the equality clause of
   Theorem~\ref{thm:nec};
-\item \texttt{Main} --- the induction of \S\ref{sec:theorem} and the internal theorems.
+\item \texttt{Main} --- the induction of \S\ref{sec:theorem}, the internal theorems of Theorem~A and
+  the tight line, and the imports through which \texttt{Solution} reaches the others.
 \end{itemize}
-Internals work over $\Z$, where linear arithmetic with negative slopes is decided by
-Lean's \texttt{omega}; the pinned statements are over $\mathbb{N}$, and the casts happen
-in \texttt{Bridge} and \texttt{Main}, and inside the proof of the residue bound, whose
-potential takes negative values. Finite facts --- the eleven permutations, the
+The internals of Theorem~A work over $\Z$, where linear arithmetic with negative slopes is
+decided by Lean's \texttt{omega}; the pinned statements are over $\mathbb{N}$, and the casts
+happen in \texttt{Bridge} and \texttt{Main}. The modules of the bounds work over $\mathbb{N}$,
+except that the potential of the residue bound takes negative values and is cast at the end. Finite facts --- the eleven permutations, the
 sixteen literal cells, and in the proof for $(6,3)$ the three-element subsets of $[7,12]$
 with sum $33$ --- are decided by the kernel on literal finite sets; there is no other
 search inside the proofs.
@@ -1833,10 +1838,11 @@ formalized conjectures contains no Langford or Skolem statement.
 \section*{Provenance}
 
 This note and the accompanying Lean development were produced with Claude (Anthropic),
-running with parallel Opus subagents; the mathematics,
-the searches and the checkers arose in that process. JD Jones owns and directed the
-project and is responsible for the submission. No independent human review or
-endorsement by the cited authors is claimed.
+running with parallel Opus subagents, and with GPT-6 (OpenAI), used in some form throughout;
+the mathematics, the searches and the checkers arose in consultation among these systems, and
+the note and the repository were written by Claude. JD Jones owns and directed the project and
+is responsible for the submission. No independent human review or endorsement by the cited
+authors is claimed.
 
 \appendix
 

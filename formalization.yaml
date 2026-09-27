@@ -2,7 +2,7 @@
 version: "v0.4"
 
 project:
-  name: "Two-fold Langford sequences exist exactly when 3l ≥ 2d − 1; the m-fold counting bound, a residue bound, and their attainment"
+  name: "Two-fold Langford sequences exist exactly when 3l ≥ 2d − 1; the m-fold counting bound and its attainment, and a residue bound"
   description: >-
     A Lean 4 characterization of two-fold Langford sequences. An m-fold Langford sequence of order l
     and defect d fills the positions 1, ..., 2ml so that every p in [d, d + l - 1] occupies the
@@ -220,7 +220,8 @@ status:
     bound (Langford.residue_bound), the forced-endpoint bound (Langford.forced_endpoint), the empty
     cells (3m - 3, 3) for m >= 3 (Langford.not_order_three) and the rigidity of the counting bound
     (Langford.tight_iff_straddle). No complete existence characterization for m >= 3 is claimed (the
-    tight line and the row l = 1 are the only sufficient families proved), and no count of
+    formalized sufficient families are the tight line and the row l = 1; the note adds, on paper, every
+    cell with 3l >= 2d - 1 for even m, from the two-fold theorem and juxtaposition), and no count of
     sequences; the note's linear-relaxation results, including its certificate-family theorems, are
     not formalized. The intentional placeholders of Challenge.lean are excluded from proof counts;
     Solution.lean does not import Challenge.lean.
@@ -285,16 +286,14 @@ automation:
       models: ["Claude (Anthropic)", "GPT-6 (OpenAI)"]
       framework: "Claude Code with parallel subagents"
       tool_setup: >-
-        The project was directed by its author. Claude (Anthropic) was used throughout; the theorems,
-        their proofs, the searches, the checkers and the repository were produced in that process. A
-        review of the six-theorem version by an OpenAI model proposed the residue bound, the
-        forced-endpoint bound, the order-three cells and the rigidity statement; they were
-        re-derived, checked by exact arithmetic and then formalized.
-        Lean v4.35.0-rc2 and Mathlib v4.35.0-rc2 (commit 065356127b1dc0016f66b7283ce0ce2c4055aa55)
-        are pinned by the committed manifest and lake update is never run; there are no GitHub
-        Actions workflows. There is no native_decide; the kernel computations are twenty-seven
-        literal finite-set equalities and six small closed checks in L2/SixThree.lean (the
-        three-element subsets of [7, 12] with sum 33, three interval sums, two cardinalities).
+        The project was directed by its author. Claude (Anthropic) and GPT-6 (OpenAI) were used, in some
+        form, throughout; the theorems, their proofs, the searches and the checkers arose in consultation
+        among these systems, and the repository was written by Claude. Lean v4.35.0-rc2 and Mathlib
+        v4.35.0-rc2 (commit 065356127b1dc0016f66b7283ce0ce2c4055aa55) are pinned by the committed manifest
+        and lake update is never run; there are no GitHub Actions workflows. There is no native_decide; the
+        kernel computations are twenty-seven literal finite-set equalities and six small closed checks in
+        L2/SixThree.lean (the three-element subsets of [7, 12] with sum 33, three interval sums, two
+        cardinalities); the three modules of the bounds contain no kernel computation.
   spend_usd: "not tracked"
   notes: "See DISCLOSURE.md."
 

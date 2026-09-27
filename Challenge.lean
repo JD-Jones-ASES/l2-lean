@@ -100,7 +100,7 @@ theorem not_order_three (m : ℕ) (hm : 3 ≤ m) :
   sorry
 
 /-- Equality in the counting bound is rigid: an `m`-fold Langford sequence has `2d + l = 2ml + 1` if and only
-if every position `i ≤ ml` is the left end of its pair, that is `ml < i + s i`. -/
+if every pair straddles the midpoint: every position `i ≤ ml` has `ml < i + s i`. -/
 theorem tight_iff_straddle (m d l : ℕ) (hm : 1 ≤ m) (hd : 1 ≤ d) (hl : 1 ≤ l) (s : ℕ → ℕ)
     (hs : IsLangford m d l s) :
     2 * d + l = 2 * m * l + 1 ↔ ∀ i : ℕ, 1 ≤ i → i ≤ m * l → m * l < i + s i := by
