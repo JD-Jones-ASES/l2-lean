@@ -37,7 +37,7 @@ python scripts/check_langford.py
 ```
 
 The `Test` target audits every constant whose name begins with `L2.`, `Langford.`, `_private.L2.` or
-`_private.Solution.` (DESK_FILLS at the time of writing, floor DESK_FILLS), permits only `propext`,
+`_private.Solution.` (1,604 at the time of writing, floor 1,400), permits only `propext`,
 `Classical.choice` and `Quot.sound`, and fails if any of the ten compared theorems is missing. A
 placeholder in a proof compiles with a warning; this audit is what fails the build. Challenge.lean
 intentionally contains ten proof placeholders; Solution.lean and the modules it imports contain
@@ -49,7 +49,7 @@ Challenge.lean, and any `debug.` option in the `[leanOptions]` table of lakefile
 Lean `v4.35.0-rc2` and Mathlib `v4.35.0-rc2` (commit `065356127b1dc0016f66b7283ce0ce2c4055aa55`) are
 pinned by the committed manifest; `lake update` is never run. A build from an empty `.lake/build` after
 `lake exe cache get`, one module at a time, takes DESK_FILLS on a 16-core, 16 GB PC; each module takes
-DESK_FILLS, most of it the Mathlib import.
+20–27 s (the three modules of the bounds 21–22 s each), most of it the Mathlib import.
 
 ## The finite computations
 

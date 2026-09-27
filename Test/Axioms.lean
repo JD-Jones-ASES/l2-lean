@@ -29,8 +29,8 @@ run_cmd do
         unless allowed.contains ax do
           rejected := rejected + 1
           logError m!"Unexpected axiom dependency: {name} -> {ax}"
-  unless checked ≥ 1300 do
-    logError m!"Axiom audit matched only {checked} project constants; expected at least 1300"
+  unless checked ≥ 1400 do
+    logError m!"Axiom audit matched only {checked} project constants; expected at least 1400"
   for n in [`Langford.twoFold_exists_iff, `Langford.necessary, `Langford.tight_exists,
       `Langford.order_one_iff, `Langford.not_threeFold_six_three, `Langford.not_sufficient,
       `Langford.residue_bound, `Langford.forced_endpoint, `Langford.not_order_three,

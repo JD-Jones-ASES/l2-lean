@@ -2,9 +2,12 @@
 
 `main.tex` is the research note on the theorems this repository proves: a two-fold Langford sequence
 of order `l` and defect `d` exists exactly when `3l ≥ 2d − 1`, and for every `m` the counting bound
-`(2m − 1)l ≥ 2d − 1` is necessary and attained, with the row `l = 1` and the cell `(6, 3)` showing it
-is not sufficient for `m ≥ 3`. It also has every class table of the band families, and a section
-on the linear relaxation for `m ≥ 3` that is not formalized. `main.pdf` is the built note; rebuild
+`(2m − 1)l ≥ 2d − 1` is necessary and attained, with the row `l = 1`, the cell `(6, 3)` and the order-three
+cells `(3m − 3, 3)` showing that it is not sufficient for `m ≥ 3`; a residue bound `r(T − r) ≤ m·Σ_p |p − T|`
+(`r = ml mod T`) and a forced-endpoint bound for every `m`; and the rigidity of the counting bound (equality
+exactly when every pair straddles the midpoint). It also has every class table of the band families, and a
+section on the linear relaxation for `m ≥ 3` whose certificate-family theorems are proved on paper and not
+formalized. `main.pdf` is the built note; rebuild
 it with `pdflatex -interaction=nonstopmode main.tex`, three passes.
 
 `certificates/0033-rt057-two-fold-langford-all-cells/` holds the note's finite-data certificate: a
