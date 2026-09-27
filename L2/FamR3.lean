@@ -6,9 +6,19 @@ import L2.SP
 The families `R3O`, `R3E`, `R3Q`, `R3T1`, indexed by `t = (l − μ)/2`. Each is a union of rows
 (block reversals) whose sizes are affine in the parameters, and each solves `SP(l, δ)` on its
 whole domain: the value runs and mirror runs of its rows tile `[1 − l, l]`.
+
+The proof of each family is its class table. Every row contributes a value run and a mirror run,
+both of step two. For each parity of `x`, the runs of that parity, taken in increasing order, abut
+with step two and cover `[1 − l, l]`; the table under each theorem lists them. The covering
+direction of `values` splits `x` by parity and then at the boundaries of that chain, and in each
+piece the run holding `x` is found by `omega`.
 -/
 
 namespace L2
+
+/-- Close a goal `P₀ ∨ P₁ ∨ … ∨ Pₖ` of linear facts by the first disjunct that `omega` proves. -/
+local macro "pick_run" : tactic =>
+  `(tactic| ((repeat (first | exact Or.inl (by omega) | refine Or.inr ?_)) <;> omega))
 
 /-- The block-reversal family `R3O` (l = 4q + 3, μ = l - 2t, t = 2u + 1, 7 blocks, target order `6134052`): block `i` sends the sources
 `[aᵢ + 1, aᵢ + nᵢ]` onto the targets `[cᵢ + 1, cᵢ + nᵢ]` reversed. -/
@@ -25,7 +35,52 @@ def famR3O (q u : ℤ) : Finset (ℤ × ℤ) :=
 theorem famR3O_sp (q u : ℤ)
     (h1 : 1 ≤ u) (h2 : 2 * u + 1 ≤ q) :
     SP (4 * q + 3) (2 * q + 1 - 2 * u) (famR3O q u) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famR3O, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famR3O, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famR3O, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc, or_assoc]
+    constructor
+    · intro h
+      omega
+    · intro hx
+      rcases Int.emod_two_eq x with hp | hp
+      · rcases le_or_gt x (-2 * q - 2) with c | c
+        · pick_run
+        rcases le_or_gt x (-2 * u - 2) with c | c
+        · pick_run
+        rcases le_or_gt x 0 with c | c
+        · pick_run
+        rcases le_or_gt x (2 * u) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q - 2 * u) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q + 2 * u + 2) with c | c
+        · pick_run
+        pick_run
+      · rcases le_or_gt x (-2 * q - 2 * u - 3) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * u - 2 * q - 1) with c | c
+        · pick_run
+        rcases le_or_gt x (-2 * u - 1) with c | c
+        · pick_run
+        rcases le_or_gt x (-1) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * u + 1) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q + 1) with c | c
+        · pick_run
+        pick_run
+  · unfold famR3O
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le
+      (card_union_le_of_le (card_union_le_of_le (card_row_le _ _ _) (card_row_le _ _ _))
+      (card_row_le _ _ _)) (card_row_le _ _ _)) (card_row_le _ _ _)) (card_row_le _ _ _))
+      (card_row_le _ _ _)).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = q + 3 * u + 2, n = q - u; value [2 * q + 2 * u + 4, 4 * q + 2]; mirror [-4 * q - 1, -2 * q - 2 * u - 3]; P
 --   b1: a = q - u, c = 2 * u + 1, n = q - u; value [2 * u + 3, 2 * q + 1]; mirror [-2 * q, -2 * u - 2]; P
@@ -56,7 +111,56 @@ def famR3E (q u : ℤ) : Finset (ℤ × ℤ) :=
 theorem famR3E_sp (q u : ℤ)
     (h1 : 1 ≤ u) (h2 : 2 * u + 1 ≤ q) :
     SP (4 * q + 3) (2 * q + 2 - 2 * u) (famR3E q u) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famR3E, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famR3E, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famR3E, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc, or_assoc]
+    constructor
+    · intro h
+      omega
+    · intro hx
+      rcases Int.emod_two_eq x with hp | hp
+      · rcases le_or_gt x (-2 * q - 2 * u - 2) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * u - 2 * q - 2) with c | c
+        · pick_run
+        rcases le_or_gt x (-2 * u - 2) with c | c
+        · pick_run
+        rcases le_or_gt x 0 with c | c
+        · pick_run
+        rcases le_or_gt x (2 * u) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q + 2) with c | c
+        · pick_run
+        pick_run
+      · rcases le_or_gt x (-2 * q - 3) with c | c
+        · pick_run
+        rcases le_or_gt x (-2 * q - 1) with c | c
+        · pick_run
+        rcases le_or_gt x (-2 * u - 1) with c | c
+        · pick_run
+        rcases le_or_gt x (-1) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * u + 1) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q + 1 - 2 * u) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q + 2 * u + 1) with c | c
+        · pick_run
+        pick_run
+  · unfold famR3E
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le
+      (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_row_le _ _ _)
+      (card_row_le _ _ _)) (card_row_le _ _ _)) (card_row_le _ _ _)) (card_row_le _ _ _))
+      (card_row_le _ _ _)) (card_row_le _ _ _)) (card_row_le _ _ _)).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = 2 * u, n = 1; value [2 * q + 2, 2 * q + 2]; mirror [-2 * q - 1, -2 * q - 1]; P
 --   b1: a = 1, c = q + 3 * u + 2, n = q + 1 - u; value [2 * q + 2 * u + 3, 4 * q + 3]; mirror [-4 * q - 2, -2 * q - 2 * u - 2]; P
@@ -87,7 +191,52 @@ def famR3Q (q u : ℤ) : Finset (ℤ × ℤ) :=
 theorem famR3Q_sp (q u : ℤ)
     (h1 : q + 1 ≤ 3 * u) (h2 : 2 * u ≤ q) :
     SP (4 * q + 3) (2 * q + 2 - 2 * u) (famR3Q q u) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famR3Q, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famR3Q, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famR3Q, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc, or_assoc]
+    constructor
+    · intro h
+      omega
+    · intro hx
+      rcases Int.emod_two_eq x with hp | hp
+      · rcases le_or_gt x (-2 * q - 2 * u - 2) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * u - 2 * q - 2) with c | c
+        · pick_run
+        rcases le_or_gt x 0 with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q - 2 * u) with c | c
+        · pick_run
+        rcases le_or_gt x (4 * u) with c | c
+        · pick_run
+        rcases le_or_gt x (4 * q + 2 - 4 * u) with c | c
+        · pick_run
+        pick_run
+      · rcases le_or_gt x (4 * u - 4 * q - 3) with c | c
+        · pick_run
+        rcases le_or_gt x (-4 * u - 1) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * u - 2 * q - 1) with c | c
+        · pick_run
+        rcases le_or_gt x (-1) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q + 1 - 2 * u) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q + 2 * u + 1) with c | c
+        · pick_run
+        pick_run
+  · unfold famR3Q
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le
+      (card_union_le_of_le (card_union_le_of_le (card_row_le _ _ _) (card_row_le _ _ _))
+      (card_row_le _ _ _)) (card_row_le _ _ _)) (card_row_le _ _ _)) (card_row_le _ _ _))
+      (card_row_le _ _ _)).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = 2 * u, n = 2 * q + 1 - 4 * u; value [4 * u + 2, 4 * q + 2 - 4 * u]; mirror [4 * u - 4 * q - 1, -4 * u - 1]; P
 --   b1: a = 2 * q + 1 - 4 * u, c = 3 * q + 2 - u, n = q + 1 - u; value [2 * q + 2 * u + 3, 4 * q + 3]; mirror [-4 * q - 2, -2 * q - 2 * u - 2]; P
@@ -116,7 +265,47 @@ def famR3T1 (q : ℤ) : Finset (ℤ × ℤ) :=
 theorem famR3T1_sp (q : ℤ)
     (h1 : 1 ≤ q) :
     SP (4 * q + 3) (2 * q + 1) (famR3T1 q) := by
-  sorry
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [famR3T1, image_union_fst, Finset.mem_union, mem_image_fst_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famR3T1, image_union_snd, Finset.mem_union, mem_image_snd_row, Finset.mem_Icc]
+    omega
+  · ext x
+    simp only [famR3T1, image_union_val, image_union_mir, Finset.mem_union, mem_image_val_row,
+      mem_image_mir_row, Finset.mem_Icc, or_assoc]
+    constructor
+    · intro h
+      omega
+    · intro hx
+      rcases Int.emod_two_eq x with hp | hp
+      · rcases le_or_gt x (-2 * q - 2) with c | c
+        · pick_run
+        rcases le_or_gt x (-2) with c | c
+        · pick_run
+        rcases le_or_gt x 0 with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q) with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q + 2) with c | c
+        · pick_run
+        pick_run
+      · rcases le_or_gt x (-2 * q - 3) with c | c
+        · pick_run
+        rcases le_or_gt x (-2 * q - 1) with c | c
+        · pick_run
+        rcases le_or_gt x (-1) with c | c
+        · pick_run
+        rcases le_or_gt x 1 with c | c
+        · pick_run
+        rcases le_or_gt x (2 * q + 1) with c | c
+        · pick_run
+        pick_run
+  · unfold famR3T1
+    exact (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le (card_union_le_of_le
+      (card_union_le_of_le (card_row_le _ _ _) (card_row_le _ _ _)) (card_row_le _ _ _))
+      (card_row_le _ _ _)) (card_row_le _ _ _)) (card_row_le _ _ _)).trans (by omega)
 -- Blocks (source order): a, c, n; value run [lo, hi] (step 2 down from hi); mirror run [lo, hi]; type
 --   b0: a = 0, c = q + 2, n = q; value [2 * q + 4, 4 * q + 2]; mirror [-4 * q - 1, -2 * q - 3]; P
 --   b1: a = q, c = 1, n = q; value [3, 2 * q + 1]; mirror [-2 * q, -2]; P
