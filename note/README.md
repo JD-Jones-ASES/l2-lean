@@ -27,5 +27,4 @@ The first ends with a line beginning `VERDICT: ALL VERIFIED`, the second with on
 their outputs. With `--routes`, either script also writes the route of every cell to a JSON file
 beside itself; with `--log`, `verify_second.py` also writes its output to `run_second_<L>.log`.
 
-License: the note (`main.tex`, `main.pdf`) is [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/);
-the certificate is [MIT](../LICENSE), like the rest of the repository.
+License: [MIT](../LICENSE), like the rest of the repository.

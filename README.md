@@ -75,6 +75,6 @@ python scripts/check_family.py
 [PROOF.md](PROOF.md) gives the mathematics with the Lean name of every step, [VERIFICATION.md](VERIFICATION.md)
 the checks and their limits, and [DISCLOSURE.md](DISCLOSURE.md) the assistance statement.
 [Challenge.lean](Challenge.lean) states the ten theorems; [Solution.lean](Solution.lean) proves them.
-[note/](note/README.md) holds the research note (CC BY-SA 4.0) and its finite-data certificate.
+[note/](note/README.md) holds the research note and its finite-data certificate.
 
 License: [MIT](LICENSE).
